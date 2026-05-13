@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This software is in the public domain under CC0 1.0 Universal plus a 
+Grant of Patent License.
+
+To the extent possible under law, the author(s) have dedicated all
+copyright and related and neighboring rights to this software to the
+public domain worldwide. This software is distributed without any
+warranty.
+
+You should have received a copy of the CC0 Public Domain Dedication
+along with this software (see the LICENSE.md file). If not, see
+<http://creativecommons.org/publicdomain/zero/1.0/>.
+-->
+<entity-facade-xml type="seed">
+    <!-- Note: Fundamental enumerations for the math package. Enumerations are finite sets. -->
+
+    <!-- Logical Operator -->
+    <moqui.basic.EnumerationType description="Logical Operator" enumTypeId="LogicalOperator"/>
+    <moqui.basic.Enumeration description="Conjunction - AND" enumId="OpAnd" enumCode="AND" enumTypeId="LogicalOperator"/>
+    <moqui.basic.Enumeration description="Alternative Denial - NAND" enumId="OpNand" enumCode="NAND" enumTypeId="LogicalOperator"/>
+    <moqui.basic.Enumeration description="Disjunction - OR" enumId="OpOr" enumCode="OR" enumTypeId="LogicalOperator"/>
+    <moqui.basic.Enumeration description="Joint Denial - NOR" enumId="OpNor" enumCode="NOR" enumTypeId="LogicalOperator"/>
+    <moqui.basic.Enumeration description="Exclusive Or - XOR" enumId="OpXor" enumCode="XOR" enumTypeId="LogicalOperator"/>
+    <moqui.basic.Enumeration description="Negation - NOT" enumId="OpNot" enumCode="NOT" enumTypeId="LogicalOperator"/>
+    <moqui.basic.Enumeration description="Biconditional - XNOR" enumId="OpXnor" enumCode="XNOR" enumTypeId="LogicalOperator"/>
+    <moqui.basic.Enumeration description="Equivalence - EQ" enumId="OpEq" enumCode="EQ" enumTypeId="LogicalOperator"/>
+    <!-- Math Function -->
+    <moqui.basic.EnumerationType description="Mathematical Function" enumTypeId="MathFunction"/>
+    <moqui.basic.Enumeration description="Sine Function" enumId="MfSin" enumTypeId="MathFunction"/>
+    <moqui.basic.Enumeration description="Cosine Function" enumId="MfCos" enumTypeId="MathFunction"/>
+    <moqui.basic.Enumeration description="Exponential Function" enumId="MfExp" enumTypeId="MathFunction"/>
+    <moqui.basic.Enumeration description="Natural Logarithm" enumId="MfLog" enumTypeId="MathFunction"/>
+    <moqui.basic.Enumeration description="Polynomial" enumId="MfPoly" enumTypeId="MathFunction"/>
+    <!-- etc... -->
+
+    <!-- Algebraic Structure Type -->
+    <moqui.basic.EnumerationType description="Algebraic Structure Type (Group, Ring, Field, etc...)" enumTypeId="AlgebraicStructureType"/>
+    <!-- Group -->
+    <moqui.basic.Enumeration description="Group" enumId="AsGroup" enumTypeId="AlgebraicStructureType"/>
+    <moqui.basic.Enumeration description="Group on Real Numbers Under Addition" enumId="AsAdditiveReal" parentEnumId="AsGroup" enumTypeId="AlgebraicStructureType"/>
+    <moqui.basic.Enumeration description="Group of Integers Under Addition" enumId="AsAdditiveInteger" parentEnumId="AsGroup" enumTypeId="AlgebraicStructureType"/>
+    <moqui.basic.Enumeration description="Cyclic Group of Integers Modulo 3 (Z/3Z)" enumId="AsZ3Group" parentEnumId="AsGroup" enumTypeId="AlgebraicStructureType"/>
+    <!-- Ring -->
+    <moqui.basic.Enumeration description="Ring" enumId="AsRing" enumTypeId="AlgebraicStructureType"/>
+    <moqui.basic.Enumeration  description="Ring of Integers" enumId="AsIntegers" parentEnumId="AsRing" enumTypeId="AlgebraicStructureType"/>
+    <moqui.basic.Enumeration description="Ring Z/5Z (Integers Modulo 5)" enumId="AsZ5Ring" parentEnumId="AsRing" enumTypeId="AlgebraicStructureType"/>
+    <!-- Field -->
+    <moqui.basic.Enumeration description="Field" enumId="AsField" enumTypeId="AlgebraicStructureType"/>
+    <moqui.basic.Enumeration description="Field of Rational Numbers" enumId="AsRationals" parentEnumId="AsField" enumTypeId="AlgebraicStructureType"/>
+    <moqui.basic.Enumeration description="Field of Real Numbers" enumId="AsReals" parentEnumId="AsField" enumTypeId="AlgebraicStructureType"/>
+    <moqui.basic.Enumeration description="Field Z/7Z (Finite Field of Order 7)" enumId="AsZ7Field" parentEnumId="AsField" enumTypeId="AlgebraicStructureType"/>
+    <!-- Module -->
+    <moqui.basic.Enumeration description="Module" enumId="AsModule" enumTypeId="AlgebraicStructureType"/>
+
+    <!-- Vector Space -->
+    <!-- Use parentEnumId field to represent vector subspaces.
+            The field optionValue could be used to set the vector space dimension. -->
+    <moqui.basic.Enumeration description="Vector Space" enumId="AsVectorSpace" enumTypeId="AlgebraicStructureType"/>
+    <moqui.basic.Enumeration description="3D Real Vector Space R^3" enumId="AsRn3" optionValue="3" parentEnumId="AsVectorSpace" enumTypeId="AlgebraicStructureType"/>
+    <moqui.basic.Enumeration description="2D Complex Vector Space C^2" enumId="AsC2" optionValue="2" parentEnumId="AsVectorSpace" enumTypeId="AlgebraicStructureType"/>   
+    <!-- The evolution of the system state can be described by means of a state-space representation. -->
+    <moqui.basic.Enumeration description="State Space" enumId="VsStateSpace" enumCode="StateSpace" enumTypeId="AlgebraicStructureType"/>
+    <!-- Euclidean Space -->
+    <moqui.basic.Enumeration description="Euclidean Space" enumId="VsEuclideanSpace" enumCode="EuclideanSpace" enumTypeId="AlgebraicStructureType"/>
+    <!-- 2D Euclidean Space -->
+    <moqui.basic.Enumeration description="2D Euclidean Space" enumId="EuclideanSpace2D" optionValue="2" enumCode="Euclidean2DSpace" parentEnumId="VsEuclideanSpace" enumTypeId="AlgebraicStructureType"/>
+    <!-- 3D Euclidean Space -->
+    <moqui.basic.Enumeration description="3D Euclidean Space" enumId="EuclideanSpace3D" optionValue="3" enumCode="Euclidean3DSpace" parentEnumId="VsEuclideanSpace" enumTypeId="AlgebraicStructureType"/>
+    <!-- Quaternion Euclidean Space -->
+    <moqui.basic.Enumeration description="Quaternion (4D) Euclidean Space" enumId="QuaternionEuclideanSpace" optionValue="4" enumCode="EuclideanQuaternionSpace" parentEnumId="VsEuclideanSpace" enumTypeId="AlgebraicStructureType"/>
+    <!-- N-dimensional Euclidean Space -->
+    <moqui.basic.Enumeration description="N-dimensional Euclidean Space" enumId="EuclideanSpaceND" optionValue="" enumCode="EuclideanNDSpace" parentEnumId="VsEuclideanSpace" enumTypeId="AlgebraicStructureType"/>
+    <!-- A thermodynamic system in state space can be described by the state variables quantity of matter (mass), V, P, T, Enthalpy, Entropy. -->
+    <moqui.basic.Enumeration description="Thermodynamic Space" enumId="VsThermodynamicSpace" optionValue="6" enumCode="ThermodynamicSpace" parentEnumId="VsStateSpace" enumTypeId="AlgebraicStructureType"/>
+
+    <!-- Vector Space Dimension -->
+    <!-- NOTE: Dimension enumeration represents each dimension of a vector space, allowing for flexible handling of multiple dimensions.
+            Use EnumGroupMember to group the dimensions for each vector space. The sequenceNum field of the EnumGroupMember entity gives the position or order of each dimension. -->
+    <moqui.basic.EnumerationType description="Space Dimension" enumTypeId="SpaceDimension"/>
+    <moqui.basic.Enumeration description="X Dimension" enumId="DimX" enumCode="x" enumTypeId="SpaceDimension"/>
+    <moqui.basic.Enumeration description="Y Dimension" enumId="DimY" enumCode="y" enumTypeId="SpaceDimension"/>
+    <moqui.basic.Enumeration description="Z Dimension" enumId="DimZ" enumCode="z" enumTypeId="SpaceDimension"/>
+    <moqui.basic.EnumerationType description="Time Dimension" enumTypeId="TimeDimension"/>
+    <moqui.basic.Enumeration description="Time Dimension" enumId="DimTime" enumCode="t" enumTypeId="TimeDimension"/>
+    <moqui.basic.EnumerationType description="Thermodynamic Dimension" enumTypeId="ThermodynamicDimension"/>
+    <moqui.basic.Enumeration description="Mass" enumId="DimMass" enumCode="M" enumTypeId="ThermodynamicDimension"/>
+    <moqui.basic.Enumeration description="Volume Dimension" enumId="DimVolume" enumCode="V" enumTypeId="ThermodynamicDimension"/>
+    <moqui.basic.Enumeration description="Pressure Dimension" enumId="DimPressure" enumCode="P" enumTypeId="ThermodynamicDimension"/>
+    <moqui.basic.Enumeration description="Temperature Dimension" enumId="DimTemperature" enumCode="T" enumTypeId="ThermodynamicDimension"/>
+    <moqui.basic.Enumeration description="Enthalpy Dimension" enumId="DimEnthalpy" enumCode="H" enumTypeId="ThermodynamicDimension"/>
+    <moqui.basic.Enumeration description="Entropy Dimension" enumId="DimEntropy" enumCode="S" enumTypeId="ThermodynamicDimension"/>
+    <moqui.basic.Enumeration description="Relative Humidity Dimension" enumId="DimRelativeHumidity" enumCode="RH" enumTypeId="ThermodynamicDimension"/>
+            
+    <!-- 3D Euclidean Space -->
+    <moqui.basic.Enumeration description="3D Euclidean Space" enumId="Eng3DEuclideanSpace" enumTypeId="EnumGroup"/>
+    <moqui.basic.EnumGroupMember enumId="DimX" enumGroupEnumId="Eng3DEuclideanSpace"/>
+    <moqui.basic.EnumGroupMember enumId="DimY" enumGroupEnumId="Eng3DEuclideanSpace"/>
+    <moqui.basic.EnumGroupMember enumId="DimZ" enumGroupEnumId="Eng3DEuclideanSpace"/>
+    <!-- Space Time -->
+    <moqui.basic.Enumeration description="Space Time" enumId="EngSpaceTime" enumTypeId="EnumGroup"/>
+    <moqui.basic.EnumGroupMember enumId="DimX" enumGroupEnumId="EngSpaceTime"/>
+    <moqui.basic.EnumGroupMember enumId="DimY" enumGroupEnumId="EngSpaceTime"/>
+    <moqui.basic.EnumGroupMember enumId="DimZ" enumGroupEnumId="EngSpaceTime"/>
+    <moqui.basic.EnumGroupMember enumId="DimTime" enumGroupEnumId="EngSpaceTime"/>
+</entity-facade-xml>

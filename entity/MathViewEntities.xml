@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This software is in the public domain under CC0 1.0 Universal plus a
+Grant of Patent License.
+
+To the extent possible under law, the author(s) have dedicated all
+copyright and related and neighboring rights to this software to the
+public domain worldwide. This software is distributed without any
+warranty.
+
+You should have received a copy of the CC0 Public Domain Dedication
+along with this software (see the LICENSE.md file). If not, see
+<http://creativecommons.org/publicdomain/zero/1.0/>.
+-->
+<entities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/entity-definition-3.xsd">
+
+    <!-- ========================================================= -->
+    <!-- moqui.math -->
+    <!-- ========================================================= -->
+
+    <!-- ========== Parameter ========== -->
+    <view-entity entity-name="ParameterDetail" package="moqui.math">
+        <member-entity entity-alias="PDEF" entity-name="moqui.math.ParameterDef"/>
+        <member-entity entity-alias="PAR" entity-name="moqui.math.Parameter" join-from-alias="PDEF">
+            <key-map field-name="parameterDefId"/></member-entity>
+
+        <alias-all entity-alias="PDEF"/>
+        <alias-all entity-alias="PAR"><exclude field="parameterDefId"/></alias-all>
+    </view-entity>
+    <view-entity entity-name="ParameterLogDetail" package="moqui.math">
+        <member-entity entity-alias="PLOG" entity-name="moqui.math.ParameterLog"/>
+        <member-entity entity-alias="PAR" entity-name="moqui.math.Parameter" join-from-alias="PLOG">
+            <key-map field-name="parameterId"/></member-entity>
+        <member-entity entity-alias="PDEF" entity-name="moqui.math.ParameterDef" join-from-alias="PAR">
+            <key-map field-name="parameterDefId"/></member-entity>
+
+        <alias-all entity-alias="PLOG"/>
+        <alias-all entity-alias="PAR"><exclude field="parameterId"/><exclude field="sequenceNum"/>
+            <exclude field="numericValue"/><exclude field="symbolicValue"/>
+            <exclude field="parameterEnumId"/></alias-all>
+        <alias entity-alias="PAR" name="parameterSequenceNum" field="sequenceNum"/>
+        <alias-all entity-alias="PDEF"><exclude field="parameterDefId"/></alias-all>
+    </view-entity>
+
+    <!-- ========== Vector ========== -->
+    <view-entity entity-name="VectorAndComponent" package="moqui.math">
+        <member-entity entity-alias="V" entity-name="moqui.math.Vector"/>
+        <member-entity entity-alias="VC" entity-name="moqui.math.VectorComponent" join-from-alias="V">
+            <key-map field-name="vectorId"/></member-entity>
+
+        <alias-all entity-alias="V"/>
+        <alias-all entity-alias="VC"><exclude field="vectorId"/></alias-all>
+    </view-entity>
+
+    <!-- ========== Matrix ========== -->
+    <!-- NOTE: This view is the basis for obtaining many notable matrices, essential in algebraic calculations.
+         This view allows you to translate algebraic operations into relational database operations.
+         Example entity find:
+            <entity-find entity-name="MatrixAndComponent" list="mcList" cache="true">
+                <econdition Replace this ... />
+            </entity-find> 
+        
+         Notable matrices obtained with entity conditions:
+
+            1- ColumnMatrix - Extract a single column (col) of a matrix as a derived vector.
+                   <set field="col" value="3"/>
+                   ...
+                   <econdition field-name="colIndex" operator="equals" from="col"/>
+
+            2- RowMatrix - Extract a single row (row) of a matrix as a derived vector.
+                   <set field="row" from="4"/>
+                   ...         
+                   <econdition field-name="rowIndex" operator="equals" from="row"/>
+
+            3- MatrixUpperTriangular - Upper triangular view of a matrix.
+               Parameter k is the diagonal offset; k equal 0 means main diagonal, k greater than 0 keeps
+               elements above the k-th super-diagonal, k less than 0 includes some elements below.
+                   <set field="k" value="1" default-value="0"/>
+                   ...
+                   <econdition field-name="diffIndex" operator="less-equals" from="k"/>
+
+            4- MatrixLowerTriangular - Lower triangular view of a matrix.
+               Parameter k is the diagonal offset; k equal 0 means main diagonal, k greater than 0 keeps
+               elements below the k-th super-diagonal, k less than 0 includes some elements above.
+                   <set field="k" value="1" default-value="0"/>
+                   ...
+                   <econdition field-name="diffIndex" operator="greater-equals" from="k"/>
+
+            5- MatrixDiagonal - Main or offset diagonal (k equal 0 main, k greater than 0 super, k less than 0 sub).
+                   <set field="k" value="1" default-value="0"/>
+                   ...
+                   <econdition field-name="diffIndex" operator="equals" from="k"/>
+
+            6- MatrixAntidiagonal - Anti-diagonal elements (i + j = n-1-k).
+               Callers can pass antiSum = cols - 1 - k
+                   <set field="antiSum" from="mat.cols - 1 - k" default-value="0"/>
+                   ...
+                   <econdition field-name="sumIndex" operator="equals" from="antiSum"/>
+
+            7- MatrixBand - Elements within a band (row - col) belonging to [-l, u] (defaults l = u = 0 ⇒ main diag).
+                   <set field="l" value="3" default-value="0"/>
+                   <set field="u" value="2" default-value="0"/>
+                   ...
+                   <econditions>
+                       <econdition field-name="diffIndex" operator="greater-equals" from="l"/>
+                       <econdition field-name="diffIndex" operator="less-equals" from="u"/>
+                   </econditions>
+ 
+            8- MatrixBlockSlice - Rectangular sub-matrix slice (row range, col range).
+                   <set field="rowLo" value=""..."/>
+                   <set field="rowHi" value="..."/>
+                   <set field="colLo" value="..."/>
+                   <set field="colHi" value="..."/>
+                   ...
+                   <econditions>
+                       <econditions>
+                           <econdition field-name="rowIndex" operator="greater-equals" from="rowLo"/>
+                           <econdition field-name="rowIndex" operator="less-equals" from="rowHi"/>
+                       </econditions>
+                       <econditions>
+                           <econdition field-name="colIndex" operator="greater-equals" from="colLo"/>
+                           <econdition field-name="colIndex" operator="less-equals" from="colHi"/>
+                       </econditions>
+                   </econditions>
+    -->
+    <view-entity entity-name="MatrixAndComponent" package="moqui.math">
+        <member-entity entity-alias="M" entity-name="moqui.math.Matrix"/>
+        <member-entity entity-alias="MC" entity-name="moqui.math.MatrixComponent" join-from-alias="M">
+            <key-map field-name="matrixId"/></member-entity>
+
+        <alias-all entity-alias="M"/>
+        <alias-all entity-alias="MC"><exclude field="matrixId"/></alias-all>
+        <complex-alias field="diffIndex">
+            <complex-alias-field entity-alias="MC" field-name="rowIndex"/>
+            <complex-alias-field operator="-" entity-alias="MC" field="colIndex"/>
+        </complex-alias>
+        <complex-alias field="sumIndex">
+            <complex-alias-field entity-alias="MC" field-name="rowIndex"/>
+            <complex-alias-field operator="+" entity-alias="MC" field="colIndex"/>
+        </complex-alias>
+    </view-entity>
+    <view-entity entity-name="MatrixAdjoint" package="moqui.math">
+        <description>View that presents the conjugate transpose of a matrix.
+            Row/column indices are swapped and the imaginary part is negated (complex conjugation).</description>
+        <member-entity entity-alias="M" entity-name="moqui.math.Matrix"/>
+        <member-entity entity-alias="MC" entity-name="moqui.math.MatrixComponent" join-from-alias="M">
+            <key-map field-name="matrixId"/></member-entity>
+
+        <alias-all entity-alias="M"/>
+        <alias-all entity-alias="MC"><exclude field="matrixId"/><exclude field="rowIndex"/>
+            <exclude field="colIndex"/></alias-all>
+        <alias entity-alias="MC" name="rowIndex" field="colIndex"/>
+        <alias entity-alias="MC" name="colIndex" field="rowIndex"/>
+        <alias name="imaginaryConjValue" type="number-decimal">
+            <complex-alias expression="-MC.imaginaryValue"/>
+        </alias>
+    </view-entity> 
+    <view-entity entity-name="MatrixTrace" package="moqui.math">
+        <description>Calculates the trace of a square matrix (sum of main diagonal elements).</description>
+        <member-entity entity-alias="M"  entity-name="moqui.math.Matrix"/>
+        <member-entity entity-alias="MC"  entity-name="moqui.math.MatrixComponent" join-from-alias="M">
+            <key-map field-name="matrixId"/></member-entity>
+
+        <alias-all entity-alias="M"/>
+        <alias-all entity-alias="MC"><exclude field="matrixId"/></alias-all>
+        <alias entity-alias="MC" name="traceValue" function="sum" field="realValue"/>
+
+        <entity-condition>
+            <econdition field-name="rowIndex" operator="equals" from-field="colIndex"/>
+        </entity-condition>
+    </view-entity>
+    <view-entity entity-name="MatrixTranspose" package="moqui.math">
+        <description>Provides a transposed view of MatrixComponent records by swapping row and column indices.</description>
+        <member-entity entity-alias="M"  entity-name="moqui.math.Matrix"/>
+        <member-entity entity-alias="MC"  entity-name="moqui.math.MatrixComponent" join-from-alias="M">
+            <key-map field-name="matrixId"/></member-entity>
+    
+        <alias-all entity-alias="M"/>
+        <alias-all entity-alias="MC"><exclude field="matrixId"/>
+            <exclude field="rowIndex"/><exclude field="colIndex"/></alias-all>
+        <alias entity-alias="MC" name="rowIndex" field="colIndex"/> 
+        <alias entity-alias="MC" name="colIndex" field="rowIndex"/> 
+    </view-entity>
+    <view-entity entity-name="MatrixVectorize" package="moqui.math">
+        <description>Flatten matrix into row-major 1-D vector (row-major index).</description>
+        <member-entity entity-alias="M" entity-name="moqui.math.Matrix"/>
+        <member-entity entity-alias="MC" entity-name="moqui.math.MatrixComponent" join-from-alias="M">
+            <key-map field-name="matrixId"/></member-entity>
+
+        <alias-all entity-alias="M"/>
+        <alias-all entity-alias="MC"><exclude field="matrixId"/></alias-all>
+        <alias name="dimensionIndex" type="number-integer">
+            <complex-alias expression="MC.rowIndex * M.cols + MC.colIndex"/>
+        </alias>
+    </view-entity>
+    <view-entity entity-name="MatrixReciprocal" package="moqui.math">
+        <description>Element-wise reciprocal.</description>
+        <member-entity entity-alias="M" entity-name="moqui.math.Matrix"/>
+        <member-entity entity-alias="MC" entity-name="moqui.math.MatrixComponent" join-from-alias="M">
+            <key-map field-name="matrixId"/></member-entity>
+
+        <alias-all entity-alias="M"/>
+        <alias-all entity-alias="MC"><exclude field="matrixId"/></alias-all>
+        <alias name="den" type="number-decimal">
+            <complex-alias expression="(MC.realValue * MC.realValue) + (MC.imaginaryValue * MC.imaginaryValue)"/>
+        </alias>
+        <alias name="recipRealValue" type="number-decimal">
+            <case><when expression="den &lt;&gt; 0">
+                <complex-alias expression="MC.realValue / den"/>
+            </when><else><complex-alias expression="0"/></else></case>
+        </alias>
+        <alias name="recipImaginaryValue" type="number-decimal">
+            <case><when expression="den &lt;&gt; 0">
+                <complex-alias expression="-MC.imaginaryValue / den"/>
+            </when><else><complex-alias expression="0"/></else></case>
+        </alias>
+    </view-entity>
+    <view-entity entity-name="MatrixFlipUpDown" package="moqui.math">
+        <description>Flip matrix upside-down (reverse rows).</description>
+        <member-entity entity-alias="M" entity-name="moqui.math.Matrix"/>
+        <member-entity entity-alias="MC" entity-name="moqui.math.MatrixComponent" join-from-alias="M">
+            <key-map field-name="matrixId"/></member-entity>
+
+        <alias-all entity-alias="M"/>
+        <alias-all entity-alias="MC"><exclude field="matrixId"/></alias-all>
+        <alias name="flipRowIndex" type="number-integer">
+            <complex-alias expression="M.rows - MC.rowIndex - 1"/>
+        </alias>
+    </view-entity>
+    <view-entity entity-name="MatrixFlipLeftRight" package="moqui.math">
+        <description>Flip matrix left-right (reverse columns).</description>
+        <member-entity entity-alias="M" entity-name="moqui.math.Matrix"/>
+        <member-entity entity-alias="MC" entity-name="moqui.math.MatrixComponent" join-from-alias="M">
+            <key-map field-name="matrixId"/></member-entity>
+
+        <alias-all entity-alias="M"/>
+        <alias-all entity-alias="MC"><exclude field="matrixId"/></alias-all>
+        <alias name="flipColIndex" type="number-integer">
+            <complex-alias expression="M.cols - MC.colIndex - 1"/>
+        </alias>
+    </view-entity>
+    <view-entity entity-name="MatrixRotate90" package="moqui.math">
+        <description>Rotate matrix by 90° k times (k = 0..3).</description>
+        <member-entity entity-alias="M" entity-name="moqui.math.Matrix"/>
+        <member-entity entity-alias="MC" entity-name="moqui.math.MatrixComponent" join-from-alias="M">
+            <key-map field-name="matrixId"/></member-entity>
+
+        <alias-all entity-alias="M"/>
+        <alias-all entity-alias="MC"><exclude field="matrixId"/></alias-all>
+        <alias name="rotRow" type="number-integer"><case>
+            <when expression="${k} == 0"><complex-alias expression="MC.rowIndex"/></when>
+            <when expression="${k} == 1"><complex-alias expression="MC.colIndex"/></when>
+            <when expression="${k} == 2"><complex-alias expression="M.rows - 1 - MC.rowIndex"/></when>
+            <else><complex-alias expression="M.cols - 1 - MC.colIndex"/></else>
+        </case></alias>
+        <alias name="rotCol" type="number-integer"><case>
+            <when expression="${k} == 0"><complex-alias expression="MC.colIndex"/></when>
+            <when expression="${k} == 1"><complex-alias expression="M.rows - 1 - MC.rowIndex"/></when>
+            <when expression="${k} == 2"><complex-alias expression="M.cols - 1 - MC.colIndex"/></when>
+            <else><complex-alias expression="MC.rowIndex"/></else>
+        </case></alias>
+    </view-entity>
+
+    <!-- ========== Tensor ========== --> 
+    <view-entity entity-name="TensorAndElement" package="moqui.math">
+        <member-entity entity-alias="T" entity-name="moqui.math.Tensor"/>
+        <member-entity entity-alias="TE" entity-name="moqui.math.TensorElement" join-from-alias="T">
+            <key-map field-name="tensorId"/></member-entity>
+
+        <alias-all entity-alias="T"/>
+        <alias-all entity-alias="TE"><exclude field="tensorId"/></alias-all>
+    </view-entity>
+    <!-- Tensor views for translating algebraic operations into relational database or SQL operations. -->
+    <!-- Tensor -> Mode-k unfoldings + vectorisation, to be able to use standard linear algebra operations that are designed for 2D matrices on tensors. -->
+    <!-- Mode-0 unfolding -->
+    <view-entity entity-name="TensorMode0Unfold" package="moqui.math">
+        <description>Mode-0 matricisation of a tensor (row-major).</description>
+        <member-entity entity-alias="T" entity-name="moqui.math.Tensor"/>
+        <member-entity entity-alias="TE" entity-name="moqui.math.TensorElement" join-from-alias="T">
+            <key-map field-name="tensorId"/></member-entity>
+        <member-entity entity-alias="TA0" entity-name="moqui.math.TensorAxis" join-from-alias="T">
+            <key-map field-name="tensorId"/>
+            <entity-condition>
+                <econdition field-name="axisIndex" operator="equals" value="0"/>
+            </entity-condition>
+        </member-entity>
+    
+        <alias-all entity-alias="T"/>
+        <alias-all entity-alias="TE"><exclude field="tensorId"/><exclude field="linearIndex"/></alias-all>
+        <alias name="rowIndex" type="number-integer">
+            <complex-alias expression="TE.linearIndex / TA0.axisStride"/>
+        </alias>
+        <alias name="colIndex" type="number-integer">
+            <complex-alias expression="TE.linearIndex % TA0.axisStride"/>
+        </alias>
+    </view-entity>
+    <!-- Mode-1 unfolding -->
+    <view-entity entity-name="TensorMode1Unfold" package="moqui.math">
+        <description>Mode-1 matricisation of a tensor (row-major).</description>
+        <member-entity entity-alias="T" entity-name="moqui.math.Tensor"/>
+        <member-entity entity-alias="TE" entity-name="moqui.math.TensorElement" join-from-alias="T">
+            <key-map field-name="tensorId"/></member-entity>
+        <member-entity entity-alias="TA1" entity-name="moqui.math.TensorAxis" join-from-alias="T">
+            <key-map field-name="tensorId"/>
+            <entity-condition>
+                <econdition field-name="axisIndex" operator="equals" value="1"/>
+            </entity-condition>
+        </member-entity>
+        <member-entity entity-alias="TA0" entity-name="moqui.math.TensorAxis" join-from-alias="T">
+            <key-map field-name="tensorId"/>
+            <entity-condition>
+                <econdition field-name="axisIndex" operator="equals" value="0"/>
+            </entity-condition>
+        </member-entity>
+
+        <alias-all entity-alias="T"/>
+        <alias-all entity-alias="TE"><exclude field="tensorId"/><exclude field="linearIndex"/></alias-all>
+        <alias name="rowIndex" type="number-integer">
+            <complex-alias expression="TE.linearIndex % TA0.axisStride / TA1.axisStride"/>
+        </alias>
+        <alias name="colIndex" type="number-integer">
+            <complex-alias expression="TE.linearIndex / TA0.axisStride * TA1.axisStride + TE.linearIndex % TA1.axisStride"/>
+        </alias>
+    </view-entity>
+    <!-- Full vectorisation -->
+    <view-entity entity-name="TensorVectorize" package="moqui.math">
+        <description>Flattens any n-dimensional tensor into a 1-D vector (row-major).</description>
+        <member-entity entity-alias="T" entity-name="moqui.math.Tensor"/>
+        <member-entity entity-alias="TE" entity-name="moqui.math.TensorElement" join-from-alias="T">
+            <key-map field-name="tensorId"/></member-entity>
+
+        <alias-all entity-alias="T"/>
+        <alias-all entity-alias="TE"><exclude field="tensorId"/><exclude field="linearIndex"/></alias-all>
+        <alias name="dimensionIndex" entity-alias="TE" field="linearIndex"/>
+    </view-entity>
+    <view-entity entity-name="TensorReciprocal" package="moqui.math">
+        <description>Element-wise reciprocal of a tensor.  
+            Real case : yᵢ = 1 / xᵢ  
+            Complex : 1 / (a+bi) = a / (a²+b²)- b / (a²+b²)i
+        </description>
+        <member-entity entity-alias="T" entity-name="moqui.math.Tensor"/>
+        <member-entity entity-alias="TE" entity-name="moqui.math.TensorElement" join-from-alias="T">
+            <key-map field-name="tensorId"/></member-entity>
+          
+        <alias-all entity-alias="T"/>
+        <alias-all entity-alias="TE"><exclude field="tensorId"/></alias-all>
+        <alias name="den" type="number-decimal">
+            <complex-alias expression="(TE.realValue * TE.realValue) + (TE.imaginaryValue * TE.imaginaryValue)"/>
+        </alias>
+        <alias name="recipRealValue" type="number-decimal">
+            <case><when expression="den &lt;&gt; 0">
+                <complex-alias expression="TE.realValue / den"/>
+            </when><else><complex-alias expression="0"/></else></case>
+        </alias>
+        <alias name="recipImagValue" type="number-decimal">
+            <case><when expression="den &lt;&gt; 0">
+                <complex-alias expression="-TE.imaginaryValue / den"/>
+            </when><else><complex-alias expression="0"/></else></case>
+        </alias>
+    </view-entity>
+    <view-entity entity-name="TensorFlipUpDown" package="moqui.math">
+        <description>Flip tensor along axis 0 (batch/row axis).</description>
+        <member-entity entity-alias="T" entity-name="moqui.math.Tensor"/>
+        <member-entity entity-alias="TE" entity-name="moqui.math.TensorElement" join-from-alias="T">
+            <key-map field-name="tensorId"/></member-entity>
+        <member-entity entity-alias="TA0" entity-name="moqui.math.TensorAxis" sub-select="true" join-from-alias="T">
+            <key-map field-name="tensorId"/>
+            <entity-condition>
+                <econdition field-name="axisIndex" operator="equals" value="0"/>
+            </entity-condition>
+        </member-entity>
+
+        <alias-all entity-alias="T"/>
+        <alias-all entity-alias="TE"><exclude field="tensorId"/></alias-all>
+        <alias name="flipLinear" type="number-integer">
+            <complex-alias expression="((TA0.axisSize - 1) - (TE.linearIndex / TA0.axisStride))
+                * TA0.axisStride + (TE.linearIndex % TA0.axisStride)"/>
+        </alias>
+    </view-entity>
+    <view-entity entity-name="TensorFlipLeftRight" package="moqui.math">
+        <description>Flip tensor along axis 1 (column/width axis).</description>
+        <member-entity entity-alias="T" entity-name="moqui.math.Tensor"/>
+        <member-entity entity-alias="TE" entity-name="moqui.math.TensorElement" join-from-alias="T">
+            <key-map field-name="tensorId"/></member-entity>
+        <member-entity entity-alias="TA0" entity-name="moqui.math.TensorAxis" join-from-alias="T">
+            <key-map field-name="tensorId"/>
+            <econdition field-name="axisIndex" operator="equals" value="0"/>
+        </member-entity>
+        <member-entity entity-alias="TA1" entity-name="moqui.math.TensorAxis" join-from-alias="T">
+            <key-map field-name="tensorId"/>
+            <econdition field-name="axisIndex" operator="equals" value="1"/>
+        </member-entity>
+
+        <alias-all entity-alias="T"/>
+        <alias-all entity-alias="TE"><exclude field="tensorId"/></alias-all>
+        <alias name="prefixLinearIndex" type="number-integer">
+            <complex-alias expression="TE.linearIndex / TA0.axisStride * TA0.axisStride"/>
+        </alias>
+        <alias name="originalAxis1Index" type="number-integer">
+            <complex-alias expression="(TE.linearIndex % TA0.axisStride) / TA1.axisStride"/>
+        </alias>
+        <alias name="newAxis1Index" type="number-integer">
+            <complex-alias expression="(TA1.axisSize - 1) - originalAxis1Index"/>
+        </alias>
+        <alias name="suffixLinearIndex" type="number-integer">
+            <complex-alias expression="TE.linearIndex % TA1.axisStride"/>
+        </alias>
+        <alias name="flipLinear" type="number-integer">
+            <complex-alias expression="prefixLinearIndex + newAxis1Index * TA1.axisStride + suffixLinearIndex"/>
+        </alias>
+    </view-entity>
+
+    <!-- ========== Approximated Function ========== -->
+    <view-entity entity-name="ApproximatedFunctionAndSample" package="moqui.math" cache="true">
+        <member-entity entity-alias="AF" entity-name="moqui.math.ApproximatedFunction"/>
+        <member-entity entity-alias="AFS" entity-name="moqui.math.ApproximatedFunctionSample" join-from-alias="AF">
+            <key-map field-name="approximatedFunctionId"/></member-entity>
+        <alias-all entity-alias="AF"/>
+        <alias-all entity-alias="AFS"><exclude field="approximatedFunctionId"/></alias-all>
+    </view-entity>
+
+    <!-- ========== Graph ========== -->
+    <view-entity entity-name="GraphEdgeEndpoint" package="moqui.math" cache="true">
+        <description>View combining a graph edge and its vertices.</description>
+        <member-entity entity-alias="GE" entity-name="moqui.math.GraphEdge"/>
+        <member-entity entity-alias="GV1" entity-name="moqui.math.GraphVertex" join-from-alias="GE">
+            <key-map field-name="graphId"/>
+            <key-map field-name="fromVertexId" related="graphVertexId"/>
+        </member-entity>
+        <member-entity entity-alias="GV2" entity-name="moqui.math.GraphVertex" join-from-alias="GE">
+            <key-map field-name="graphId"/>
+            <key-map field-name="toVertexId" related="graphVertexId"/>
+        </member-entity>
+        <alias-all entity-alias="GE"/>
+        <alias-all entity-alias="GV1" prefix="from"><exclude field="graphId"/></alias-all>
+        <alias-all entity-alias="GV2" prefix="to"><exclude field="graphId"/></alias-all>
+    </view-entity>
+
+    <!-- ========== Mesh ========== -->
+    <view-entity entity-name="MeshKCellAndVertex" package="moqui.math">
+        <member-entity entity-alias="MKC" entity-name="moqui.math.MeshKCell"/>
+        <member-entity entity-alias="MKCV" entity-name="moqui.math.MeshKCellVertex" join-from-alias="MKC">
+            <key-map field-name="meshKCellId"/></member-entity>
+        <member-entity entity-alias="GV" entity-name="moqui.math.GraphVertex" join-from-alias="MKCV">
+            <key-map field-name="graphVertexId"/></member-entity>
+
+        <alias-all entity-alias="MKC"/>
+        <alias-all entity-alias="GV" prefix="graph"/>
+    </view-entity>
+    <view-entity entity-name="MeshKCellAndEdge" package="moqui.math">
+        <member-entity entity-alias="MKC" entity-name="moqui.math.MeshKCell"/>
+        <member-entity entity-alias="MKCE" entity-name="moqui.math.MeshKCellEdge" join-from-alias="MKC">
+            <key-map field-name="meshKCellId"/></member-entity>
+        <member-entity entity-alias="GE" entity-name="moqui.math.GraphEdge" join-from-alias="MKCE">
+            <key-map field-name="graphEdgeId"/></member-entity>
+
+        <alias-all entity-alias="MKC"/>
+        <alias-all entity-alias="GE" prefix="graph"/>
+    </view-entity>
+
+    <!-- ========== Parametric Path ========== -->
+    <view-entity entity-name="ParametricPathAndPoint" package="moqui.math" cache="true">
+        <member-entity entity-alias="PP" entity-name="moqui.math.ParametricPath"/>
+        <member-entity entity-alias="PPP" entity-name="moqui.math.ParametricPathPoint" join-from-alias="PP">
+            <key-map field-name="approximatedFunctionId"/></member-entity>
+        <alias-all entity-alias="PP"/>
+        <alias-all entity-alias="PPP"><exclude field="approximatedFunctionId"/></alias-all>
+    </view-entity>
+
+    <!-- ========== Trajectory ========== -->
+    <view-entity entity-name="TrajectoryAndPoint" package="moqui.math" cache="true">
+        <member-entity entity-alias="TRJ" entity-name="moqui.math.Trajectory"/>
+        <member-entity entity-alias="PT" entity-name="moqui.math.TrajectoryPoint" join-from-alias="TRJ">
+            <key-map field-name="approximatedFunctionId"/></member-entity>
+        <alias-all entity-alias="TRJ"/>
+        <alias-all entity-alias="PT"><exclude field="approximatedFunctionId"/></alias-all>
+    </view-entity>
+</entities>
