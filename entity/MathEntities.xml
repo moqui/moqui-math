@@ -180,6 +180,7 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Control" enumId="PpControl" enumTypeId="ParameterPurpose"/>
             <!-- Monitoring parameters describe specific types of information that represent a numeric value, a functioning state, or a health status reported by a piece of equipment. -->
             <moqui.basic.Enumeration description="Monitoring" enumId="PpMonitoring" enumTypeId="ParameterPurpose"/>
+            <moqui.basic.Enumeration description="Feedback" enumId="PpFeedback" parentEnumId="PpMonitoring" enumTypeId="ParameterPurpose"/>
             <moqui.basic.Enumeration description="Status" enumId="PpStatus" parentEnumId="PpMonitoring" enumTypeId="ParameterPurpose"/>         
             <!-- Condition checked to monitor the health of a piece of equipment and its ability to function. -->
             <moqui.basic.Enumeration description="Condition" enumId="PpCondition" parentEnumId="PpMonitoring" enumTypeId="ParameterPurpose"/>
