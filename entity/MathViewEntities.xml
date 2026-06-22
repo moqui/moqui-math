@@ -476,4 +476,65 @@ along with this software (see the LICENSE.md file). If not, see
         <alias-all entity-alias="TRJ"/>
         <alias-all entity-alias="PT"><exclude field="approximatedFunctionId"/></alias-all>
     </view-entity>
+
+    <!-- Flat view of trajectory point position components for PLC dispatch.
+         Each row represents one dimension of one point: dimensionIndex 0-5 maps to
+         SMC_POS_REF.v[0..5] (X, Y, Z mm + A, B, C deg for Cartesian; J1-J6 deg for ACS).
+
+         Join path:
+           Trajectory (TRJ) → ParametricPath (PP)       [compositionMethodEnumId = trajectory blending default]
+           TRJ → TrajectoryPoint (PT)                   [isBreakPoint, blendingEnumId = per-point override]
+           PT  → ApproximatedFunctionSample (AFS)       [sequenceNum, sampleVectorId]
+           AFS → ParametricPathPoint (PPP)              [tolerance = blendingMode]
+           AFS → Vector (V)                             [position vector]
+           V   → VectorComponent (VC)                   [dimensionIndex, realValue = axis value]
+
+         Gateway blending translation:
+           PP.compositionMethodEnumId (PpcmPlc*) → Trajectory.bufferMode + transitionMode
+           PT.blendingEnumId          (PpcmPlc*) → TrajectoryPoint.hasBlendingOverride + bufferMode + transitionMode
+           PPP.tolerance                         → TrajectoryPoint.blendingMode (0 = trajectory default) -->
+    <view-entity entity-name="TrajectoryPointComponent" package="moqui.math" cache="true">
+        <member-entity entity-alias="TRJ" entity-name="moqui.math.Trajectory"/>
+        <member-entity entity-alias="PP" entity-name="moqui.math.ParametricPath" join-from-alias="TRJ">
+            <key-map field-name="approximatedFunctionId"/></member-entity>
+        <member-entity entity-alias="PT" entity-name="moqui.math.TrajectoryPoint" join-from-alias="TRJ">
+            <key-map field-name="approximatedFunctionId"/></member-entity>
+        <member-entity entity-alias="AFS" entity-name="moqui.math.ApproximatedFunctionSample" join-from-alias="PT">
+            <key-map field-name="approximatedFunctionId"/>
+            <key-map field-name="approximatedFunctionSampleId"/></member-entity>
+        <member-entity entity-alias="PPP" entity-name="moqui.math.ParametricPathPoint" join-from-alias="AFS">
+            <key-map field-name="approximatedFunctionId"/>
+            <key-map field-name="approximatedFunctionSampleId"/></member-entity>
+        <member-entity entity-alias="V" entity-name="moqui.math.Vector" join-from-alias="AFS">
+            <key-map field-name="sampleVectorId" related="vectorId"/></member-entity>
+        <member-entity entity-alias="VC" entity-name="moqui.math.VectorComponent" join-from-alias="V">
+            <key-map field-name="vectorId"/></member-entity>
+
+        <!-- Trajectory identification -->
+        <alias entity-alias="TRJ" name="trajectoryId" field="approximatedFunctionId"/>
+        <alias entity-alias="TRJ" name="actuationTypeEnumId"/>
+        <alias entity-alias="TRJ" name="controlMethodEnumId"/>
+        <!-- Trajectory-level blending default → Trajectory.bufferMode + transitionMode in ST struct -->
+        <alias entity-alias="PP" name="compositionMethodEnumId"/>
+        <!-- Point identity and timing -->
+        <alias entity-alias="PT" name="approximatedFunctionSampleId"/>
+        <alias entity-alias="PT" name="pointTimeOffsetMillis"/>
+        <alias entity-alias="PT" name="isBreakPoint"/>
+        <!-- Per-point blending override → TrajectoryPoint.hasBlendingOverride + bufferMode + transitionMode -->
+        <alias entity-alias="PT" name="blendingEnumId"/>
+        <!-- Point sequence order from the function sample -->
+        <alias entity-alias="AFS" name="sequenceNum"/>
+        <alias entity-alias="AFS" name="sampleCode"/>
+        <!-- Per-point blend radius / parameter → TrajectoryPoint.blendingMode -->
+        <alias entity-alias="PPP" name="blendingMode" field="tolerance"/>
+        <!-- Position vector -->
+        <alias entity-alias="V" name="positionVectorId" field="vectorId"/>
+        <alias entity-alias="V" name="coordinateSystemId"/>
+        <!-- Vector component: dimensionIndex 0-5, realValue is the axis value -->
+        <alias entity-alias="VC" name="vectorComponentId"/>
+        <alias entity-alias="VC" name="dimensionIndex"/>
+        <alias entity-alias="VC" name="realValue"/>
+        <alias entity-alias="VC" name="imaginaryValue"/>
+        <alias entity-alias="VC" name="symbolicValue"/>
+    </view-entity>
 </entities>

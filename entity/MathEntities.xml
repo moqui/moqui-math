@@ -3318,6 +3318,26 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Bezier Blend" enumId="PpcmBezierBlend" enumTypeId="ParametricPathCompositionMethod"/>
             <moqui.basic.Enumeration description="Spline Blend" enumId="PpcmSplineBlend" enumTypeId="ParametricPathCompositionMethod"/>
             <moqui.basic.Enumeration description="Custom User-Defined Blend" enumId="PpcmCustomBlend" enumTypeId="ParametricPathCompositionMethod"/>
+            <!-- PLCopen Part 4 Coordinated Motion - MC_BUFFER_MODE (execution sequencing).
+                 These control when the next segment starts relative to the current one.
+                 Set on ParametricPath.compositionMethodEnumId (trajectory default) or
+                 TrajectoryPoint.blendingEnumId (per-point override).
+                 Note: TrajectoryPoint.isBreakPoint=Y always overrides to exact stop regardless. -->
+            <moqui.basic.Enumeration description="PLCopen Aborting - abort current segment, start next immediately" enumId="PpcmPlcAborting" enumTypeId="ParametricPathCompositionMethod"/>
+            <moqui.basic.Enumeration description="PLCopen Buffered - queue next segment, start after current completes" enumId="PpcmPlcBuffered" enumTypeId="ParametricPathCompositionMethod"/>
+            <moqui.basic.Enumeration description="PLCopen Blending Low - blend at the lower of the two segment velocities" enumId="PpcmPlcBlendingLow" enumTypeId="ParametricPathCompositionMethod"/>
+            <moqui.basic.Enumeration description="PLCopen Blending Previous - blend at velocity of previous segment" enumId="PpcmPlcBlendingPrev" enumTypeId="ParametricPathCompositionMethod"/>
+            <moqui.basic.Enumeration description="PLCopen Blending Next - blend at velocity of next segment" enumId="PpcmPlcBlendingNext" enumTypeId="ParametricPathCompositionMethod"/>
+            <moqui.basic.Enumeration description="PLCopen Blending High - blend at the higher of the two segment velocities" enumId="PpcmPlcBlendingHigh" enumTypeId="ParametricPathCompositionMethod"/>
+            <!-- PLCopen Part 4 Coordinated Motion - MC_TRANSITION_MODE (geometric blend shape).
+                 These control HOW the robot path is shaped at the transition point.
+                 Used in combination with a buffer mode above.
+                 For TMCornerDistance the blend radius comes from ParametricPathPoint.tolerance. -->
+            <moqui.basic.Enumeration description="PLCopen TMNone - exact stop at the point, no geometric blending" enumId="PpcmPlcTMNone" enumTypeId="ParametricPathCompositionMethod"/>
+            <moqui.basic.Enumeration description="PLCopen TMCornerDistance - blend within corner radius (ParametricPathPoint.tolerance)" enumId="PpcmPlcTMCornerDist" enumTypeId="ParametricPathCompositionMethod"/>
+            <moqui.basic.Enumeration description="PLCopen TMConstantVelocity - maintain constant velocity through transition" enumId="PpcmPlcTMConstVel" enumTypeId="ParametricPathCompositionMethod"/>
+            <moqui.basic.Enumeration description="PLCopen TMStartVelocity - continue at current speed into next segment" enumId="PpcmPlcTMStartVel" enumTypeId="ParametricPathCompositionMethod"/>
+            <moqui.basic.Enumeration description="PLCopen TMMaxVelocity - maximize velocity through the transition" enumId="PpcmPlcTMMaxVel" enumTypeId="ParametricPathCompositionMethod"/>
         </seed-data>
     </entity>
     <entity entity-name="ParametricPathContent" package="moqui.math" cache="never">
@@ -3669,7 +3689,12 @@ along with this software (see the LICENSE.md file). If not, see
             <description>Duration of the break at this point (in seconds or milliseconds).</description></field>
         <field name="breakReason" type="text-short">
             <description>Optional description for why the break is required (e.g., cooling, safety check).</description></field>
-        <field name="pointTimeOffsetMillis" type="number-decimal">
+        <field name="blendingEnumId" type="id">
+            <description>Per-point blending override (ParametricPathCompositionMethod values).
+                If set, overrides ParametricPath.compositionMethodEnumId for the transition into this point.
+                isBreakPoint=Y takes priority (always an exact stop regardless of this field).
+                For PpcmPlcTMCornerDist the blend radius comes from ParametricPathPoint.tolerance.</description></field> 
+       <field name="pointTimeOffsetMillis" type="number-decimal">
             <description>Planned time offset (millis) for reaching this point. The time, relative to the origin of time axis,
                 to which the trajectory should interpolate or approximate this point during execution.
                 Each point in a trajectory will correspond to a particular timestamp and the corresponding point vector.</description></field>
@@ -3695,6 +3720,8 @@ along with this software (see the LICENSE.md file). If not, see
             <key-map field-name="jerkVectorId" related="vectorId"/></relationship>
         <relationship type="one" title="SnapMatrix" related="moqui.math.Vector" short-alias="snapVector">
             <key-map field-name="snapVectorId" related="vectorId"/></relationship>
+        <relationship type="one" title="TrajectoryPointBlending" related="moqui.basic.Enumeration" short-alias="blending">
+            <key-map field-name="blendingEnumId"/></relationship>
         <index name="TRJPOINT_BY_TIME"><index-field name="approximatedFunctionId"/>
             <index-field name="pointTimeOffsetMillis"/></index>
     </entity>
