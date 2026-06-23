@@ -2111,7 +2111,8 @@ along with this software (see the LICENSE.md file). If not, see
         <description>Simple performance counters recorded at the end of a run.</description>
         <field name="mathModelPerfId" type="id" is-pk="true"/>
         <field name="mathModelRunId" type="id" not-null="true"/>
-        <field name="wallClockSeconds" type="number-decimal"/>
+        <field name="totalDurationSec" type="number-decimal"/>
+        <field name="inferenceLatencyMs" type="number-decimal"/>
         <field name="cpuSeconds" type="number-decimal"/>
         <field name="gpuSeconds" type="number-decimal"/>
         <field name="memoryPeakMb" type="number-decimal"/>
