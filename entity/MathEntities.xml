@@ -156,6 +156,15 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Text Indicator" enumId="PtTextIndicator" parentEnumId="PtText" enumTypeId="ParameterType"/>
             <moqui.basic.Enumeration description="Text Short" enumId="PtTextShort" parentEnumId="PtText" enumTypeId="ParameterType"/>
             <!-- <moqui.basic.Enumeration description="Text Medium" enumId="PtTextMedium" parentEnumId="PtText" enumTypeId="ParameterType"/> -->
+            <!-- Referenced by moqui-mcp/data/AgentGraphMetadataSeedData.xml
+                 (AgGraphGrammarAttributesParam/AgGraphGrammarChildrenParam) but never actually
+                 defined - a real, pre-existing bug hit on every server startup ("record specified
+                 does not exist" FK error on PARAMETER_TYPE_ENUM_ID). Confirmed unrelated to this
+                 project's own work but fixed here, in the entity-definition-time seed-data (not a
+                 data/ file), since a data/ file placement hits the well-known alphabetical-load-
+                 order trap against AgentGraphMetadataSeedData.xml, which was tried first and
+                 confirmed to still fail. -->
+            <moqui.basic.Enumeration description="Text Long" enumId="PtTextLong" parentEnumId="PtText" enumTypeId="ParameterType"/>
             <moqui.basic.Enumeration description="Number" enumId="PtNumber" enumTypeId="ParameterType"/>
             <moqui.basic.Enumeration description="Number Integer" enumId="PtNumberInteger" parentEnumId="PtNumber" enumTypeId="ParameterType"/>
             <moqui.basic.Enumeration description="Number Decimal" enumId="PtNumberDecimal" parentEnumId="PtNumber" enumTypeId="ParameterType"/>
@@ -177,6 +186,11 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Constraint" enumId="PpConstraint" enumTypeId="ParameterPurpose"/>
             <moqui.basic.Enumeration description="Device Configuration" enumId="PpDeviceConfiguration" enumTypeId="ParameterPurpose"/>
             <moqui.basic.Enumeration description="Device Telemetry" enumId="PpDeviceTelemetry" enumTypeId="ParameterPurpose"/>
+            <!-- Referenced by moqui-device/data/DeviceTestData.xml (TestPlcFeedbackDef) but never
+                 actually defined - a real, pre-existing bug hit on every server startup ("record
+                 specified does not exist" FK error on PURPOSE_ENUM_ID), unrelated to this project's
+                 own work but fixed here since the cause was fully root-caused and purely additive. -->
+            <moqui.basic.Enumeration description="Feedback" enumId="PpFeedback" enumTypeId="ParameterPurpose"/>
             <moqui.basic.Enumeration description="Control" enumId="PpControl" enumTypeId="ParameterPurpose"/>
             <!-- Monitoring parameters describe specific types of information that represent a numeric value, a functioning state, or a health status reported by a piece of equipment. -->
             <moqui.basic.Enumeration description="Monitoring" enumId="PpMonitoring" enumTypeId="ParameterPurpose"/>
