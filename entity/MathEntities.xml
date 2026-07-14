@@ -244,26 +244,9 @@ along with this software (see the LICENSE.md file). If not, see
                 For example device status word bit combinations, device control word bit combinations, etc.
                 The default value is null.</description></field>
 
-        <!-- Graph-scoped parameter attachment: lets a Parameter carry a scalar value keyed to a
-             specific GraphVertex or GraphEdge (topology stays generic in Graph/GraphVertex/
-             GraphEdge; any domain-specific metadata attaches here via ParameterDef). Used by
-             every graph-backed component in the moqui-industrial distribution (agent/artifact
-             graphs, PLC/firmware graphs, normative-clause graphs, electrical-compliance graphs) -
-             previously declared identically via extend-entity in two separate components before
-             being consolidated here as the single native definition. -->
-        <field name="graphId" type="id"/>
-        <field name="graphVertexId" type="id"/>
-        <field name="graphEdgeId" type="id"/>
-        <field name="textValue" type="text-long"/>
-
         <relationship type="one" related="moqui.math.ParameterDef" short-alias="parameterDef"/>
         <relationship type="one" related="moqui.basic.Uom" short-alias="uom">
             <key-map field-name="parameterUomId" related="uomId"/></relationship>
-        <relationship type="one" related="moqui.math.Graph" short-alias="graph"/>
-        <relationship type="one" related="moqui.math.GraphVertex" short-alias="graphVertex">
-            <key-map field-name="graphVertexId" related="graphVertexId"/></relationship>
-        <relationship type="one" related="moqui.math.GraphEdge" short-alias="graphEdge">
-            <key-map field-name="graphEdgeId" related="graphEdgeId"/></relationship>
         <!-- <relationship type="one" title="Parameter" related="moqui.basic.Enumeration"> -->
             <!-- The title won't match the enumTypeId for this field -->
             <!-- <key-map field-name="parameterEnumId"/></relationship> -->
@@ -2743,15 +2726,6 @@ along with this software (see the LICENSE.md file). If not, see
         <relationship type="one" related="moqui.math.Graph" short-alias="graph"/>
         <relationship type="one" related="moqui.math.Vector" short-alias="positionVector">
             <key-map field-name="positionVectorId" related="vectorId"/></relationship>
-        <relationship type="many" title="OutgoingEdge" related="moqui.math.GraphEdge" short-alias="outgoingEdges">
-            <key-map field-name="graphId"/>
-            <key-map field-name="graphVertexId" related="fromVertexId"/></relationship>
-        <relationship type="many" title="IncomingEdge" related="moqui.math.GraphEdge" short-alias="incomingEdges">
-            <key-map field-name="graphId"/>
-            <key-map field-name="graphVertexId" related="toVertexId"/></relationship>
-        <relationship type="many" title="GraphParameter" related="moqui.math.Parameter" short-alias="parameters">
-            <key-map field-name="graphId"/>
-            <key-map field-name="graphVertexId"/></relationship>
     </entity>
     <entity entity-name="GraphEdge" package="moqui.math" use="configuration" cache="true">
         <description>Edge connecting two vertices in a graph. May include weight and direction.</description>
@@ -2778,9 +2752,6 @@ along with this software (see the LICENSE.md file). If not, see
             <key-map field-name="fromVertexId" related="graphVertexId"/></relationship>
         <relationship type="one" title="ToVertex" related="moqui.math.GraphVertex" short-alias="toVertex">
             <key-map field-name="toVertexId" related="graphVertexId"/></relationship>
-        <relationship type="many" title="GraphParameter" related="moqui.math.Parameter" short-alias="parameters">
-            <key-map field-name="graphId"/>
-            <key-map field-name="graphEdgeId"/></relationship>
         <seed-data>
             <!-- Graph Edge Type -->
             <moqui.basic.EnumerationType description="Graph Edge Type" enumTypeId="GraphEdgeType" />
