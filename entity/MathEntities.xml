@@ -2009,7 +2009,9 @@ along with this software (see the LICENSE.md file). If not, see
         <relationship type="one" related="moqui.basic.StatusFlow" short-alias="flow"/>
         <relationship type="many" related="moqui.math.MathModelData" short-alias="data">
             <key-map field-name="mathModelId"/></relationship>
-        <seed-data>    
+        <relationship type="many" title="MathModelParameter" related="moqui.math.Parameter" short-alias="parameters">
+            <key-map field-name="mathModelId"/></relationship>
+        <seed-data>
             <!-- Math Model Solving Method -->
             <moqui.basic.EnumerationType description="Math Model Solving Method" enumTypeId="MathModelSolvingMethod"/>
             <moqui.basic.Enumeration enumId="MmsmFem" enumTypeId="MathModelSolvingMethod" description="Finite Element Method - FEM"/>
@@ -2726,6 +2728,15 @@ along with this software (see the LICENSE.md file). If not, see
         <relationship type="one" related="moqui.math.Graph" short-alias="graph"/>
         <relationship type="one" related="moqui.math.Vector" short-alias="positionVector">
             <key-map field-name="positionVectorId" related="vectorId"/></relationship>
+        <relationship type="many" title="OutgoingEdge" related="moqui.math.GraphEdge" short-alias="outgoingEdges">
+            <key-map field-name="graphId"/>
+            <key-map field-name="graphVertexId" related="fromVertexId"/></relationship>
+        <relationship type="many" title="IncomingEdge" related="moqui.math.GraphEdge" short-alias="incomingEdges">
+            <key-map field-name="graphId"/>
+            <key-map field-name="graphVertexId" related="toVertexId"/></relationship>
+        <relationship type="many" title="GraphParameter" related="moqui.math.Parameter" short-alias="parameters">
+            <key-map field-name="graphId"/>
+            <key-map field-name="graphVertexId"/></relationship>
     </entity>
     <entity entity-name="GraphEdge" package="moqui.math" use="configuration" cache="true">
         <description>Edge connecting two vertices in a graph. May include weight and direction.</description>
@@ -2752,6 +2763,9 @@ along with this software (see the LICENSE.md file). If not, see
             <key-map field-name="fromVertexId" related="graphVertexId"/></relationship>
         <relationship type="one" title="ToVertex" related="moqui.math.GraphVertex" short-alias="toVertex">
             <key-map field-name="toVertexId" related="graphVertexId"/></relationship>
+        <relationship type="many" title="GraphParameter" related="moqui.math.Parameter" short-alias="parameters">
+            <key-map field-name="graphId"/>
+            <key-map field-name="graphEdgeId"/></relationship>
         <seed-data>
             <!-- Graph Edge Type -->
             <moqui.basic.EnumerationType description="Graph Edge Type" enumTypeId="GraphEdgeType" />
@@ -2762,6 +2776,25 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Smooth Edge" enumId="GetSmooth" enumTypeId="GraphEdgeType"/>
         </seed-data>
     </entity>
+
+    <!-- Graph-scoped parameter attachment: lets a Parameter carry a scalar value keyed to a
+         specific GraphVertex or GraphEdge (topology stays generic in Graph/GraphVertex/GraphEdge;
+         any domain-specific metadata attaches here via ParameterDef). Used by every graph-backed
+         component in the moqui-industrial distribution (agent/artifact graphs, PLC/firmware
+         graphs, normative-clause graphs, electrical-compliance graphs) - previously declared
+         identically via extend-entity in two separate components before being consolidated here. -->
+    <extend-entity entity-name="Parameter" package="moqui.math" enable-audit-log="update" use="configuration" cache="true" short-alias="parameters">
+        <field name="graphId" type="id"/>
+        <field name="graphVertexId" type="id"/>
+        <field name="graphEdgeId" type="id"/>
+        <field name="textValue" type="text-long"/>
+
+        <relationship type="one" related="moqui.math.Graph" short-alias="graph"/>
+        <relationship type="one" related="moqui.math.GraphVertex" short-alias="graphVertex">
+            <key-map field-name="graphVertexId" related="graphVertexId"/></relationship>
+        <relationship type="one" related="moqui.math.GraphEdge" short-alias="graphEdge">
+            <key-map field-name="graphEdgeId" related="graphEdgeId"/></relationship>
+    </extend-entity>
 
     <!-- ========== Mesh ========== -->
     <entity entity-name="Mesh" package="moqui.math" use="configuration" cache="true">
@@ -2955,6 +2988,8 @@ along with this software (see the LICENSE.md file). If not, see
         <relationship type="many" related="moqui.math.MeshKCellVertex" short-alias="vertices">
             <key-map field-name="meshKCellId"/></relationship>
         <relationship type="many" related="moqui.math.MeshKCellEdge" short-alias="edges">
+            <key-map field-name="meshKCellId"/></relationship>
+        <relationship type="many" title="MeshKCellParameter" related="moqui.math.Parameter" short-alias="parameters">
             <key-map field-name="meshKCellId"/></relationship>
         <seed-data>
             <!-- Mesh K-Cell Type -->
