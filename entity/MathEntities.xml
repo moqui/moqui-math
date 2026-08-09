@@ -2266,6 +2266,10 @@ along with this software (see the LICENSE.md file). If not, see
         <field name="categoryId" type="id" is-pk="true"/>
         <field name="parentCategoryId" type="id"/>
         <field name="categoryTypeEnumId" type="id"/>
+        <!-- Functor U (Underlying Graph) or F (Free Category source) -->
+        <field name="underlyingGraphId" type="id">
+            <description>The underlying graph U(C) associated with this category,
+                or the generating graph if this is a Free Category F(G).</description></field>
         <field name="categoryName" type="text-short"/>
         <field name="description" type="text-medium"/>
         <field name="fromDate" type="date-time"/>
@@ -2275,6 +2279,8 @@ along with this software (see the LICENSE.md file). If not, see
             <key-map field-name="parentCategoryId" related="categoryId"/></relationship>
         <relationship type="one" title="CategoryType" related="moqui.basic.Enumeration">
             <key-map field-name="categoryTypeEnumId"/></relationship>
+        <relationship type="one" title="UnderlyingGraph" related="moqui.math.Graph" short-alias="underlyingGraph">
+            <key-map field-name="underlyingGraphId" related="graphId"/></relationship>
         <relationship type="many" related="moqui.math.ct.CategoryObject" short-alias="objects">
             <key-map field-name="categoryId"/></relationship>
         <relationship type="many" related="moqui.math.ct.Morphism" short-alias="morphisms">
@@ -2307,6 +2313,7 @@ along with this software (see the LICENSE.md file). If not, see
         <field name="categoryObjectId" type="id" is-pk="true"/>
         <field name="parentObjectId" type="id"/>
         <field name="categoryId" type="id" not-null="true"/>
+        <field name="graphVertexId" type="id"/>
         <field name="objectEntityName" type="text-medium"/>
         <field name="objectPkValue" type="text-medium"/>
         <field name="objectTypeEnumId" type="id"/>
@@ -2317,6 +2324,7 @@ along with this software (see the LICENSE.md file). If not, see
         <relationship type="one" title="Parent" related="moqui.math.ct.CategoryObject" short-alias="parent">
             <key-map field-name="parentObjectId" related="categoryObjectId"/></relationship>
         <relationship type="one" related="moqui.math.ct.Category" short-alias="category"/>
+        <relationship type="one" related="moqui.math.GraphVertex" short-alias="graphVertex"/>
         <relationship type="one" title="CategoryObjectType" related="moqui.basic.Enumeration" short-alias="type">
             <key-map field-name="objectTypeEnumId"/></relationship>
         <index name="CATOBJ_UNIQ" unique="true"><index-field name="categoryId"/><index-field name="objectEntityName"/><index-field name="objectPkValue"/></index>
@@ -2350,6 +2358,10 @@ along with this software (see the LICENSE.md file). If not, see
         <field name="matrixId" type="id"/>
         <field name="transformationId" type="id"/>
         <field name="serviceName" type="text-medium"/>
+        <field name="graphEdgeId" type="id">
+            <description>The graph edge that serves as the generator of this morphism (for paths of length 1).</description></field>
+        <field name="pathId" type="id">
+            <description>If the morphism is a composition in the Free Category F(G), it represents the entire path.</description></field>
 
         <relationship type="one" title="Parent" related="moqui.math.ct.Morphism" short-alias="parent">
             <key-map field-name="parentMorphismId" related="morphismId"/></relationship>
@@ -2362,6 +2374,9 @@ along with this software (see the LICENSE.md file). If not, see
             <key-map field-name="targetObjectId" related="categoryObjectId"/></relationship>
         <relationship type="one" related="moqui.math.Matrix" short-alias="matrix"/>
         <relationship type="one" related="moqui.math.Transformation" short-alias="transformation"/>
+        <relationship type="one" related="moqui.math.GraphEdge" short-alias="graphEdge"/>
+        <relationship type="one" related="moqui.math.ParametricPath" short-alias="parametricPath">
+            <key-map field-name="pathId" related="approximatedFunctionId"/></relationship>
         <index name="MORPHISM_SRCTGT"><index-field name="sourceObjectId"/><index-field name="targetObjectId"/></index>
         <index name="MORPHISM_UNIQ"><index-field name="categoryId"/><index-field name="sourceObjectId"/>
             <index-field name="targetObjectId"/><index-field name="morphismName"/></index>
@@ -2416,8 +2431,25 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Natural-Transformation Vertical Composition" enumId="McNatVert" enumTypeId="MorphismCompositionType"/>
         </seed-data>
     </entity>
+
+    <!-- Morphism-scoped parameter attachment: lets a Parameter carry declarative metadata
+         about a morphism (DSL origin, operand roles, semantic effect, composition notes,
+         service-step annotations, etc.) using generic ParameterDef/Parameter records instead
+         of domain-specific morphism fields. -->
+    <extend-entity entity-name="Parameter" package="moqui.math" enable-audit-log="update" use="configuration" cache="true" short-alias="parameters">
+        <field name="morphismId" type="id"/>
+        <relationship type="one" related="moqui.math.ct.Morphism" short-alias="morphism"/>
+    </extend-entity>
+
     <!-- Functors and Naturals -->
     <entity entity-name="Functor" package="moqui.math.ct" enable-audit-log="true" cache="true">
+        <description>
+            NOTE ON DIAGRAMS: In much of the categorical literature, a diagram in a category C is a functor D: I -> C where I is a shape category.
+            By extending a shape graph into a free category, a graph homomorphism uniquely extends to a functor.
+            Therefore, this Functor entity, along with FunctorObjectMapping and FunctorMorphismMapping,
+            natively serves as the data model for representing diagrams.
+            There is no need for a separate 'Diagram' entity.
+        </description>
         <field name="functorId" type="id" is-pk="true"/>
         <field name="parentFunctorId" type="id"/>
         <field name="functorTypeEnumId" type="id"/>
@@ -2452,6 +2484,9 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Hom(-,X) Covariant" enumId="FtHomCov" enumTypeId="FunctorType"/>
             <moqui.basic.Enumeration description="Hom(X,-) Contravariant" enumId="FtHomContra" enumTypeId="FunctorType"/>
             <moqui.basic.Enumeration description="Power-Set Functor" enumId="FtPowerset" enumTypeId="FunctorType"/>
+            <!-- Representation of diagrams -->
+            <!-- In the categorical literature, a diagram in a category is a functor D: I -> C, where I is a shape category. -->
+            <moqui.basic.Enumeration description="Diagram Functor (Shape Graph to Target Category)" enumId="FtDiagram" enumTypeId="FunctorType"/>
         </seed-data>
     </entity>
     <entity entity-name="FunctorObjectMapping" package="moqui.math.ct" enable-audit-log="true" cache="true">
@@ -2497,6 +2532,20 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Natural Isomorphism" enumId="NtIso" enumTypeId="NaturalTransformationType"/>
             <moqui.basic.Enumeration description="Modification" enumId="NtMod" enumTypeId="NaturalTransformationType"/>
             <moqui.basic.Enumeration description="Dinatural Transformation" enumId="NtDiNat" enumTypeId="NaturalTransformationType"/>
+            <!-- 
+                Representation of Cones and Limits
+                A cone with base D is an object along with a family of arrows pointing to the diagram, equivalently modeled as a natural transformation.
+                A limit of a diagram D is a universal commutative cone.
+            -->
+            <moqui.basic.Enumeration description="Cone (Constant Functor to Diagram Functor)" enumId="NtCone" enumTypeId="NaturalTransformationType"/>
+            <moqui.basic.Enumeration description="Limit Cone (Universal Cone)" enumId="NtLimitCone" parentEnumId="NtCone" enumTypeId="NaturalTransformationType"/>
+            <!-- 
+                Representation of Co-Cones and Colimits
+                A co-cone is a cone in the dual graph.
+                Its universal version is called a co-limit.
+            -->
+            <moqui.basic.Enumeration description="Cocone (Diagram Functor to Constant Functor)" enumId="NtCocone" enumTypeId="NaturalTransformationType"/>
+            <moqui.basic.Enumeration description="Colimit Cocone (Universal Cocone)" enumId="NtColimitCocone" parentEnumId="NtCocone" enumTypeId="NaturalTransformationType"/>
         </seed-data>
     </entity>
     <entity entity-name="NaturalTransformationComponent" package="moqui.math.ct" enable-audit-log="true" cache="true">
