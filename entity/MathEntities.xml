@@ -120,7 +120,7 @@ along with this software (see the LICENSE.md file). If not, see
         <field name="priority" type="number-integer"/>
         <field name="parameterCode" type="text-short" not-null="true"/>
         <field name="parameterName" type="text-short" not-null="true"/>
-        <field name="description" type="text-medium"/>
+        <field name="description" type="text-long"/>
         <field name="hasValue" type="text-indicator"/>
         <field name="minValue" type="number-decimal"/>
         <field name="maxValue" type="number-decimal"/>
@@ -285,7 +285,7 @@ along with this software (see the LICENSE.md file). If not, see
             <description>Coordinate system in which the vector is expressed.</description></field>
         <field name="name" type="text-short"/>
         <field name="symbol" type="text-short"/>
-        <field name="description" type="text-medium"/>
+        <field name="description" type="text-long"/>
         <field name="dimension" type="number-integer">
             <description>Vector dimension.</description></field>
         <field name="magnitude" type="number-decimal">
@@ -427,7 +427,7 @@ along with this software (see the LICENSE.md file). If not, see
         <field name="approximationMethodEnumId" type="id"/>
         <field name="name" type="text-short"/>
         <field name="symbol" type="text-short"/>
-        <field name="description" type="text-medium"/>
+        <field name="description" type="text-long"/>
         <field name="size" type="text-short">
             <description>The matrix size represented as a string for display purpose.
                 A matrix with m rows and n columns is called an m × n matrix.</description></field>
@@ -2353,7 +2353,7 @@ along with this software (see the LICENSE.md file). If not, see
         <field name="targetObjectId" type="id" not-null="true"/>
         <field name="morphismName" type="text-short" not-null="true"/>
         <field name="morphismSymbol" type="text-short"/>
-        <field name="description" type="text-medium"/>
+        <field name="description" type="text-long"/>
 
         <field name="matrixId" type="id"/>
         <field name="transformationId" type="id"/>
