@@ -34,45 +34,73 @@ along with this software (see the LICENSE.md file). If not, see
     <moqui.basic.Enumeration description="Polynomial" enumId="MfPoly" enumTypeId="MathFunction"/>
     <!-- etc... -->
 
-    <!-- Algebraic Structure Type -->
-    <moqui.basic.EnumerationType description="Algebraic Structure Type (Group, Ring, Field, etc...)" enumTypeId="AlgebraicStructureType"/>
-    <!-- Group -->
-    <moqui.basic.Enumeration description="Group" enumId="AsGroup" enumTypeId="AlgebraicStructureType"/>
-    <moqui.basic.Enumeration description="Group on Real Numbers Under Addition" enumId="AsAdditiveReal" parentEnumId="AsGroup" enumTypeId="AlgebraicStructureType"/>
-    <moqui.basic.Enumeration description="Group of Integers Under Addition" enumId="AsAdditiveInteger" parentEnumId="AsGroup" enumTypeId="AlgebraicStructureType"/>
-    <moqui.basic.Enumeration description="Cyclic Group of Integers Modulo 3 (Z/3Z)" enumId="AsZ3Group" parentEnumId="AsGroup" enumTypeId="AlgebraicStructureType"/>
-    <!-- Ring -->
-    <moqui.basic.Enumeration description="Ring" enumId="AsRing" enumTypeId="AlgebraicStructureType"/>
-    <moqui.basic.Enumeration  description="Ring of Integers" enumId="AsIntegers" parentEnumId="AsRing" enumTypeId="AlgebraicStructureType"/>
-    <moqui.basic.Enumeration description="Ring Z/5Z (Integers Modulo 5)" enumId="AsZ5Ring" parentEnumId="AsRing" enumTypeId="AlgebraicStructureType"/>
-    <!-- Field -->
-    <moqui.basic.Enumeration description="Field" enumId="AsField" enumTypeId="AlgebraicStructureType"/>
+    <!-- Algebraic Structure Type (Magma, Group, Ring, Field, Module, etc...).
+         parentEnumId defines the primary navigation taxonomy only. Algebraic structures may
+         satisfy laws inherited through more than one mathematical path; those laws must not
+         be inferred solely from this single-parent hierarchy. -->
+    <moqui.basic.EnumerationType description="Algebraic Structure Type" enumTypeId="AlgebraicStructureType"/>
+
+    <!-- ========================================================== -->
+    <!-- 1. Magma Hierarchy (One Binary Operation)                  -->
+    <!-- ========================================================== -->
+    <moqui.basic.Enumeration description="Magma: carrier set equipped with a closed binary operation" enumId="AsMagma" enumTypeId="AlgebraicStructureType"/>
+
+    <!-- Associativity -->
+    <moqui.basic.Enumeration description="Semigroup: associative magma" enumId="AsSemigroup" parentEnumId="AsMagma" enumTypeId="AlgebraicStructureType"/>
+    <moqui.basic.Enumeration description="Monoid: semigroup with a two-sided identity element" enumId="AsMonoid" parentEnumId="AsSemigroup" enumTypeId="AlgebraicStructureType"/>
+
+    <!-- Invertibility / Divisibility -->
+    <moqui.basic.Enumeration description="Quasigroup: magma in which every left and right division equation has a unique solution" enumId="AsQuasigroup" parentEnumId="AsMagma" enumTypeId="AlgebraicStructureType"/>
+    <moqui.basic.Enumeration description="Loop: quasigroup with a two-sided identity element" enumId="AsLoop" parentEnumId="AsQuasigroup" enumTypeId="AlgebraicStructureType"/>
+
+    <!-- Convergence: Associativity + Identity + Invertibility -->
+    <!-- A group is also an associative loop. The primary parent is Monoid because Enumeration
+         supports one parent only; this does not remove the mathematically valid Loop relation. -->
+    <moqui.basic.Enumeration description="Group: monoid in which every element has a two-sided inverse" enumId="AsGroup" parentEnumId="AsMonoid" enumTypeId="AlgebraicStructureType"/>
+    
+    <!-- Abelian Extension -->
+    <moqui.basic.Enumeration description="Abelian group: group with a commutative operation" enumId="AsAbelianGroup" parentEnumId="AsGroup" enumTypeId="AlgebraicStructureType"/>
+
+    <!-- Concrete Group Implementations -->
+    <moqui.basic.Enumeration description="Additive Abelian group of real numbers (R, +)" enumId="AsAdditiveReal" parentEnumId="AsAbelianGroup" enumTypeId="AlgebraicStructureType"/>
+    <moqui.basic.Enumeration description="Additive Abelian group of integers (Z, +)" enumId="AsAdditiveInteger" parentEnumId="AsAbelianGroup" enumTypeId="AlgebraicStructureType"/>
+    <moqui.basic.Enumeration description="Cyclic Abelian group of integers modulo 3 under addition (Z/3Z, +)" enumId="AsZ3Group" parentEnumId="AsAbelianGroup" enumTypeId="AlgebraicStructureType"/>
+
+    <!-- ========================================================== -->
+    <!-- 2. Ring and Field Hierarchy (Two Binary Operations)        -->
+    <!-- ========================================================== -->
+    <moqui.basic.Enumeration description="Unital ring: additive Abelian group, multiplicative monoid, and distributive laws" enumId="AsRing" enumTypeId="AlgebraicStructureType"/>
+    <moqui.basic.Enumeration description="Field: commutative unital ring with 0 != 1 whose nonzero elements form an Abelian group under multiplication" enumId="AsField" parentEnumId="AsRing" enumTypeId="AlgebraicStructureType"/>
+
+    <!-- Concrete Ring/Field Implementations -->
+    <moqui.basic.Enumeration description="Ring of Integers" enumId="AsIntegers" parentEnumId="AsRing" enumTypeId="AlgebraicStructureType"/>
+    <moqui.basic.Enumeration description="Finite field of integers modulo 5 (Z/5Z)" enumId="AsZ5Field" parentEnumId="AsField" enumTypeId="AlgebraicStructureType"/>
     <moqui.basic.Enumeration description="Field of Rational Numbers" enumId="AsRationals" parentEnumId="AsField" enumTypeId="AlgebraicStructureType"/>
     <moqui.basic.Enumeration description="Field of Real Numbers" enumId="AsReals" parentEnumId="AsField" enumTypeId="AlgebraicStructureType"/>
     <moqui.basic.Enumeration description="Field Z/7Z (Finite Field of Order 7)" enumId="AsZ7Field" parentEnumId="AsField" enumTypeId="AlgebraicStructureType"/>
-    <!-- Module -->
-    <moqui.basic.Enumeration description="Module" enumId="AsModule" enumTypeId="AlgebraicStructureType"/>
 
-    <!-- Vector Space -->
-    <!-- Use parentEnumId field to represent vector subspaces.
-            The field optionValue could be used to set the vector space dimension. -->
-    <moqui.basic.Enumeration description="Vector Space" enumId="AsVectorSpace" enumTypeId="AlgebraicStructureType"/>
-    <moqui.basic.Enumeration description="3D Real Vector Space R^3" enumId="AsRn3" optionValue="3" parentEnumId="AsVectorSpace" enumTypeId="AlgebraicStructureType"/>
-    <moqui.basic.Enumeration description="2D Complex Vector Space C^2" enumId="AsC2" optionValue="2" parentEnumId="AsVectorSpace" enumTypeId="AlgebraicStructureType"/>   
-    <!-- The evolution of the system state can be described by means of a state-space representation. -->
-    <moqui.basic.Enumeration description="State Space" enumId="VsStateSpace" enumCode="StateSpace" enumTypeId="AlgebraicStructureType"/>
-    <!-- Euclidean Space -->
-    <moqui.basic.Enumeration description="Euclidean Space" enumId="VsEuclideanSpace" enumCode="EuclideanSpace" enumTypeId="AlgebraicStructureType"/>
-    <!-- 2D Euclidean Space -->
+    <!-- ========================================================== -->
+    <!-- 3. Module and Vector Space (Operations over Ring/Field)    -->
+    <!-- ========================================================== -->
+    <moqui.basic.Enumeration description="Module: additive Abelian group equipped with scalar multiplication over a specified ring" enumId="AsModule" enumTypeId="AlgebraicStructureType"/>
+    
+    <!-- Vector Space is essentially a Module where the underlying Ring is a Field -->
+    <moqui.basic.Enumeration description="Vector space: module whose scalar ring is a specified field" enumId="AsVectorSpace" parentEnumId="AsModule" enumTypeId="AlgebraicStructureType"/>
+
+    <!-- Concrete Vector Spaces -->
+    <moqui.basic.Enumeration description="Three-dimensional vector space R^3 over the field R" enumId="AsRn3" optionValue="3" parentEnumId="AsVectorSpace" enumTypeId="AlgebraicStructureType"/>
+    <moqui.basic.Enumeration description="Two-dimensional vector space C^2 over the field C" enumId="AsC2" optionValue="2" parentEnumId="AsVectorSpace" enumTypeId="AlgebraicStructureType"/>
+    <moqui.basic.Enumeration description="State space; its mathematical structure is defined by the selected model" enumId="VsStateSpace" enumCode="StateSpace" enumTypeId="AlgebraicStructureType"/>
+    
+    <!-- Euclidean Spaces -->
+    <moqui.basic.Enumeration description="Finite-dimensional real inner-product vector space" enumId="VsEuclideanSpace" enumCode="EuclideanSpace" parentEnumId="AsVectorSpace" enumTypeId="AlgebraicStructureType"/>
     <moqui.basic.Enumeration description="2D Euclidean Space" enumId="EuclideanSpace2D" optionValue="2" enumCode="Euclidean2DSpace" parentEnumId="VsEuclideanSpace" enumTypeId="AlgebraicStructureType"/>
-    <!-- 3D Euclidean Space -->
     <moqui.basic.Enumeration description="3D Euclidean Space" enumId="EuclideanSpace3D" optionValue="3" enumCode="Euclidean3DSpace" parentEnumId="VsEuclideanSpace" enumTypeId="AlgebraicStructureType"/>
-    <!-- Quaternion Euclidean Space -->
-    <moqui.basic.Enumeration description="Quaternion (4D) Euclidean Space" enumId="QuaternionEuclideanSpace" optionValue="4" enumCode="EuclideanQuaternionSpace" parentEnumId="VsEuclideanSpace" enumTypeId="AlgebraicStructureType"/>
-    <!-- N-dimensional Euclidean Space -->
-    <moqui.basic.Enumeration description="N-dimensional Euclidean Space" enumId="EuclideanSpaceND" optionValue="" enumCode="EuclideanNDSpace" parentEnumId="VsEuclideanSpace" enumTypeId="AlgebraicStructureType"/>
-    <!-- A thermodynamic system in state space can be described by the state variables quantity of matter (mass), V, P, T, Enthalpy, Entropy. -->
-    <moqui.basic.Enumeration description="Thermodynamic Space" enumId="VsThermodynamicSpace" optionValue="6" enumCode="ThermodynamicSpace" parentEnumId="VsStateSpace" enumTypeId="AlgebraicStructureType"/>
+    <moqui.basic.Enumeration description="Quaternion coordinates represented as the four-dimensional real Euclidean space R^4" enumId="QuaternionEuclideanSpace" optionValue="4" enumCode="EuclideanQuaternionSpace" parentEnumId="VsEuclideanSpace" enumTypeId="AlgebraicStructureType"/>
+    <moqui.basic.Enumeration description="N-dimensional real Euclidean space" enumId="EuclideanSpaceND" enumCode="EuclideanNDSpace" parentEnumId="VsEuclideanSpace" enumTypeId="AlgebraicStructureType"/>
+    
+    <!-- Thermodynamic Space -->
+    <moqui.basic.Enumeration description="Thermodynamic state space; dimensionality and constraints are defined by the selected state variables and model" enumId="VsThermodynamicSpace" enumCode="ThermodynamicSpace" parentEnumId="VsStateSpace" enumTypeId="AlgebraicStructureType"/>
 
     <!-- Vector Space Dimension -->
     <!-- NOTE: Dimension enumeration represents each dimension of a vector space, allowing for flexible handling of multiple dimensions.

@@ -437,6 +437,112 @@ along with this software (see the LICENSE.md file). If not, see
         <alias-all entity-alias="GV2" prefix="to"><exclude field="graphId"/></alias-all>
     </view-entity>
 
+    <!-- ========== Category Underlying Graph ========== -->
+    <view-entity entity-name="CategoryUnderlyingGraph" package="moqui.math" cache="true">
+        <description>Header view for the underlying graph U(C) of a category C.</description>
+        <member-entity entity-alias="GC" entity-name="moqui.math.GraphCategory"/>
+        <member-entity entity-alias="G" entity-name="moqui.math.Graph" join-from-alias="GC">
+            <key-map field-name="graphId"/></member-entity>
+        <member-entity entity-alias="C" entity-name="moqui.math.ct.Category" join-from-alias="GC">
+            <key-map field-name="categoryId"/></member-entity>
+        <member-entity entity-alias="PURP" entity-name="moqui.basic.Enumeration" join-from-alias="GC">
+            <key-map field-name="purposeEnumId" related="enumId"/></member-entity>
+
+        <alias entity-alias="GC" name="graphCategoryId"/>
+        <alias entity-alias="GC" name="purposeEnumId"/>
+        <alias entity-alias="PURP" name="purposeDescription" field="description"/>
+
+        <alias entity-alias="C" name="categoryId"/>
+        <alias entity-alias="C" name="parentCategoryId"/>
+        <alias entity-alias="C" name="categoryTypeEnumId"/>
+        <alias entity-alias="C" name="categoryName"/>
+        <alias entity-alias="C" name="categoryDescription" field="description"/>
+
+        <alias entity-alias="G" name="graphId"/>
+        <alias entity-alias="G" name="parentGraphId"/>
+        <alias entity-alias="G" name="graphTypeEnumId"/>
+        <alias entity-alias="G" name="graphName" field="name"/>
+        <alias entity-alias="G" name="graphDescription" field="description"/>
+        <alias entity-alias="G" name="isDirected"/>
+        <alias entity-alias="G" name="isWeighted"/>
+    </view-entity>
+
+    <view-entity entity-name="UnderlyingGraphObject" package="moqui.math" cache="true">
+        <description>Object component of U(C): one CategoryObject and its corresponding GraphVertex.</description>
+        <member-entity entity-alias="GC" entity-name="moqui.math.GraphCategory"/>
+        <member-entity entity-alias="MAP" entity-name="moqui.math.GraphVertexCategoryObject" join-from-alias="GC">
+            <key-map field-name="graphCategoryId"/></member-entity>
+        <member-entity entity-alias="GV" entity-name="moqui.math.GraphVertex" join-from-alias="MAP">
+            <key-map field-name="graphVertexId"/></member-entity>
+        <member-entity entity-alias="CO" entity-name="moqui.math.ct.CategoryObject" join-from-alias="MAP">
+            <key-map field-name="categoryObjectId"/></member-entity>
+
+        <alias entity-alias="GC" name="graphCategoryId"/>
+        <alias entity-alias="GC" name="graphId"/>
+        <alias entity-alias="GC" name="categoryId"/>
+        <alias entity-alias="GC" name="purposeEnumId"/>
+        <alias entity-alias="MAP" name="graphVertexCategoryObjectId"/>
+
+        <alias entity-alias="CO" name="categoryObjectId"/>
+        <alias entity-alias="CO" name="parentObjectId"/>
+        <alias entity-alias="CO" name="objectTypeEnumId"/>
+        <alias entity-alias="CO" name="objectEntityName"/>
+        <alias entity-alias="CO" name="objectPkValue"/>
+        <alias entity-alias="CO" name="objectName"/>
+        <alias entity-alias="CO" name="objectSymbol"/>
+        <alias entity-alias="CO" name="objectDescription" field="description"/>
+
+        <alias entity-alias="GV" name="graphVertexId"/>
+        <alias entity-alias="GV" name="vertexLabel" field="label"/>
+        <alias entity-alias="GV" name="degree"/>
+        <alias entity-alias="GV" name="positionVectorId"/>
+    </view-entity>
+
+    <view-entity entity-name="UnderlyingGraphMorphism" package="moqui.math" cache="true">
+        <description>Arrow component of U(C): one Morphism and its corresponding directed GraphEdge.</description>
+        <member-entity entity-alias="GC" entity-name="moqui.math.GraphCategory"/>
+        <member-entity entity-alias="MAP" entity-name="moqui.math.GraphEdgeMorphism" join-from-alias="GC">
+            <key-map field-name="graphCategoryId"/></member-entity>
+        <member-entity entity-alias="GE" entity-name="moqui.math.GraphEdge" join-from-alias="MAP">
+            <key-map field-name="graphEdgeId"/></member-entity>
+        <member-entity entity-alias="M" entity-name="moqui.math.ct.Morphism" join-from-alias="MAP">
+            <key-map field-name="morphismId"/></member-entity>
+        <member-entity entity-alias="SRC" entity-name="moqui.math.ct.CategoryObject" join-from-alias="M">
+            <key-map field-name="sourceObjectId" related="categoryObjectId"/></member-entity>
+        <member-entity entity-alias="TGT" entity-name="moqui.math.ct.CategoryObject" join-from-alias="M">
+            <key-map field-name="targetObjectId" related="categoryObjectId"/></member-entity>
+
+        <alias entity-alias="GC" name="graphCategoryId"/>
+        <alias entity-alias="GC" name="graphId"/>
+        <alias entity-alias="GC" name="categoryId"/>
+        <alias entity-alias="GC" name="purposeEnumId"/>
+        <alias entity-alias="MAP" name="graphEdgeMorphismId"/>
+
+        <alias entity-alias="M" name="morphismId"/>
+        <alias entity-alias="M" name="parentMorphismId"/>
+        <alias entity-alias="M" name="morphismTypeEnumId"/>
+        <alias entity-alias="M" name="sourceObjectId"/>
+        <alias entity-alias="M" name="targetObjectId"/>
+        <alias entity-alias="M" name="morphismName"/>
+        <alias entity-alias="M" name="morphismSymbol"/>
+        <alias entity-alias="M" name="matrixId"/>
+        <alias entity-alias="M" name="transformationId"/>
+        <alias entity-alias="M" name="serviceName"/>
+        <alias entity-alias="M" name="pathId"/>
+        <alias entity-alias="SRC" name="sourceObjectName" field="objectName"/>
+        <alias entity-alias="SRC" name="sourceObjectSymbol" field="objectSymbol"/>
+        <alias entity-alias="TGT" name="targetObjectName" field="objectName"/>
+        <alias entity-alias="TGT" name="targetObjectSymbol" field="objectSymbol"/>
+
+        <alias entity-alias="GE" name="graphEdgeId"/>
+        <alias entity-alias="GE" name="fromVertexId"/>
+        <alias entity-alias="GE" name="toVertexId"/>
+        <alias entity-alias="GE" name="edgeTypeEnumId"/>
+        <alias entity-alias="GE" name="edgeLabel" field="label"/>
+        <alias entity-alias="GE" name="isDirected"/>
+        <alias entity-alias="GE" name="isLoop"/>
+    </view-entity>
+
     <!-- ========== Mesh ========== -->
     <view-entity entity-name="MeshKCellAndVertex" package="moqui.math">
         <member-entity entity-alias="MKC" entity-name="moqui.math.MeshKCell"/>

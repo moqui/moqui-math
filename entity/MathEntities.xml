@@ -2266,10 +2266,6 @@ along with this software (see the LICENSE.md file). If not, see
         <field name="categoryId" type="id" is-pk="true"/>
         <field name="parentCategoryId" type="id"/>
         <field name="categoryTypeEnumId" type="id"/>
-        <!-- Functor U (Underlying Graph) or F (Free Category source) -->
-        <field name="underlyingGraphId" type="id">
-            <description>The underlying graph U(C) associated with this category,
-                or the generating graph if this is a Free Category F(G).</description></field>
         <field name="categoryName" type="text-short"/>
         <field name="description" type="text-medium"/>
         <field name="fromDate" type="date-time"/>
@@ -2279,8 +2275,6 @@ along with this software (see the LICENSE.md file). If not, see
             <key-map field-name="parentCategoryId" related="categoryId"/></relationship>
         <relationship type="one" title="CategoryType" related="moqui.basic.Enumeration">
             <key-map field-name="categoryTypeEnumId"/></relationship>
-        <relationship type="one" title="UnderlyingGraph" related="moqui.math.Graph" short-alias="underlyingGraph">
-            <key-map field-name="underlyingGraphId" related="graphId"/></relationship>
         <relationship type="many" related="moqui.math.ct.CategoryObject" short-alias="objects">
             <key-map field-name="categoryId"/></relationship>
         <relationship type="many" related="moqui.math.ct.Morphism" short-alias="morphisms">
@@ -2313,7 +2307,6 @@ along with this software (see the LICENSE.md file). If not, see
         <field name="categoryObjectId" type="id" is-pk="true"/>
         <field name="parentObjectId" type="id"/>
         <field name="categoryId" type="id" not-null="true"/>
-        <field name="graphVertexId" type="id"/>
         <field name="objectEntityName" type="text-medium"/>
         <field name="objectPkValue" type="text-medium"/>
         <field name="objectTypeEnumId" type="id"/>
@@ -2324,7 +2317,6 @@ along with this software (see the LICENSE.md file). If not, see
         <relationship type="one" title="Parent" related="moqui.math.ct.CategoryObject" short-alias="parent">
             <key-map field-name="parentObjectId" related="categoryObjectId"/></relationship>
         <relationship type="one" related="moqui.math.ct.Category" short-alias="category"/>
-        <relationship type="one" related="moqui.math.GraphVertex" short-alias="graphVertex"/>
         <relationship type="one" title="CategoryObjectType" related="moqui.basic.Enumeration" short-alias="type">
             <key-map field-name="objectTypeEnumId"/></relationship>
         <index name="CATOBJ_UNIQ" unique="true"><index-field name="categoryId"/><index-field name="objectEntityName"/><index-field name="objectPkValue"/></index>
@@ -2358,10 +2350,9 @@ along with this software (see the LICENSE.md file). If not, see
         <field name="matrixId" type="id"/>
         <field name="transformationId" type="id"/>
         <field name="serviceName" type="text-medium"/>
-        <field name="graphEdgeId" type="id">
-            <description>The graph edge that serves as the generator of this morphism (for paths of length 1).</description></field>
         <field name="pathId" type="id">
-            <description>If the morphism is a composition in the Free Category F(G), it represents the entire path.</description></field>
+            <description>Optional numerical or geometric ParametricPath implementing or approximating this morphism.
+                Categorical composition is represented by MorphismComposition, not by ParametricPath.</description></field>
 
         <relationship type="one" title="Parent" related="moqui.math.ct.Morphism" short-alias="parent">
             <key-map field-name="parentMorphismId" related="morphismId"/></relationship>
@@ -2374,7 +2365,6 @@ along with this software (see the LICENSE.md file). If not, see
             <key-map field-name="targetObjectId" related="categoryObjectId"/></relationship>
         <relationship type="one" related="moqui.math.Matrix" short-alias="matrix"/>
         <relationship type="one" related="moqui.math.Transformation" short-alias="transformation"/>
-        <relationship type="one" related="moqui.math.GraphEdge" short-alias="graphEdge"/>
         <relationship type="one" related="moqui.math.ParametricPath" short-alias="parametricPath">
             <key-map field-name="pathId" related="approximatedFunctionId"/></relationship>
         <index name="MORPHISM_SRCTGT"><index-field name="sourceObjectId"/><index-field name="targetObjectId"/></index>
@@ -2844,6 +2834,75 @@ along with this software (see the LICENSE.md file). If not, see
         <relationship type="one" related="moqui.math.GraphEdge" short-alias="graphEdge">
             <key-map field-name="graphEdgeId" related="graphEdgeId"/></relationship>
     </extend-entity>
+
+    <!-- ========================================================= -->
+    <!-- Category Theory / Graph Associative Entities              -->
+    <!-- ========================================================= -->
+
+    <entity entity-name="GraphCategory" package="moqui.math" use="configuration" cache="true">
+        <description>Materializes the underlying directed graph U(C) of a category C.
+            CategoryObject records are represented by GraphVertex records and Morphism records by GraphEdge records;
+            source and target are preserved. The identity designation and composition operation are forgotten at
+            the Graph level; identity morphisms remain present as ordinary GraphEdge records.
+            Each Category has one underlying Graph; the converse need not be unique because U is not injective.</description>
+        <field name="graphCategoryId" type="id" is-pk="true"/>
+        <field name="graphId" type="id" not-null="true"/>
+        <field name="categoryId" type="id" not-null="true"/>
+        <field name="purposeEnumId" type="id" not-null="true">
+            <description>The purpose or role of this category for the graph.</description></field>
+
+        <relationship type="one" related="moqui.math.Graph" short-alias="graph"/>
+        <relationship type="one" related="moqui.math.ct.Category" short-alias="category"/>
+        <relationship type="one" title="GraphCategoryPurpose" related="moqui.basic.Enumeration" short-alias="purpose">
+            <key-map field-name="purposeEnumId"/></relationship>
+        <relationship type="many" related="moqui.math.GraphVertexCategoryObject" short-alias="vertexObjectMappings">
+            <key-map field-name="graphCategoryId"/></relationship>
+        <relationship type="many" related="moqui.math.GraphEdgeMorphism" short-alias="edgeMorphismMappings">
+            <key-map field-name="graphCategoryId"/></relationship>
+        <index name="GRAPH_CAT_GRAPH"><index-field name="graphId"/></index>
+        <index name="GRAPH_CAT_CATEGORY_UNIQ" unique="true"><index-field name="categoryId"/></index>
+        <seed-data>
+            <moqui.basic.EnumerationType enumTypeId="GraphCategoryPurpose" description="Graph-Category Association Purpose"/>
+            <moqui.basic.Enumeration enumId="GcpUnderlyingGraph" enumTypeId="GraphCategoryPurpose"
+                    description="Underlying graph U(C): objects become vertices and morphisms become directed edges"/>
+        </seed-data>
+    </entity>
+
+    <entity entity-name="GraphVertexCategoryObject" package="moqui.math" use="configuration" cache="true">
+        <description>Object component of the underlying-graph materialization.
+            Within one GraphCategory, each CategoryObject corresponds to exactly one GraphVertex and each
+            GraphVertex corresponds to exactly one CategoryObject.</description>
+        <field name="graphVertexCategoryObjectId" type="id" is-pk="true"/>
+        <field name="graphCategoryId" type="id" not-null="true"/>
+        <field name="graphVertexId" type="id" not-null="true"/>
+        <field name="categoryObjectId" type="id" not-null="true"/>
+
+        <relationship type="one" related="moqui.math.GraphCategory" short-alias="graphCategory"/>
+        <relationship type="one" related="moqui.math.GraphVertex" short-alias="vertex"/>
+        <relationship type="one" related="moqui.math.ct.CategoryObject" short-alias="categoryObject"/>
+        <index name="GVER_CAT_VERTEX_UNIQ" unique="true">
+            <index-field name="graphCategoryId"/><index-field name="graphVertexId"/></index>
+        <index name="GVER_CAT_OBJECT_UNIQ" unique="true">
+            <index-field name="graphCategoryId"/><index-field name="categoryObjectId"/></index>
+    </entity>
+    <entity entity-name="GraphEdgeMorphism" package="moqui.math" use="configuration" cache="true">
+        <description>Arrow component of the underlying-graph materialization.
+            Within one GraphCategory, each Morphism corresponds to exactly one GraphEdge and each GraphEdge
+            corresponds to exactly one Morphism. A sequence of composable morphisms belongs in
+            MorphismComposition; it is not encoded as multiple morphisms on one GraphEdge.</description>
+        <field name="graphEdgeMorphismId" type="id" is-pk="true"/>
+        <field name="graphCategoryId" type="id" not-null="true"/>
+        <field name="graphEdgeId" type="id" not-null="true"/>
+        <field name="morphismId" type="id" not-null="true"/>
+
+        <relationship type="one" related="moqui.math.GraphCategory" short-alias="graphCategory"/>
+        <relationship type="one" related="moqui.math.GraphEdge" short-alias="edge"/>
+        <relationship type="one" related="moqui.math.ct.Morphism" short-alias="morphism"/>
+        <index name="GEDG_CAT_EDGE_UNIQ" unique="true">
+            <index-field name="graphCategoryId"/><index-field name="graphEdgeId"/></index>
+        <index name="GEDG_CAT_MORPH_UNIQ" unique="true">
+            <index-field name="graphCategoryId"/><index-field name="morphismId"/></index>
+    </entity>
 
     <!-- ========== Mesh ========== -->
     <entity entity-name="Mesh" package="moqui.math" use="configuration" cache="true">
