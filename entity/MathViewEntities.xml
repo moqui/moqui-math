@@ -463,7 +463,6 @@ along with this software (see the LICENSE.md file). If not, see
         <alias entity-alias="G" name="graphTypeEnumId"/>
         <alias entity-alias="G" name="graphName" field="name"/>
         <alias entity-alias="G" name="graphDescription" field="description"/>
-        <alias entity-alias="G" name="isDirected"/>
         <alias entity-alias="G" name="isWeighted"/>
     </view-entity>
 
