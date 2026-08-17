@@ -2367,6 +2367,8 @@ along with this software (see the LICENSE.md file). If not, see
         <relationship type="one" related="moqui.math.Transformation" short-alias="transformation"/>
         <relationship type="one" related="moqui.math.ParametricPath" short-alias="parametricPath">
             <key-map field-name="pathId" related="approximatedFunctionId"/></relationship>
+        <relationship type="many" title="MorphismParameter" related="moqui.math.Parameter" short-alias="parameters">
+            <key-map field-name="morphismId"/></relationship>
         <index name="MORPHISM_SRCTGT"><index-field name="sourceObjectId"/><index-field name="targetObjectId"/></index>
         <index name="MORPHISM_UNIQ"><index-field name="categoryId"/><index-field name="sourceObjectId"/>
             <index-field name="targetObjectId"/><index-field name="morphismName"/></index>
@@ -2420,6 +2422,15 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="N-ary Composition (f1 o f2 o ... o fn)" enumId="McNary" enumTypeId="MorphismCompositionType"/>
             <moqui.basic.Enumeration description="Natural-Transformation Vertical Composition" enumId="McNatVert" enumTypeId="MorphismCompositionType"/>
         </seed-data>
+        <master name="catalog">
+            <detail relationship="category"/>
+            <detail relationship="sourceObj"/>
+            <detail relationship="targetObj"/>
+            <detail relationship="parameters">
+                <detail relationship="parameterDef"/>
+                <detail relationship="uom"/>
+            </detail>
+        </master>
     </entity>
 
     <!-- Morphism-scoped parameter attachment: lets a Parameter carry declarative metadata
