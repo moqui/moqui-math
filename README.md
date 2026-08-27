@@ -97,6 +97,45 @@ semantics, instead of having to be reverse-engineered from a blob.**
 Granularity is yours: event-by-event when you need fine traceability, aggregated
 when you don't. The schema imposes meaning, not frequency.
 
+## One finite model, three complementary readings
+
+Moqui Math is deliberately a **finite and discrete metamodel**. It does not try
+to materialize an infinite set, an infinitesimal, or every point of a continuous
+function. It stores finite descriptions of mathematical objects, including
+objects whose mathematical interpretation may be infinite or continuous. A
+formula, a domain, a discretization, a tensor, a proof obligation, and a sampled
+approximation are all finite governed records.
+
+The set-theoretic reading comes from the relational foundation itself:
+enumerations are finite sets, entity records are elements, and relationships are
+finite relations. The categorical reading adds the external, compositional view:
+a `CategoryObject` is characterized by the morphisms connecting it to other
+objects, while a `Morphism` declares a black-box contract `f : A → B` independently
+of its implementation.
+
+Type theory is included without introducing parallel `Type`, `Term`, `Expression`,
+or `Equation` entity hierarchies:
+
+- a mathematical **type** is a `CategoryObject` classified as `CotType`;
+- a typing **context** is a `CategoryObject` classified as `CotContext`;
+- a **proposition-as-type** and a **universe** use `CotProposition` and
+  `CotUniverse`;
+- `ParameterDef.declaredTypeObjectId` declares the mathematical type expected
+  by a parameter or variable;
+- a typed **term** is a `Morphism` classified as `MtTerm`, from its context to
+  its result type;
+- dependent types can be represented by morphisms classified as
+  `MtDisplayMap` in a locally Cartesian-closed category (`CtLCCC`);
+- a **type constructor** can be represented by a `Functor` classified as
+  `FtTypeConstructor`; and
+- a **type judgement** is an exact `Transformation` with purpose
+  `TpTypeJudgement`.
+
+This is not a claim that set theory, category theory, and type theory are the
+same formal system. It is a practical claim about this data model: their useful
+finite descriptions share the same records and relationships, so the database
+does not need three overlapping vocabularies for the same object.
+
 ## The Math–Device duality
 
 `moqui.math` and `moqui.device` are two faces of one problem. **You cannot run a
@@ -111,15 +150,34 @@ transformer, unchanged. The only knob that differs is the device type.
 This is the part no MLOps tool has, because they all come from the software side
 and treat the device as a deployment detail. Here it is co-primary.
 
-## Specification, realization, and proof
+## Contract, exact realization, numerical approximation, and proof
 
-The pairing that makes this a *lifecycle* system, not just a registry:
+The separation that makes this a *lifecycle* system, not just a registry:
 
-- a **`Transformation`** is the specification — what the model is meant to do;
-- an **`ApproximatedFunction`** / `MathModel` is the realization — the network,
-  the fit, the controller that actually does it;
+- a **`Morphism`** is the abstract function or relation — the black-box contract
+  `f : A → B`, independent of how it is computed;
+- a **`Transformation`** is an exact, symbolic, algebraic, or relational
+  realization of that contract. It may also exist independently inside a
+  mathematical model;
+- an **`ApproximatedFunction`** is the finite numerical evaluation or
+  approximation of a quantitative function, when such an approximation is
+  relevant;
+- a **`ParametricPath`** specializes that numerical approximation for a
+  parameterized path; and
 - a **`MathModelRun`** produces the evidence — metrics, and the measured error
-  of the realization against the specification.
+  of the implementation or approximation against its declared contract and
+  constraints.
+
+`Morphism.serviceName` may bind the abstract contract to an implementation in
+code. `Morphism.transformationId` may bind it to an exact mathematical
+realization. The morphism therefore remains independent of both the executable
+service and the numerical machinery.
+
+`Transformation` keeps its optional result references to vectors, matrices,
+tensors, approximated functions, and parameters because it can be evaluated and
+used outside a `MathModel`. A numerical result is not assumed: many categorical,
+logical, symbolic, and relational transformations have no matrix or tensor
+evaluation at all.
 
 A neural trajectory planner can be bound to the classical planner it
 approximates, with its maximum relative error recorded as a dated, versioned
@@ -184,12 +242,41 @@ It records the fact, and only the fact. Not everything (you drown), not nothing
 | Tensor operations | `MatrixDecomposition`, `TensorDecomposition`, `TensorDecompositionFactor`, slices, extractions |
 | Coordinate Systems | `CoordinateSystem`, `CoordinateSystemBaseVector`, `CoordinateSystemMetric`, `CoordinateSystemTransformation` |
 | Transformations | `Transformation`, `TransformationOperand`, `DiagonalExtraction`, `TriangularExtraction`, `BandExtraction`, `BlockMatrixExtraction`, `NormResult` |
+| Equations and predicates | Recursive `Transformation` expressions, typed/scalar operands, equality, inequality, membership, constraints, and predicates |
 | Approximated Functions | `ApproximatedFunction`, `ApproximatedFunctionSample`, `ApproximatedFunctionDerivative` |
 | Mathematical Models | `MathModelDef`, `MathModelDefIdentification`, `MathModelDefContent`, `MathModel`, `MathModelRun`, `MathModelEvent`, `MathModelPerf`, `MathModelData` |
 | Graph Theory | `Graph`, `GraphVertex`, `GraphEdge`, `GraphContent` |
 | Finite-Element Mesh | `Mesh`, `MeshContent`, `MeshQuality`, `MeshKCell`, `MeshKCellVertex`, `MeshKCellEdge`, `MeshKCellIncidence`, `MeshGroup`, `MeshGroupMember` |
 | Trajectories | `ParametricPath`, `ParametricPathPoint`, `ParametricPathContent`, `ParametricPathEvent`, `Trajectory`, `TrajectoryPoint`, `TrajectoryPointRun`, `TrajectoryRun`, `TrajectoryStats` |
 | Category Theory | `Category`, `CategoryObject`, `Morphism`, `MorphismComposition`, `Functor`, `FunctorObjectMapping`, `FunctorMorphismMapping`, `NaturalTransformation`, `NaturalTransformationComponent`, `NaturalTransformationComposition` |
+| Type Theory | Types and contexts as `CategoryObject`; typed terms as `Morphism`; declarations through `ParameterDef`; judgements and propositions through `Transformation` |
+
+### Equations and finite expression graphs
+
+Equations do not require a separate `Equation` entity. A `Transformation` with
+purpose `TpEquation`, `TpConstraint`, or `TpPredicate` represents the root of an
+exact expression. `TransformationOperand` can reference vectors, matrices,
+tensors, enumerations, parameters, or another `Transformation`. Recursive
+transformation operands therefore form a finite expression graph rather than an
+opaque formula stored as text. Applications that require a DAG must enforce
+acyclicity when creating or validating the graph.
+
+Relational transformation types cover equality, inequality, ordering, and set
+or type membership. `resultParameterId` supports scalar, symbolic, enumerative,
+or Boolean results alongside the existing vector, matrix, tensor, and numerical
+function results.
+
+### Inspection views
+
+The model includes views that expose the shared interpretation without adding
+storage entities:
+
+- `ParameterDeclaredType` resolves a parameter definition and its declared
+  mathematical type;
+- `TransformationAndOperand` exposes exact expressions, nested operands, and
+  parameter results; and
+- `MorphismTypeSignature` exposes the categorical and type-theoretic signature
+  of a morphism together with its optional exact realization.
 
 ### Tensor storage
 
