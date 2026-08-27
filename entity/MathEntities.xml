@@ -2340,13 +2340,19 @@ along with this software (see the LICENSE.md file). If not, see
         </seed-data>
     </entity>
     <entity entity-name="CategoryObject" package="moqui.math.ct" cache="never">
-        <description>An object of a category; polymorphic reference into any entity.</description>
+        <description>An object of a category; optionally a polymorphic reference into any entity.
+            Composite primary keys follow the Moqui EntityAuditLog convention: the first and second
+            primary-key values are stored separately and any remaining key fields are serialized in
+            objectPkRestCombinedValue.</description>
         <field name="categoryObjectId" type="id" is-pk="true"/>
         <field name="parentObjectId" type="id"/>
         <field name="categoryId" type="id" not-null="true"/>
         <field name="objectEntityName" type="text-medium"/>
-        <field name="objectPkValue" type="text-medium"/>
+        <field name="objectPkPrimaryValue" type="text-medium"/>
         <field name="objectPkSecondaryValue" type="text-medium"/>
+        <field name="objectPkRestCombinedValue" type="text-medium">
+            <description>Third and subsequent PK fields serialized using the Moqui convention fieldName:'value',fieldName2:'value2'.</description>
+        </field>
         <field name="objectTypeEnumId" type="id"/>
         <field name="objectName" type="text-short"/>
         <field name="objectSymbol" type="text-short"/>
@@ -2357,9 +2363,11 @@ along with this software (see the LICENSE.md file). If not, see
         <relationship type="one" related="moqui.math.ct.Category" short-alias="category"/>
         <relationship type="one" title="CategoryObjectType" related="moqui.basic.Enumeration" short-alias="type">
             <key-map field-name="objectTypeEnumId"/></relationship>
-        <index name="CATOBJ_UNIQ" unique="true"><index-field name="categoryId"/><index-field name="objectEntityName"/><index-field name="objectPkValue"/></index>
-        <index name="CATOBJ_ENTPKPR"><index-field name="objectEntityName"/><index-field name="objectPkValue"/></index>
-        <index name="CATOBJ_PKPRIM"><index-field name="objectPkValue"/></index>
+        <index name="CATOBJ_UNIQ" unique="true"><index-field name="categoryId"/><index-field name="objectEntityName"/>
+            <index-field name="objectPkPrimaryValue"/><index-field name="objectPkSecondaryValue"/>
+            <index-field name="objectPkRestCombinedValue"/></index>
+        <index name="CATOBJ_ENTPKPR"><index-field name="objectEntityName"/><index-field name="objectPkPrimaryValue"/></index>
+        <index name="CATOBJ_PKPRIM"><index-field name="objectPkPrimaryValue"/></index>
         <seed-data>
             <!-- Enumeration for algebraic structures that are one-object categories. -->
             <moqui.basic.EnumerationType enumTypeId="CategoryObjectType" description="Category Object Type"/>
@@ -2383,6 +2391,8 @@ along with this software (see the LICENSE.md file). If not, see
         <field name="parentMorphismId" type="id"/>
         <field name="categoryId" type="id" not-null="true"/>
         <field name="morphismTypeEnumId" type="id"/>
+        <field name="morphismPurposeEnumId" type="id">
+            <description>Operational role of the morphism, independent of its mathematical morphism type.</description></field>
         <field name="sourceObjectId" type="id" not-null="true"/>
         <field name="targetObjectId" type="id" not-null="true"/>
         <field name="morphismName" type="text-short" not-null="true"/>
@@ -2397,6 +2407,8 @@ along with this software (see the LICENSE.md file). If not, see
         <relationship type="one" related="moqui.math.ct.Category" short-alias="category"/>
         <relationship type="one" title="MorphismType" related="moqui.basic.Enumeration" short-alias="type">
             <key-map field-name="morphismTypeEnumId"/></relationship>
+        <relationship type="one" title="MorphismPurpose" related="moqui.basic.Enumeration" short-alias="purpose">
+            <key-map field-name="morphismPurposeEnumId"/></relationship>
         <relationship type="one" title="SourceObj" related="moqui.math.ct.CategoryObject" short-alias="sourceObj">
             <key-map field-name="sourceObjectId" related="categoryObjectId"/></relationship>
         <relationship type="one" title="TargetObj" related="moqui.math.ct.CategoryObject" short-alias="targetObj">
@@ -2625,10 +2637,10 @@ along with this software (see the LICENSE.md file). If not, see
     <moqui.math.ct.Category categoryId="CatFSM" categoryTypeEnumId="CtSmall" categoryName="FSM Category"
         description="Objects = StatusFlow (FSM); Morphisms = FSM homomorphisms."/>
     <moqui.math.ct.CategoryObject categoryObjectId="ObjHeatPDE" categoryId="CatPDE"
-        objectEntityName="moqui.math.MathModel" objectPkValue="HeatEq1"
+        objectEntityName="moqui.math.MathModel" objectPkPrimaryValue="HeatEq1"
         objectName="Heat Equation PDE" objectSymbol="ℋ"/>
     <moqui.math.ct.CategoryObject categoryObjectId="ObjHeatFSM" categoryId="CatFSM"
-        objectEntityName="moqui.basic.StatusFlow" objectPkValue="HeatFSM"
+        objectEntityName="moqui.basic.StatusFlow" objectPkPrimaryValue="HeatFSM"
         objectName="Heat FSM" objectSymbol="Σ"/>
     <moqui.math.ct.Morphism morphismId="IdHeatPDE" categoryId="CatPDE"
         morphismTypeEnumId="CmtId" sourceObjectId="ObjHeatPDE" targetObjectId="ObjHeatPDE"

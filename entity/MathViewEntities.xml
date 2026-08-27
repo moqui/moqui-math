@@ -486,7 +486,9 @@ along with this software (see the LICENSE.md file). If not, see
         <alias entity-alias="CO" name="parentObjectId"/>
         <alias entity-alias="CO" name="objectTypeEnumId"/>
         <alias entity-alias="CO" name="objectEntityName"/>
-        <alias entity-alias="CO" name="objectPkValue"/>
+        <alias entity-alias="CO" name="objectPkPrimaryValue"/>
+        <alias entity-alias="CO" name="objectPkSecondaryValue"/>
+        <alias entity-alias="CO" name="objectPkRestCombinedValue"/>
         <alias entity-alias="CO" name="objectName"/>
         <alias entity-alias="CO" name="objectSymbol"/>
         <alias entity-alias="CO" name="objectDescription" field="description"/>
@@ -520,14 +522,13 @@ along with this software (see the LICENSE.md file). If not, see
         <alias entity-alias="M" name="morphismId"/>
         <alias entity-alias="M" name="parentMorphismId"/>
         <alias entity-alias="M" name="morphismTypeEnumId"/>
+        <alias entity-alias="M" name="morphismPurposeEnumId"/>
         <alias entity-alias="M" name="sourceObjectId"/>
         <alias entity-alias="M" name="targetObjectId"/>
         <alias entity-alias="M" name="morphismName"/>
         <alias entity-alias="M" name="morphismSymbol"/>
-        <alias entity-alias="M" name="matrixId"/>
         <alias entity-alias="M" name="transformationId"/>
         <alias entity-alias="M" name="serviceName"/>
-        <alias entity-alias="M" name="pathId"/>
         <alias entity-alias="SRC" name="sourceObjectName" field="objectName"/>
         <alias entity-alias="SRC" name="sourceObjectSymbol" field="objectSymbol"/>
         <alias entity-alias="TGT" name="targetObjectName" field="objectName"/>

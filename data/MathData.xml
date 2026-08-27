@@ -32,6 +32,26 @@ along with this software (see the LICENSE.md file). If not, see
     <moqui.basic.Enumeration description="Greater Than or Equal - GE" enumId="OpGe" enumCode="GE" enumTypeId="LogicalOperator"/>
     <moqui.basic.Enumeration description="Implication - IMPLIES" enumId="OpImplies" enumCode="IMPLIES" enumTypeId="LogicalOperator"/>
     <moqui.basic.Enumeration description="Membership - IN" enumId="OpIn" enumCode="IN" enumTypeId="LogicalOperator"/>
+
+    <!-- Operational purpose of a categorical morphism. This is intentionally independent
+         from MorphismType, which describes mathematical properties such as identity,
+         endomorphism, monomorphism, or isomorphism. -->
+    <moqui.basic.EnumerationType description="Operational Purpose of a Morphism" enumTypeId="MorphismPurpose"/>
+    <moqui.basic.Enumeration description="Abstract transition between control states" enumId="MpTransition"
+        enumCode="Transition" enumTypeId="MorphismPurpose"/>
+    <moqui.basic.Enumeration description="Operation intended to produce an effect in the controlled environment" enumId="MpAction"
+        enumCode="Action" enumTypeId="MorphismPurpose"/>
+    <moqui.basic.Enumeration description="Active acquisition of ground-truth evidence from the controlled environment" enumId="MpDiagnostic"
+        enumCode="Diagnostic" enumTypeId="MorphismPurpose"/>
+    <moqui.basic.Enumeration description="Precondition or admissibility check for a morphism or composition" enumId="MpGuard"
+        enumCode="Guard" enumTypeId="MorphismPurpose"/>
+    <moqui.basic.Enumeration description="Postcondition check against evidence acquired after execution" enumId="MpVerify"
+        enumCode="Verify" enumTypeId="MorphismPurpose"/>
+    <moqui.basic.Enumeration description="Recovery or compensating operation after a failed or rejected effect" enumId="MpCompensate"
+        enumCode="Compensate" enumTypeId="MorphismPurpose"/>
+    <moqui.basic.Enumeration description="Classification of evidence into a finite diagnostic or control outcome" enumId="MpClassify"
+        enumCode="Classify" enumTypeId="MorphismPurpose"/>
+
     <!-- Math Function -->
     <moqui.basic.EnumerationType description="Mathematical Function" enumTypeId="MathFunction"/>
     <moqui.basic.Enumeration description="Sine Function" enumId="MfSin" enumTypeId="MathFunction"/>
