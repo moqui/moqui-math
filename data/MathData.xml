@@ -24,7 +24,14 @@ along with this software (see the LICENSE.md file). If not, see
     <moqui.basic.Enumeration description="Exclusive Or - XOR" enumId="OpXor" enumCode="XOR" enumTypeId="LogicalOperator"/>
     <moqui.basic.Enumeration description="Negation - NOT" enumId="OpNot" enumCode="NOT" enumTypeId="LogicalOperator"/>
     <moqui.basic.Enumeration description="Biconditional - XNOR" enumId="OpXnor" enumCode="XNOR" enumTypeId="LogicalOperator"/>
-    <moqui.basic.Enumeration description="Equivalence - EQ" enumId="OpEq" enumCode="EQ" enumTypeId="LogicalOperator"/>
+    <moqui.basic.Enumeration description="Equality - EQ" enumId="OpEq" enumCode="EQ" enumTypeId="LogicalOperator"/>
+    <moqui.basic.Enumeration description="Inequality - NE" enumId="OpNe" enumCode="NE" enumTypeId="LogicalOperator"/>
+    <moqui.basic.Enumeration description="Less Than - LT" enumId="OpLt" enumCode="LT" enumTypeId="LogicalOperator"/>
+    <moqui.basic.Enumeration description="Less Than or Equal - LE" enumId="OpLe" enumCode="LE" enumTypeId="LogicalOperator"/>
+    <moqui.basic.Enumeration description="Greater Than - GT" enumId="OpGt" enumCode="GT" enumTypeId="LogicalOperator"/>
+    <moqui.basic.Enumeration description="Greater Than or Equal - GE" enumId="OpGe" enumCode="GE" enumTypeId="LogicalOperator"/>
+    <moqui.basic.Enumeration description="Implication - IMPLIES" enumId="OpImplies" enumCode="IMPLIES" enumTypeId="LogicalOperator"/>
+    <moqui.basic.Enumeration description="Membership - IN" enumId="OpIn" enumCode="IN" enumTypeId="LogicalOperator"/>
     <!-- Math Function -->
     <moqui.basic.EnumerationType description="Mathematical Function" enumTypeId="MathFunction"/>
     <moqui.basic.Enumeration description="Sine Function" enumId="MfSin" enumTypeId="MathFunction"/>

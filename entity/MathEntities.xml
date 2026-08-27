@@ -107,6 +107,10 @@ along with this software (see the LICENSE.md file). If not, see
         <field name="parentParameterDefId" type="id">
             <description>To model a hierarchical relationship between parameters.</description></field>
         <field name="parameterTypeEnumId" type="id" not-null="true"/>
+        <field name="declaredTypeObjectId" type="id">
+            <description>Optional mathematical type of this parameter. The referenced CategoryObject
+                makes a domain type explicit when ParameterType is too generic, for example Vector3,
+                ThermodynamicState or a proposition used as a contract.</description></field>
         <field name="purposeEnumId" type="id"/>
         <field name="groupEnumId" type="id"/>
         <field name="classEnumId" type="id"/>
@@ -130,6 +134,8 @@ along with this software (see the LICENSE.md file). If not, see
             <key-map field-name="parentParameterDefId" related="parameterDefId"/></relationship>
         <relationship type="one" title="ParameterType" related="moqui.basic.Enumeration" short-alias="type">
             <key-map field-name="parameterTypeEnumId"/></relationship>
+        <relationship type="one" title="DeclaredType" related="moqui.math.ct.CategoryObject" short-alias="declaredType">
+            <key-map field-name="declaredTypeObjectId" related="categoryObjectId"/></relationship>
         <relationship type="one" title="ParameterPurpose" related="moqui.basic.Enumeration" short-alias="purpose">
             <key-map field-name="purposeEnumId"/></relationship>
         <relationship type="one" title="ParameterGroup" related="moqui.basic.Enumeration" short-alias="group">
@@ -1015,6 +1021,9 @@ along with this software (see the LICENSE.md file). If not, see
         <field name="resultMatrixId" type="id"/>
         <field name="resultTensorId" type="id"/>
         <field name="resultFunctionId" type="id"/>
+        <field name="resultParameterId" type="id">
+            <description>Optional scalar, symbolic, enumerative or Boolean result. This complements
+                vector, matrix, tensor and function results.</description></field>
 
         <relationship type="one" title="Parent" related="moqui.math.Transformation" short-alias="parent">
             <key-map field-name="parentTransformationId" related="transformationId"/></relationship>
@@ -1030,6 +1039,8 @@ along with this software (see the LICENSE.md file). If not, see
             <key-map field-name="resultTensorId" related="tensorId"/></relationship>
         <relationship type="one" related="moqui.math.ApproximatedFunction" short-alias="resultFunc">
             <key-map field-name="resultFunctionId" related="approximatedFunctionId"/></relationship>
+        <relationship type="one" title="ResultParameter" related="moqui.math.Parameter" short-alias="resultParameter">
+            <key-map field-name="resultParameterId" related="parameterId"/></relationship>
         <relationship type="many" related="moqui.math.TransformationOperand" short-alias="operands">
             <key-map field-name="transformationId"/></relationship>
         <seed-data>
@@ -1039,6 +1050,16 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration enumId="TtLinear" enumTypeId="TransformationType" description="Linear Transformation"/>
             <moqui.basic.Enumeration enumId="TtnonLinear" enumTypeId="TransformationType" description="Non-linear Transformation"/>
             <moqui.basic.Enumeration enumId="TtMeta" enumTypeId="TransformationType" description="Meta-Transformation (composition, decomposition, compilation, etc.)"/>
+            <!-- Relations are exact predicates over finite descriptions of their operands. -->
+            <moqui.basic.Enumeration enumId="TtRelation" enumTypeId="TransformationType" description="Relational Transformation or Predicate"/>
+            <moqui.basic.Enumeration enumId="TtEquality" parentEnumId="TtRelation" enumTypeId="TransformationType" description="Equality Relation"/>
+            <moqui.basic.Enumeration enumId="TtInequality" parentEnumId="TtRelation" enumTypeId="TransformationType" description="Inequality Relation"/>
+            <moqui.basic.Enumeration enumId="TtNotEqual" parentEnumId="TtInequality" enumTypeId="TransformationType" description="Not Equal Relation"/>
+            <moqui.basic.Enumeration enumId="TtLessThan" parentEnumId="TtInequality" enumTypeId="TransformationType" description="Less Than Relation"/>
+            <moqui.basic.Enumeration enumId="TtLessEqual" parentEnumId="TtInequality" enumTypeId="TransformationType" description="Less Than or Equal Relation"/>
+            <moqui.basic.Enumeration enumId="TtGreaterThan" parentEnumId="TtInequality" enumTypeId="TransformationType" description="Greater Than Relation"/>
+            <moqui.basic.Enumeration enumId="TtGreaterEqual" parentEnumId="TtInequality" enumTypeId="TransformationType" description="Greater Than or Equal Relation"/>
+            <moqui.basic.Enumeration enumId="TtMembership" parentEnumId="TtRelation" enumTypeId="TransformationType" description="Set or Type Membership Relation"/>
             <!-- Arity for linear transformations -->
             <moqui.basic.Enumeration enumId="TtUnaryLin" parentEnumId="TtLinear" enumTypeId="TransformationType" description="Unary linear transformation"/>
             <moqui.basic.Enumeration enumId="TtBinaryLin" parentEnumId="TtLinear" enumTypeId="TransformationType" description="Binary linear transformation"/>
@@ -1120,6 +1141,10 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Frame Change" enumId="TpFrameChange" enumTypeId="TransformationPurpose"/>
             <moqui.basic.Enumeration description="Data Compression" enumId="TpDataCompression" enumTypeId="TransformationPurpose"/>
             <moqui.basic.Enumeration description="Spectral Analysis or Stability" enumId="TpEigenAnalysis" enumTypeId="TransformationPurpose"/>
+            <moqui.basic.Enumeration description="Equation" enumId="TpEquation" enumTypeId="TransformationPurpose"/>
+            <moqui.basic.Enumeration description="Constraint" enumId="TpConstraint" enumTypeId="TransformationPurpose"/>
+            <moqui.basic.Enumeration description="Predicate" enumId="TpPredicate" enumTypeId="TransformationPurpose"/>
+            <moqui.basic.Enumeration description="Type Judgement" enumId="TpTypeJudgement" enumTypeId="TransformationPurpose"/>
         </seed-data>
     </entity>
     <entity entity-name="TransformationOperand" package="moqui.math" use="configuration" cache="true">
@@ -1131,6 +1156,10 @@ along with this software (see the LICENSE.md file). If not, see
         <field name="operandMatrixId" type="id"/>
         <field name="operandTensorId" type="id"/>
         <field name="operandEnumId" type="id"/>
+        <field name="operandTransformationId" type="id">
+            <description>Nested exact expression used as an operand. Recursive references form a finite expression DAG.</description></field>
+        <field name="operandParameterId" type="id">
+            <description>Scalar, symbolic, enumerative or typed parameter used as an operand.</description></field>
         
         <relationship type="one" related="moqui.math.Transformation" short-alias="transformation"/>
         <relationship type="one" title="TransformationOperandType" related="moqui.basic.Enumeration" short-alias="type">
@@ -1144,6 +1173,10 @@ along with this software (see the LICENSE.md file). If not, see
         <relationship type="one" title="OperandEnum" related="moqui.basic.Enumeration">
             <!-- The title won't match the enumTypeId for this field -->
             <key-map field-name="operandEnumId"/></relationship>
+        <relationship type="one" title="OperandTransformation" related="moqui.math.Transformation" short-alias="operandTransformation">
+            <key-map field-name="operandTransformationId" related="transformationId"/></relationship>
+        <relationship type="one" title="OperandParameter" related="moqui.math.Parameter" short-alias="operandParameter">
+            <key-map field-name="operandParameterId" related="parameterId"/></relationship>
         <seed-data>
             <moqui.basic.EnumerationType description="Transformation Operand Type" enumTypeId="TransformationOperandType"/>
             <moqui.basic.Enumeration description="Left / First Operand" enumId="TotLeft" enumTypeId="TransformationOperandType"/>
@@ -1159,6 +1192,8 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration enumId="TotVector" enumTypeId="TransformationOperandType" description="Generic vector operand (type marker)"/>
             <moqui.basic.Enumeration enumId="TotTensor" enumTypeId="TransformationOperandType" description="Generic tensor operand (type marker)"/>
             <moqui.basic.Enumeration enumId="TotScalar" enumTypeId="TransformationOperandType" description="Scalar / hyper-parameter operand"/>
+            <moqui.basic.Enumeration enumId="TotTransformation" enumTypeId="TransformationOperandType" description="Nested Transformation Operand"/>
+            <moqui.basic.Enumeration enumId="TotParameter" enumTypeId="TransformationOperandType" description="Scalar, Symbolic or Typed Parameter Operand"/>
             <!-- Matrix -->
             <moqui.basic.Enumeration enumId="TotLeftMatrix" parentEnumId="TotLeft" enumTypeId="TransformationOperandType" description="Left / first operand - Matrix"/>
             <moqui.basic.Enumeration enumId="TotRightMatrix" parentEnumId="TotRight" enumTypeId="TransformationOperandType" description="Right / second operand - Matrix"/>
@@ -2286,6 +2321,8 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Topos" enumId="CtTopos" enumTypeId="CategoryType"/>
             <moqui.basic.Enumeration description="Large category" enumId="CtLarge" enumTypeId="CategoryType"/>
             <moqui.basic.Enumeration description="Cartesian-closed category" enumId="CtCCC" enumTypeId="CategoryType"/>
+            <moqui.basic.Enumeration description="Syntactic category of a type theory" enumId="CtSyntactic" enumTypeId="CategoryType"/>
+            <moqui.basic.Enumeration description="Locally Cartesian-closed category for dependent types" enumId="CtLCCC" enumTypeId="CategoryType"/>
             <moqui.basic.Enumeration description="Abelian category" enumId="CtAbelian" enumTypeId="CategoryType"/>
             <moqui.basic.Enumeration description="Enriched (V-) category" enumId="CtEnriched" enumTypeId="CategoryType"/>
             <moqui.basic.Enumeration description="Groupoid" enumId="CtGroupoid" enumTypeId="CategoryType"/>
@@ -2326,6 +2363,10 @@ along with this software (see the LICENSE.md file). If not, see
             <!-- Enumeration for algebraic structures that are one-object categories. -->
             <moqui.basic.EnumerationType enumTypeId="CategoryObjectType" description="Category Object Type"/>
             <moqui.basic.Enumeration description="Generic object" enumId="CotGeneric" enumTypeId="CategoryObjectType"/>
+            <moqui.basic.Enumeration description="Type" enumId="CotType" enumTypeId="CategoryObjectType"/>
+            <moqui.basic.Enumeration description="Typing Context" enumId="CotContext" enumTypeId="CategoryObjectType"/>
+            <moqui.basic.Enumeration description="Proposition as Type" enumId="CotProposition" parentEnumId="CotType" enumTypeId="CategoryObjectType"/>
+            <moqui.basic.Enumeration description="Universe of Types" enumId="CotUniverse" parentEnumId="CotType" enumTypeId="CategoryObjectType"/>
             <moqui.basic.Enumeration description="Algebraic Structure (one-object category)" enumId="CotAlgebraicStruct" enumTypeId="CategoryObjectType"/>
             <moqui.basic.Enumeration description="Monoid" enumId="CotMonoid" parentEnumId="CotAlgebraicStruct" enumTypeId="CategoryObjectType"/>
             <moqui.basic.Enumeration description="Group" enumId="CotGroup" parentEnumId="CotAlgebraicStruct" enumTypeId="CategoryObjectType"/>
@@ -2347,12 +2388,8 @@ along with this software (see the LICENSE.md file). If not, see
         <field name="morphismSymbol" type="text-short"/>
         <field name="description" type="text-long"/>
 
-        <field name="matrixId" type="id"/>
         <field name="transformationId" type="id"/>
         <field name="serviceName" type="text-medium"/>
-        <field name="pathId" type="id">
-            <description>Optional numerical or geometric ParametricPath implementing or approximating this morphism.
-                Categorical composition is represented by MorphismComposition, not by ParametricPath.</description></field>
 
         <relationship type="one" title="Parent" related="moqui.math.ct.Morphism" short-alias="parent">
             <key-map field-name="parentMorphismId" related="morphismId"/></relationship>
@@ -2363,10 +2400,7 @@ along with this software (see the LICENSE.md file). If not, see
             <key-map field-name="sourceObjectId" related="categoryObjectId"/></relationship>
         <relationship type="one" title="TargetObj" related="moqui.math.ct.CategoryObject" short-alias="targetObj">
             <key-map field-name="targetObjectId" related="categoryObjectId"/></relationship>
-        <relationship type="one" related="moqui.math.Matrix" short-alias="matrix"/>
         <relationship type="one" related="moqui.math.Transformation" short-alias="transformation"/>
-        <relationship type="one" related="moqui.math.ParametricPath" short-alias="parametricPath">
-            <key-map field-name="pathId" related="approximatedFunctionId"/></relationship>
         <relationship type="many" title="MorphismParameter" related="moqui.math.Parameter" short-alias="parameters">
             <key-map field-name="morphismId"/></relationship>
         <index name="MORPHISM_SRCTGT"><index-field name="sourceObjectId"/><index-field name="targetObjectId"/></index>
@@ -2380,7 +2414,9 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Epimorphism" enumId="MtEpi" enumTypeId="MorphismType"/>
             <moqui.basic.Enumeration description="Monomorphism" enumId="MtMono" enumTypeId="MorphismType"/>
             <moqui.basic.Enumeration description="Identity morphism" enumId="MtId" enumTypeId="MorphismType"/>
-            <moqui.basic.Enumeration description="Zero morphism" enumId="MtZero" enumTypeId="MorphismType"/>
+            <moqui.basic.Enumeration description="Zero morphism" enumId="MphZero" enumTypeId="MorphismType"/>
+            <moqui.basic.Enumeration description="Typed Term from a Context to a Type" enumId="MtTerm" enumTypeId="MorphismType"/>
+            <moqui.basic.Enumeration description="Display Map representing a Dependent Type" enumId="MtDisplayMap" enumTypeId="MorphismType"/>
             <moqui.basic.Enumeration description="Retract (split epi)" enumId="MtRetract" enumTypeId="MorphismType"/>
             <moqui.basic.Enumeration description="Section (split mono)" enumId="MtSection" enumTypeId="MorphismType"/>
             <moqui.basic.Enumeration description="Retraction left-inverse" enumId="MtLeftInv" enumTypeId="MorphismType"/>
@@ -2424,12 +2460,9 @@ along with this software (see the LICENSE.md file). If not, see
         </seed-data>
         <master name="catalog">
             <detail relationship="category"/>
-            <detail relationship="sourceObj"/>
-            <detail relationship="targetObj"/>
-            <detail relationship="parameters">
-                <detail relationship="parameterDef"/>
-                <detail relationship="uom"/>
-            </detail>
+            <detail relationship="firstMorphism"/>
+            <detail relationship="secondMorphism"/>
+            <detail relationship="resultMorphism"/>
         </master>
     </entity>
 
@@ -2485,6 +2518,7 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Hom(-,X) Covariant" enumId="FtHomCov" enumTypeId="FunctorType"/>
             <moqui.basic.Enumeration description="Hom(X,-) Contravariant" enumId="FtHomContra" enumTypeId="FunctorType"/>
             <moqui.basic.Enumeration description="Power-Set Functor" enumId="FtPowerset" enumTypeId="FunctorType"/>
+            <moqui.basic.Enumeration description="Type Constructor Functor" enumId="FtTypeConstructor" enumTypeId="FunctorType"/>
             <!-- Representation of diagrams -->
             <!-- In the categorical literature, a diagram in a category is a functor D: I -> C, where I is a shape category. -->
             <moqui.basic.Enumeration description="Diagram Functor (Shape Graph to Target Category)" enumId="FtDiagram" enumTypeId="FunctorType"/>
