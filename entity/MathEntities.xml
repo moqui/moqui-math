@@ -2346,6 +2346,7 @@ along with this software (see the LICENSE.md file). If not, see
         <field name="categoryId" type="id" not-null="true"/>
         <field name="objectEntityName" type="text-medium"/>
         <field name="objectPkValue" type="text-medium"/>
+        <field name="objectPkSecondaryValue" type="text-medium"/>
         <field name="objectTypeEnumId" type="id"/>
         <field name="objectName" type="text-short"/>
         <field name="objectSymbol" type="text-short"/>
