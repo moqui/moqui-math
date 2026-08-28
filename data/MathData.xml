@@ -66,129 +66,100 @@ along with this software (see the LICENSE.md file). If not, see
         service-call, service-schedule, or cancel-scheduled-service operation.
 
         Periodic execution is represented by scheduling plus cancellation. There is deliberately no
-        busy-loop/while-state-active morphism: an FSM state-entry output schedules the task and the
-        corresponding state-exit output cancels it. The periodically invoked diagnostic service must
-        still verify that its expected MathModel/status context is current before producing effects.
+        busy-loop morphism: a controlling plan schedules the task and a later morphism cancels it.
+        The periodically invoked diagnostic service must still verify that its expected categorical
+        object and execution context are current before producing effects.
     -->
     <moqui.math.ct.Category categoryId="MorphismExecution" categoryTypeEnumId="CtSmall"
         categoryName="Morphism Execution"
-        description="Finite category of standard operators used to submit, schedule, observe, await, and cancel executable morphisms."/>
+        description="Finite category of standard operators used to submit, schedule, observe, await, and cancel executable morphisms.">
 
-    <!-- Objects are execution-interface states, not business workflow states. -->
-    <moqui.math.ct.CategoryObject categoryObjectId="MxInvocationDef" categoryId="MorphismExecution"
-        objectTypeEnumId="CotGeneric" objectName="Invocation Definition" objectSymbol="Call"
-        description="A morphism with a resolved executable binding and input parameters, not yet submitted."/>
-    <moqui.math.ct.CategoryObject categoryObjectId="MxExecutionHandle" categoryId="MorphismExecution"
-        objectTypeEnumId="CotGeneric" objectName="Execution Handle" objectSymbol="Handle"
-        description="A Future or ScheduledFuture-like handle for an asynchronous or scheduled invocation."/>
-    <moqui.math.ct.CategoryObject categoryObjectId="MxExecutionResult" categoryId="MorphismExecution"
-        objectTypeEnumId="CotGeneric" objectName="Execution Result" objectSymbol="Result"
-        description="Finite result, messages, errors, and evidence returned by an invocation."/>
-    <moqui.math.ct.CategoryObject categoryObjectId="MxCancelledExecution" categoryId="MorphismExecution"
-        objectTypeEnumId="CotGeneric" objectName="Cancelled Execution" objectSymbol="Cancelled"
-        description="Terminal representation of a successfully cancelled scheduled execution."/>
+        <!-- Objects are execution-interface states, not business workflow states. -->
+        <objects categoryObjectId="MxInvocationDef" objectTypeEnumId="CotGeneric"
+            objectName="Invocation Definition" objectSymbol="Call"
+            description="A morphism with a resolved executable binding and runtime context, not yet submitted."/>
+        <objects categoryObjectId="MxExecutionHandle" objectTypeEnumId="CotGeneric"
+            objectName="Execution Handle" objectSymbol="Handle"
+            description="A Future or ScheduledFuture-like handle for an asynchronous or scheduled invocation."/>
+        <objects categoryObjectId="MxExecutionResult" objectTypeEnumId="CotGeneric"
+            objectName="Execution Result" objectSymbol="Result"
+            description="Finite result, messages, errors, and evidence returned by an invocation."/>
+        <objects categoryObjectId="MxCancelledExecution" objectTypeEnumId="CotGeneric"
+            objectName="Cancelled Execution" objectSymbol="Cancelled"
+            description="Terminal representation of a successfully cancelled scheduled execution."/>
 
-    <!-- Identity arrows make the categorical identities explicit in the finite catalog. -->
-    <moqui.math.ct.Morphism morphismId="MxIdInvocationDef" categoryId="MorphismExecution" morphismTypeEnumId="MtId"
-        sourceObjectId="MxInvocationDef" targetObjectId="MxInvocationDef" morphismName="Identity Invocation Definition"
-        morphismSymbol="id_Call"/>
-    <moqui.math.ct.Morphism morphismId="MxIdExecutionHandle" categoryId="MorphismExecution" morphismTypeEnumId="MtId"
-        sourceObjectId="MxExecutionHandle" targetObjectId="MxExecutionHandle" morphismName="Identity Execution Handle"
-        morphismSymbol="id_Handle"/>
-    <moqui.math.ct.Morphism morphismId="MxIdExecutionResult" categoryId="MorphismExecution" morphismTypeEnumId="MtId"
-        sourceObjectId="MxExecutionResult" targetObjectId="MxExecutionResult" morphismName="Identity Execution Result"
-        morphismSymbol="id_Result"/>
-    <moqui.math.ct.Morphism morphismId="MxIdCancelledExecution" categoryId="MorphismExecution" morphismTypeEnumId="MtId"
-        sourceObjectId="MxCancelledExecution" targetObjectId="MxCancelledExecution" morphismName="Identity Cancelled Execution"
-        morphismSymbol="id_Cancelled"/>
+        <!-- Identity arrows make the categorical identities explicit in the finite catalog. -->
+        <morphisms morphismId="MxIdInvocationDef" morphismTypeEnumId="MtId"
+            sourceObjectId="MxInvocationDef" targetObjectId="MxInvocationDef" morphismName="Identity Invocation Definition"
+            morphismSymbol="id_Call"/>
+        <morphisms morphismId="MxIdExecutionHandle" morphismTypeEnumId="MtId"
+            sourceObjectId="MxExecutionHandle" targetObjectId="MxExecutionHandle" morphismName="Identity Execution Handle"
+            morphismSymbol="id_Handle"/>
+        <morphisms morphismId="MxIdExecutionResult" morphismTypeEnumId="MtId"
+            sourceObjectId="MxExecutionResult" targetObjectId="MxExecutionResult" morphismName="Identity Execution Result"
+            morphismSymbol="id_Result"/>
+        <morphisms morphismId="MxIdCancelledExecution" morphismTypeEnumId="MtId"
+            sourceObjectId="MxCancelledExecution" targetObjectId="MxCancelledExecution" morphismName="Identity Cancelled Execution"
+            morphismSymbol="id_Cancelled"/>
 
-    <!-- Direct and asynchronous submission operators. -->
-    <moqui.math.ct.Morphism morphismId="MxExecuteSync" categoryId="MorphismExecution" morphismTypeEnumId="MtGeneral"
-        morphismPurposeEnumId="MpAction" sourceObjectId="MxInvocationDef" targetObjectId="MxExecutionResult"
-        morphismName="Execute Synchronously" morphismSymbol="sync"
-        description="Compile to ec.service.sync().name(target.serviceName).parameters(...).call()."/>
-    <moqui.math.ct.Morphism morphismId="MxExecuteAsync" categoryId="MorphismExecution" morphismTypeEnumId="MtGeneral"
-        morphismPurposeEnumId="MpAction" sourceObjectId="MxInvocationDef" targetObjectId="MxExecutionHandle"
-        morphismName="Execute Asynchronously" morphismSymbol="async"
-        description="Compile to ec.service.async().name(target.serviceName).parameters(...).callFuture()."/>
-    <moqui.math.ct.Morphism morphismId="MxExecuteDistributed" parentMorphismId="MxExecuteAsync"
-        categoryId="MorphismExecution" morphismTypeEnumId="MtGeneral" morphismPurposeEnumId="MpAction"
-        sourceObjectId="MxInvocationDef" targetObjectId="MxExecutionHandle"
-        morphismName="Execute Asynchronously Distributed" morphismSymbol="distribute"
-        description="Compile to ec.service.async().name(target.serviceName).parameters(...).distribute(true).callFuture(). Parameters must be serializable."/>
+        <!-- Direct and asynchronous submission operators. -->
+        <morphisms morphismId="MxExecuteSync" morphismTypeEnumId="MtGeneral"
+            morphismPurposeEnumId="MpAction" sourceObjectId="MxInvocationDef" targetObjectId="MxExecutionResult"
+            morphismName="Execute Synchronously" morphismSymbol="sync"
+            description="Compile to ec.service.sync().name(target.serviceName).parameters(runtimeContext).call()."/>
+        <morphisms morphismId="MxExecuteAsync" morphismTypeEnumId="MtGeneral"
+            morphismPurposeEnumId="MpAction" sourceObjectId="MxInvocationDef" targetObjectId="MxExecutionHandle"
+            morphismName="Execute Asynchronously" morphismSymbol="async"
+            description="Compile to ec.service.async().name(target.serviceName).parameters(runtimeContext).callFuture()."/>
+        <morphisms morphismId="MxExecuteDistributed" parentMorphismId="MxExecuteAsync"
+            morphismTypeEnumId="MtGeneral" morphismPurposeEnumId="MpAction"
+            sourceObjectId="MxInvocationDef" targetObjectId="MxExecutionHandle"
+            morphismName="Execute Asynchronously Distributed" morphismSymbol="distribute"
+            description="Compile to ec.service.async().name(target.serviceName).parameters(runtimeContext).distribute(true).callFuture(). Parameters must be serializable."/>
 
-    <!-- Native Moqui scheduled-service operators from the service-scheduling framework extension. -->
-    <moqui.math.ct.Morphism morphismId="MxScheduleOneShot" categoryId="MorphismExecution" morphismTypeEnumId="MtGeneral"
-        morphismPurposeEnumId="MpAction" sourceObjectId="MxInvocationDef" targetObjectId="MxExecutionHandle"
-        morphismName="Schedule One Shot" morphismSymbol="scheduleOnce"
-        description="Compile to service-schedule type one-shot, or ec.service.schedule(taskName).name(target.serviceName).initialDelay(...).call()."/>
-    <moqui.math.ct.Morphism morphismId="MxScheduleFixedRate" categoryId="MorphismExecution" morphismTypeEnumId="MtGeneral"
-        morphismPurposeEnumId="MpAction" sourceObjectId="MxInvocationDef" targetObjectId="MxExecutionHandle"
-        morphismName="Schedule At Fixed Rate" morphismSymbol="fixedRate"
-        description="Compile to service-schedule type at-fixed-rate, using polling-interval and optional duration."/>
-    <moqui.math.ct.Morphism morphismId="MxScheduleFixedDelay" categoryId="MorphismExecution" morphismTypeEnumId="MtGeneral"
-        morphismPurposeEnumId="MpAction" sourceObjectId="MxInvocationDef" targetObjectId="MxExecutionHandle"
-        morphismName="Schedule With Fixed Delay" morphismSymbol="fixedDelay"
-        description="Compile to service-schedule type with-fixed-delay, using polling-interval and optional duration."/>
-    <moqui.math.ct.Morphism morphismId="MxScheduleDistributed" categoryId="MorphismExecution" morphismTypeEnumId="MtEndo"
-        morphismPurposeEnumId="MpAction" sourceObjectId="MxInvocationDef" targetObjectId="MxInvocationDef"
-        morphismName="Mark Schedule Distributed" morphismSymbol="scheduleDistributed"
-        description="Execution modifier compiled to distribute(true) for a scheduled call when a distributed scheduled executor is configured."/>
+        <!-- Native Moqui scheduled-service operators from the service-scheduling framework extension. -->
+        <morphisms morphismId="MxScheduleOneShot" morphismTypeEnumId="MtGeneral"
+            morphismPurposeEnumId="MpAction" sourceObjectId="MxInvocationDef" targetObjectId="MxExecutionHandle"
+            morphismName="Schedule One Shot" morphismSymbol="scheduleOnce"
+            description="Compile to service-schedule type one-shot, or ec.service.schedule(taskName).name(target.serviceName).initialDelay(...).call()."/>
+        <morphisms morphismId="MxScheduleFixedRate" morphismTypeEnumId="MtGeneral"
+            morphismPurposeEnumId="MpAction" sourceObjectId="MxInvocationDef" targetObjectId="MxExecutionHandle"
+            morphismName="Schedule At Fixed Rate" morphismSymbol="fixedRate"
+            description="Compile to service-schedule type at-fixed-rate using values from the runtime execution context."/>
+        <morphisms morphismId="MxScheduleFixedDelay" morphismTypeEnumId="MtGeneral"
+            morphismPurposeEnumId="MpAction" sourceObjectId="MxInvocationDef" targetObjectId="MxExecutionHandle"
+            morphismName="Schedule With Fixed Delay" morphismSymbol="fixedDelay"
+            description="Compile to service-schedule type with-fixed-delay using values from the runtime execution context."/>
+        <morphisms morphismId="MxScheduleDistributed" morphismTypeEnumId="MtEndo"
+            morphismPurposeEnumId="MpAction" sourceObjectId="MxInvocationDef" targetObjectId="MxInvocationDef"
+            morphismName="Mark Schedule Distributed" morphismSymbol="scheduleDistributed"
+            description="Execution modifier compiled to distribute(true) for a scheduled call when a distributed scheduled executor is configured."/>
 
-    <!-- Feedback and lifecycle operators. -->
-    <moqui.math.ct.Morphism morphismId="MxObserveExecution" categoryId="MorphismExecution" morphismTypeEnumId="MtEndo"
-        morphismPurposeEnumId="MpDiagnostic" sourceObjectId="MxExecutionHandle" targetObjectId="MxExecutionHandle"
-        morphismName="Observe Execution" morphismSymbol="observe"
-        description="Acquire active diagnostic evidence such as running, done, cancelled, timeout, messages, and errors without changing the controlled business state."/>
-    <moqui.math.ct.Morphism morphismId="MxAwaitExecution" categoryId="MorphismExecution" morphismTypeEnumId="MtGeneral"
-        morphismPurposeEnumId="MpDiagnostic" sourceObjectId="MxExecutionHandle" targetObjectId="MxExecutionResult"
-        morphismName="Await Execution Result" morphismSymbol="await"
-        description="Wait for a finite execution result subject to the configured timeout; failure or timeout remains explicit evidence."/>
-    <moqui.math.ct.Morphism morphismId="MxCancelScheduled" categoryId="MorphismExecution" morphismTypeEnumId="MtGeneral"
-        morphismPurposeEnumId="MpCompensate" sourceObjectId="MxExecutionHandle" targetObjectId="MxCancelledExecution"
-        morphismName="Cancel Scheduled Execution" morphismSymbol="cancel"
-        description="Compile to cancel-scheduled-service or ec.service.schedule(taskName).cancel(...). Used on FSM state exit or diagnostic rejection."/>
+        <!-- Feedback and lifecycle operators. -->
+        <morphisms morphismId="MxObserveExecution" morphismTypeEnumId="MtEndo"
+            morphismPurposeEnumId="MpDiagnostic" sourceObjectId="MxExecutionHandle" targetObjectId="MxExecutionHandle"
+            morphismName="Observe Execution" morphismSymbol="observe"
+            description="Acquire active diagnostic evidence such as running, done, cancelled, timeout, messages, and errors without changing the controlled object."/>
+        <morphisms morphismId="MxAwaitExecution" morphismTypeEnumId="MtGeneral"
+            morphismPurposeEnumId="MpDiagnostic" sourceObjectId="MxExecutionHandle" targetObjectId="MxExecutionResult"
+            morphismName="Await Execution Result" morphismSymbol="await"
+            description="Wait for a finite execution result subject to the runtime timeout; failure or timeout remains explicit evidence."/>
+        <morphisms morphismId="MxCancelScheduled" morphismTypeEnumId="MtGeneral"
+            morphismPurposeEnumId="MpCompensate" sourceObjectId="MxExecutionHandle" targetObjectId="MxCancelledExecution"
+            morphismName="Cancel Scheduled Execution" morphismSymbol="cancel"
+            description="Compile to cancel-scheduled-service or ec.service.schedule(taskName).cancel(...), when requested by the controlling plan or diagnostics."/>
 
-    <!-- A useful ordinary composition; no special apply/combinator composition type is introduced. -->
-    <moqui.math.ct.Morphism morphismId="MxExecuteAsyncAwait" categoryId="MorphismExecution" morphismTypeEnumId="MtGeneral"
-        morphismPurposeEnumId="MpAction" sourceObjectId="MxInvocationDef" targetObjectId="MxExecutionResult"
-        morphismName="Execute Asynchronously And Await" morphismSymbol="await_async"
-        description="Composite execution operator: submit asynchronously and then await the resulting handle."/>
-    <moqui.math.ct.MorphismComposition compositeId="MxCompAsyncAwait" categoryId="MorphismExecution"
-        compositionTypeEnumId="McBinary" firstMorphismId="MxExecuteAsync" secondMorphismId="MxAwaitExecution"
-        resultMorphismId="MxExecuteAsyncAwait" description="MxAwaitExecution composed after MxExecuteAsync."/>
-
-    <!-- Generic configuration vocabulary for concrete children of the standard execution morphisms. -->
-    <moqui.math.ParameterDef parameterDefId="MxTargetMorphismId" parameterTypeEnumId="PtTextShort"
-        purposeEnumId="PpControl" parameterCode="targetMorphismId" parameterName="Target Morphism ID" isRequired="Y"
-        description="Morphism whose serviceName or MCP binding is submitted by the selected execution operator."/>
-    <moqui.math.ParameterDef parameterDefId="MxTaskName" parameterTypeEnumId="PtTextShort"
-        purposeEnumId="PpControl" parameterCode="taskName" parameterName="Scheduled Task Name"
-        description="Unique task name used to retrieve, observe, and cancel a scheduled invocation."/>
-    <moqui.math.ParameterDef parameterDefId="MxTimeUnit" parameterTypeEnumId="PtTextShort"
-        purposeEnumId="PpControl" parameterCode="timeUnit" parameterName="Scheduling Time Unit"
-        description="java.util.concurrent.TimeUnit name; Moqui scheduling defaults to MILLISECONDS."/>
-    <moqui.math.ParameterDef parameterDefId="MxInitialDelay" parameterTypeEnumId="PtNumberInteger"
-        purposeEnumId="PpControl" parameterCode="initialDelay" parameterName="Initial Delay" minValue="0"
-        description="Delay before the first scheduled execution, expressed in MxTimeUnit."/>
-    <moqui.math.ParameterDef parameterDefId="MxPollingInterval" parameterTypeEnumId="PtNumberInteger"
-        purposeEnumId="PpControl" parameterCode="pollingInterval" parameterName="Polling Interval" minValue="0"
-        description="Fixed-rate period or fixed delay between executions, expressed in MxTimeUnit."/>
-    <moqui.math.ParameterDef parameterDefId="MxDuration" parameterTypeEnumId="PtNumberInteger"
-        purposeEnumId="PpControl" parameterCode="duration" parameterName="Schedule Duration" minValue="0"
-        description="Optional maximum lifetime of a periodic schedule before automatic cancellation."/>
-    <moqui.math.ParameterDef parameterDefId="MxTransactionTimeout" parameterTypeEnumId="PtNumberInteger"
-        purposeEnumId="PpControl" parameterCode="transactionTimeout" parameterName="Transaction Timeout" minValue="0"
-        description="Per-invocation transaction timeout in seconds."/>
-    <moqui.math.ParameterDef parameterDefId="MxMayInterrupt" parameterTypeEnumId="PtTextIndicator"
-        purposeEnumId="PpControl" parameterCode="mayInterruptIfRunning" parameterName="May Interrupt If Running"
-        description="Y/N policy used when cancelling an active scheduled invocation."/>
-    <moqui.math.ParameterDef parameterDefId="MxCancelDelay" parameterTypeEnumId="PtNumberInteger"
-        purposeEnumId="PpControl" parameterCode="cancelDelay" parameterName="Cancellation Delay" minValue="0"
-        description="Optional delayed cancellation interval expressed in MxTimeUnit."/>
-    <moqui.math.ParameterDef parameterDefId="MxAwaitTimeout" parameterTypeEnumId="PtNumberInteger"
-        purposeEnumId="PpControl" parameterCode="awaitTimeout" parameterName="Await Timeout" minValue="0"
-        description="Maximum finite time to wait for an asynchronous result, expressed in MxTimeUnit."/>
+        <!-- A useful ordinary composition; no special apply/combinator composition type is introduced. -->
+        <morphisms morphismId="MxExecuteAsyncAwait" morphismTypeEnumId="MtGeneral"
+            morphismPurposeEnumId="MpAction" sourceObjectId="MxInvocationDef" targetObjectId="MxExecutionResult"
+            morphismName="Execute Asynchronously And Await" morphismSymbol="await_async"
+            description="Composite execution operator: submit asynchronously and then await the resulting handle.">
+            <composition compositionTypeEnumId="McBinary">
+                <components componentMorphismId="MxExecuteAsync" sequenceNum="10"/>
+                <components componentMorphismId="MxAwaitExecution" sequenceNum="20"/>
+            </composition>
+        </morphisms>
+    </moqui.math.ct.Category>
 
     <!-- Math Function -->
     <moqui.basic.EnumerationType description="Mathematical Function" enumTypeId="MathFunction"/>

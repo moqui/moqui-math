@@ -437,6 +437,97 @@ along with this software (see the LICENSE.md file). If not, see
         <alias-all entity-alias="GV2" prefix="to"><exclude field="graphId"/></alias-all>
     </view-entity>
 
+    <!-- ========== Category Theory ========== -->
+    <view-entity entity-name="MorphismDetail" package="moqui.math.ct" cache="true">
+        <description>Generic morphism view with categorical endpoints, operational metadata, and optional composition metadata.
+            It is independent from Graph, StatusFlow, and any concrete execution engine.</description>
+        <member-entity entity-alias="M" entity-name="moqui.math.ct.Morphism"/>
+        <member-entity entity-alias="CAT" entity-name="moqui.math.ct.Category" join-from-alias="M">
+            <key-map field-name="categoryId"/></member-entity>
+        <member-entity entity-alias="SRC" entity-name="moqui.math.ct.CategoryObject" join-from-alias="M">
+            <key-map field-name="sourceObjectId" related="categoryObjectId"/></member-entity>
+        <member-entity entity-alias="TGT" entity-name="moqui.math.ct.CategoryObject" join-from-alias="M">
+            <key-map field-name="targetObjectId" related="categoryObjectId"/></member-entity>
+        <member-entity entity-alias="MT" entity-name="moqui.basic.Enumeration" join-from-alias="M" join-optional="true">
+            <key-map field-name="morphismTypeEnumId" related="enumId"/></member-entity>
+        <member-entity entity-alias="MP" entity-name="moqui.basic.Enumeration" join-from-alias="M" join-optional="true">
+            <key-map field-name="morphismPurposeEnumId" related="enumId"/></member-entity>
+        <member-entity entity-alias="MC" entity-name="moqui.math.ct.MorphismComposition" join-from-alias="M" join-optional="true">
+            <key-map field-name="morphismId"/></member-entity>
+        <member-entity entity-alias="MCT" entity-name="moqui.basic.Enumeration" join-from-alias="MC" join-optional="true">
+            <key-map field-name="compositionTypeEnumId" related="enumId"/></member-entity>
+
+        <alias entity-alias="M" name="morphismId"/>
+        <alias entity-alias="M" name="parentMorphismId"/>
+        <alias entity-alias="M" name="categoryId"/>
+        <alias entity-alias="M" name="morphismTypeEnumId"/>
+        <alias entity-alias="M" name="morphismPurposeEnumId"/>
+        <alias entity-alias="M" name="sourceObjectId"/>
+        <alias entity-alias="M" name="targetObjectId"/>
+        <alias entity-alias="M" name="morphismName"/>
+        <alias entity-alias="M" name="morphismSymbol"/>
+        <alias entity-alias="M" name="description"/>
+        <alias entity-alias="M" name="transformationId"/>
+        <alias entity-alias="M" name="serviceName"/>
+        <alias entity-alias="CAT" name="categoryName"/>
+        <alias entity-alias="SRC" name="sourceObjectName" field="objectName"/>
+        <alias entity-alias="SRC" name="sourceObjectSymbol" field="objectSymbol"/>
+        <alias entity-alias="TGT" name="targetObjectName" field="objectName"/>
+        <alias entity-alias="TGT" name="targetObjectSymbol" field="objectSymbol"/>
+        <alias entity-alias="MT" name="morphismTypeDescription" field="description"/>
+        <alias entity-alias="MP" name="morphismPurposeDescription" field="description"/>
+        <alias entity-alias="MC" name="compositionMorphismId" field="morphismId"/>
+        <alias entity-alias="MC" name="compositionTypeEnumId"/>
+        <alias entity-alias="MCT" name="compositionTypeDescription" field="description"/>
+    </view-entity>
+
+    <view-entity entity-name="MorphismCompositionComponentDetail" package="moqui.math.ct" cache="true">
+        <description>Ordered, flattened factorization of a composite morphism. One row represents one component;
+            componentMorphismId may identify either an atomic morphism or another MorphismComposition.</description>
+        <member-entity entity-alias="MC" entity-name="moqui.math.ct.MorphismComposition"/>
+        <member-entity entity-alias="CMP" entity-name="moqui.math.ct.Morphism" join-from-alias="MC">
+            <key-map field-name="morphismId"/></member-entity>
+        <member-entity entity-alias="MCC" entity-name="moqui.math.ct.MorphismCompositionComponent" join-from-alias="MC">
+            <key-map field-name="morphismId"/></member-entity>
+        <member-entity entity-alias="CM" entity-name="moqui.math.ct.Morphism" join-from-alias="MCC">
+            <key-map field-name="componentMorphismId" related="morphismId"/></member-entity>
+        <member-entity entity-alias="MCT" entity-name="moqui.basic.Enumeration" join-from-alias="MC" join-optional="true">
+            <key-map field-name="compositionTypeEnumId" related="enumId"/></member-entity>
+        <member-entity entity-alias="CP" entity-name="moqui.basic.Enumeration" join-from-alias="MCC" join-optional="true">
+            <key-map field-name="purposeEnumId" related="enumId"/></member-entity>
+        <member-entity entity-alias="CSRC" entity-name="moqui.math.ct.CategoryObject" join-from-alias="CM">
+            <key-map field-name="sourceObjectId" related="categoryObjectId"/></member-entity>
+        <member-entity entity-alias="CTGT" entity-name="moqui.math.ct.CategoryObject" join-from-alias="CM">
+            <key-map field-name="targetObjectId" related="categoryObjectId"/></member-entity>
+
+        <alias entity-alias="MC" name="compositeMorphismId" field="morphismId"/>
+        <alias entity-alias="MC" name="compositionTypeEnumId"/>
+        <alias entity-alias="MCT" name="compositionTypeDescription" field="description"/>
+        <alias entity-alias="CMP" name="categoryId"/>
+        <alias entity-alias="CMP" name="compositeSourceObjectId" field="sourceObjectId"/>
+        <alias entity-alias="CMP" name="compositeTargetObjectId" field="targetObjectId"/>
+        <alias entity-alias="CMP" name="compositeMorphismName" field="morphismName"/>
+        <alias entity-alias="CMP" name="compositeServiceName" field="serviceName"/>
+
+        <alias entity-alias="MCC" name="componentMorphismId"/>
+        <alias entity-alias="MCC" name="componentPurposeEnumId" field="purposeEnumId"/>
+        <alias entity-alias="MCC" name="sequenceNum"/>
+        <alias entity-alias="MCC" name="componentDescription" field="description"/>
+        <alias entity-alias="CP" name="componentPurposeDescription" field="description"/>
+        <alias entity-alias="CM" name="componentMorphismTypeEnumId" field="morphismTypeEnumId"/>
+        <alias entity-alias="CM" name="componentMorphismPurposeEnumId" field="morphismPurposeEnumId"/>
+        <alias entity-alias="CM" name="componentSourceObjectId" field="sourceObjectId"/>
+        <alias entity-alias="CM" name="componentTargetObjectId" field="targetObjectId"/>
+        <alias entity-alias="CM" name="componentMorphismName" field="morphismName"/>
+        <alias entity-alias="CM" name="componentMorphismSymbol" field="morphismSymbol"/>
+        <alias entity-alias="CM" name="componentMorphismDescription" field="description"/>
+        <alias entity-alias="CM" name="componentServiceName" field="serviceName"/>
+        <alias entity-alias="CSRC" name="componentSourceObjectName" field="objectName"/>
+        <alias entity-alias="CTGT" name="componentTargetObjectName" field="objectName"/>
+
+        <entity-condition><order-by field-name="sequenceNum"/></entity-condition>
+    </view-entity>
+
     <!-- ========== Category Underlying Graph ========== -->
     <view-entity entity-name="CategoryUnderlyingGraph" package="moqui.math" cache="true">
         <description>Header view for the underlying graph U(C) of a category C.</description>

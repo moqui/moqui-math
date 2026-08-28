@@ -1754,6 +1754,8 @@ along with this software (see the LICENSE.md file). If not, see
             <key-map field-name="domainEnumId"/></relationship>
         <relationship type="one" title="ReleaseStatus" related="moqui.basic.StatusItem" short-alias="status">
             <key-map field-name="releaseStatusId" related="statusId"/></relationship>
+        <relationship type="many" related="moqui.math.MathModel" short-alias="models">
+            <key-map field-name="mathModelDefId"/></relationship>
         <seed-data>
             <!-- Math Model Type -->
             <moqui.basic.EnumerationType description="Math Model Type" enumTypeId="MathModelType"/>
@@ -2309,6 +2311,8 @@ along with this software (see the LICENSE.md file). If not, see
 
         <relationship type="one" title="Parent" related="moqui.math.ct.Category" short-alias="parent">
             <key-map field-name="parentCategoryId" related="categoryId"/></relationship>
+        <relationship type="many" related="moqui.math.ct.Category" short-alias="children">
+            <key-map field-name="categoryId" related="parentCategoryId"/></relationship>
         <relationship type="one" title="CategoryType" related="moqui.basic.Enumeration">
             <key-map field-name="categoryTypeEnumId"/></relationship>
         <relationship type="many" related="moqui.math.ct.CategoryObject" short-alias="objects">
@@ -2361,9 +2365,15 @@ along with this software (see the LICENSE.md file). If not, see
 
         <relationship type="one" title="Parent" related="moqui.math.ct.CategoryObject" short-alias="parent">
             <key-map field-name="parentObjectId" related="categoryObjectId"/></relationship>
+        <relationship type="many" related="moqui.math.ct.CategoryObject" short-alias="children">
+            <key-map field-name="categoryObjectId" related="parentObjectId"/></relationship>
         <relationship type="one" related="moqui.math.ct.Category" short-alias="category"/>
         <relationship type="one" title="CategoryObjectType" related="moqui.basic.Enumeration" short-alias="type">
             <key-map field-name="objectTypeEnumId"/></relationship>
+        <relationship type="many" title="Source" related="moqui.math.ct.Morphism" short-alias="outgoingMorphisms">
+            <key-map field-name="categoryObjectId" related="sourceObjectId"/></relationship>
+        <relationship type="many" title="Target" related="moqui.math.ct.Morphism" short-alias="incomingMorphisms">
+            <key-map field-name="categoryObjectId" related="targetObjectId"/></relationship>
         <index name="CATOBJ_UNIQ" unique="true"><index-field name="categoryId"/><index-field name="objectEntityName"/>
             <index-field name="objectPkPrimaryValue"/><index-field name="objectPkSecondaryValue"/>
             <index-field name="objectPkRestCombinedValue"/></index>
@@ -2405,6 +2415,8 @@ along with this software (see the LICENSE.md file). If not, see
 
         <relationship type="one" title="Parent" related="moqui.math.ct.Morphism" short-alias="parent">
             <key-map field-name="parentMorphismId" related="morphismId"/></relationship>
+        <relationship type="many" related="moqui.math.ct.Morphism" short-alias="children">
+            <key-map field-name="morphismId" related="parentMorphismId"/></relationship>
         <relationship type="one" related="moqui.math.ct.Category" short-alias="category"/>
         <relationship type="one" title="MorphismType" related="moqui.basic.Enumeration" short-alias="type">
             <key-map field-name="morphismTypeEnumId"/></relationship>
@@ -2415,8 +2427,9 @@ along with this software (see the LICENSE.md file). If not, see
         <relationship type="one" title="TargetObj" related="moqui.math.ct.CategoryObject" short-alias="targetObj">
             <key-map field-name="targetObjectId" related="categoryObjectId"/></relationship>
         <relationship type="one" related="moqui.math.Transformation" short-alias="transformation"/>
-        <relationship type="many" title="MorphismParameter" related="moqui.math.Parameter" short-alias="parameters">
-            <key-map field-name="morphismId"/></relationship>
+        <relationship type="one-nofk" related="moqui.math.ct.MorphismComposition" short-alias="composition" mutable="true"/>
+        <relationship type="many" related="moqui.math.ct.MorphismCompositionComponent" short-alias="memberOfCompositions">
+            <key-map field-name="morphismId" related="componentMorphismId"/></relationship>
         <index name="MORPHISM_SRCTGT"><index-field name="sourceObjectId"/><index-field name="targetObjectId"/></index>
         <index name="MORPHISM_UNIQ"><index-field name="categoryId"/><index-field name="sourceObjectId"/>
             <index-field name="targetObjectId"/><index-field name="morphismName"/></index>
@@ -2443,25 +2456,16 @@ along with this software (see the LICENSE.md file). If not, see
         </seed-data>
     </entity>
     <entity entity-name="MorphismComposition" package="moqui.math.ct" cache="never">
-        <field name="compositeId" type="id" is-pk="true"/>
-        <field name="categoryId" type="id" not-null="true"/>
+        <description>Specialization of a Morphism whose implementation is an ordered composition of other morphisms.
+            The shared morphismId primary key follows the same table-per-type pattern used by DeviceGroup and PhysicalDevice.</description>
+        <field name="morphismId" type="id" is-pk="true"/>
         <field name="compositionTypeEnumId" type="id"/>
-        <field name="firstMorphismId"  type="id"/>
-        <field name="secondMorphismId" type="id"/>
-        <field name="resultMorphismId" type="id"/>
-        <field name="description" type="text-medium"/>
 
-        <relationship type="one" related="moqui.math.ct.Category" short-alias="category"/>
+        <relationship type="one" related="moqui.math.ct.Morphism" short-alias="morphism"/>
         <relationship type="one" title="MorphismCompositionType" related="moqui.basic.Enumeration" short-alias="type">
             <key-map field-name="compositionTypeEnumId"/></relationship>
-        <relationship type="one" title="FirstMorphism" related="moqui.math.ct.Morphism" short-alias="firstMorphism">
-            <key-map field-name="firstMorphismId" related="morphismId"/></relationship>
-        <relationship type="one" title="SecondMorphism" related="moqui.math.ct.Morphism" short-alias="secondMorphism">
-            <key-map field-name="secondMorphismId" related="morphismId"/></relationship>
-        <relationship type="one" title="ResultMorphism" related="moqui.math.ct.Morphism" short-alias="resultMorphism">
-            <key-map field-name="resultMorphismId" related="morphismId"/></relationship>
-        <index name="MORPHISMCOMP_UNIQ"><index-field name="categoryId"/><index-field name="firstMorphismId"/>
-            <index-field name="secondMorphismId"/></index>
+        <relationship type="many" related="moqui.math.ct.MorphismCompositionComponent" short-alias="components">
+            <key-map field-name="morphismId"/></relationship>
         <seed-data>
             <moqui.basic.EnumerationType description="Morphism Composition Type" enumTypeId="MorphismCompositionType"/>
             <moqui.basic.Enumeration description="Binary Composition (g ∘ f)" enumId="McBinary" enumTypeId="MorphismCompositionType"/>
@@ -2473,21 +2477,43 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Natural-Transformation Vertical Composition" enumId="McNatVert" enumTypeId="MorphismCompositionType"/>
         </seed-data>
         <master name="catalog">
-            <detail relationship="category"/>
-            <detail relationship="firstMorphism"/>
-            <detail relationship="secondMorphism"/>
-            <detail relationship="resultMorphism"/>
+            <detail relationship="morphism"/>
+            <detail relationship="type"/>
+            <detail relationship="components">
+                <detail relationship="component"/>
+                <detail relationship="purpose"/>
+            </detail>
         </master>
     </entity>
 
-    <!-- Morphism-scoped parameter attachment: lets a Parameter carry declarative metadata
-         about a morphism (DSL origin, operand roles, semantic effect, composition notes,
-         service-step annotations, etc.) using generic ParameterDef/Parameter records instead
-         of domain-specific morphism fields. -->
-    <extend-entity entity-name="Parameter" package="moqui.math" enable-audit-log="update" use="configuration" cache="true" short-alias="parameters">
-        <field name="morphismId" type="id"/>
-        <relationship type="one" related="moqui.math.ct.Morphism" short-alias="morphism"/>
-    </extend-entity>
+    <entity entity-name="MorphismCompositionComponent" package="moqui.math.ct" cache="never">
+        <description>Places a Morphism inside a composite Morphism. Components are deterministic, ordered factors;
+            a component may itself be a MorphismComposition, allowing recursive compositions.</description>
+        <field name="morphismId" type="id" is-pk="true"/>
+        <field name="componentMorphismId" type="id" is-pk="true"/>
+        <field name="purposeEnumId" type="id" default="'MccpFactor'"/>
+        <field name="sequenceNum" type="number-integer" not-null="true"/>
+        <field name="description" type="text-medium"/>
+
+        <relationship type="one" related="moqui.math.ct.MorphismComposition" short-alias="composition"/>
+        <relationship type="one" title="ComponentMorphism" related="moqui.math.ct.Morphism" short-alias="component">
+            <key-map field-name="componentMorphismId" related="morphismId"/></relationship>
+        <relationship type="one" title="MorphismCompositionComponentPurpose" related="moqui.basic.Enumeration" short-alias="purpose">
+            <key-map field-name="purposeEnumId"/></relationship>
+        <index name="MORPHCOMP_SEQ_UNIQ" unique="true">
+            <index-field name="morphismId"/><index-field name="sequenceNum"/></index>
+        <seed-data>
+            <moqui.basic.EnumerationType description="Morphism Composition Component Purpose"
+                enumTypeId="MorphismCompositionComponentPurpose"/>
+            <moqui.basic.Enumeration description="Ordered factor of a composite morphism" enumId="MccpFactor"
+                enumCode="Factor" enumTypeId="MorphismCompositionComponentPurpose"/>
+        </seed-data>
+        <master name="catalog">
+            <detail relationship="composition"/>
+            <detail relationship="component"/>
+            <detail relationship="purpose"/>
+        </master>
+    </entity>
 
     <!-- Functors and Naturals -->
     <entity entity-name="Functor" package="moqui.math.ct" enable-audit-log="true" cache="true">
