@@ -1727,7 +1727,8 @@ along with this software (see the LICENSE.md file). If not, see
 
     <!-- ========== Math Model ========== -->
     <entity entity-name="MathModelDef" package="moqui.math" use="configuration" cache="true">
-        <description>This entity represents the abstract and reusable definition of the model logic.</description>
+        <description>This entity represents the abstract and reusable definition of the model logic,
+            but applied to a context, i.e. a context-aware model.</description>
         <field name="mathModelDefId" type="id" is-pk="true"/>
         <field name="parentModelDefId" type="id">
             <description>To represent a hierarchical relationship between models.</description></field>
