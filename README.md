@@ -248,7 +248,7 @@ It records the fact, and only the fact. Not everything (you drown), not nothing
 | Graph Theory | `Graph`, `GraphVertex`, `GraphEdge`, `GraphContent` |
 | Finite-Element Mesh | `Mesh`, `MeshContent`, `MeshQuality`, `MeshKCell`, `MeshKCellVertex`, `MeshKCellEdge`, `MeshKCellIncidence`, `MeshGroup`, `MeshGroupMember` |
 | Trajectories | `ParametricPath`, `ParametricPathPoint`, `ParametricPathContent`, `ParametricPathEvent`, `Trajectory`, `TrajectoryPoint`, `TrajectoryPointRun`, `TrajectoryRun`, `TrajectoryStats` |
-| Category Theory | `Category`, `CategoryObject`, `Morphism`, `MorphismComposition`, `Functor`, `FunctorObjectMapping`, `FunctorMorphismMapping`, `NaturalTransformation`, `NaturalTransformationComponent`, `NaturalTransformationComposition` |
+| Category Theory | `Category`, `CategoryObject`, `Morphism`, `MorphismComposition`, `MorphismCompositionComponent`, `MorphismParameterBinding`, `Functor`, `FunctorObjectMapping`, `FunctorMorphismMapping`, `NaturalTransformation`, `NaturalTransformationComponent`, `NaturalTransformationComposition` |
 | Type Theory | Types and contexts as `CategoryObject`; typed terms as `Morphism`; declarations through `ParameterDef`; judgements and propositions through `Transformation` |
 
 ### Equations and finite expression graphs
@@ -277,6 +277,25 @@ storage entities:
   parameter results; and
 - `MorphismTypeSignature` exposes the categorical and type-theoretic signature
   of a morphism together with its optional exact realization.
+
+### Executable categorical pipelines
+
+An executable atomic `Morphism` may bind its abstract arrow to a Moqui service
+through `serviceName`. A `MorphismComposition` reuses the same `morphismId` and
+orders its factors through `MorphismCompositionComponent.sequenceNum`.
+Composition components carry no operational purpose: diagnostics, waiting,
+effects, and state changes are semantics of the selected morphisms themselves.
+
+Service input/output definitions are not duplicated in this model. Moqui
+`ServiceDefinition`, `EntityDefinition`, view-entity metadata, and XSD remain the
+operational type authority. Same-name values flow by convention. Add a
+`MorphismParameterBinding` only for a literal, context alias/path, or explicit
+output-to-input mapping that violates the convention.
+
+`Parameter` records attached to a morphism are reserved for conventional
+execution configuration. The supplied `async` and `distribute` definitions
+apply only to independent root morphisms or root compositions; every individual
+composition remains strictly sequential.
 
 ### Tensor storage
 

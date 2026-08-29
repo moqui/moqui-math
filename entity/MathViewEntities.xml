@@ -439,7 +439,7 @@ along with this software (see the LICENSE.md file). If not, see
 
     <!-- ========== Category Theory ========== -->
     <view-entity entity-name="MorphismDetail" package="moqui.math.ct" cache="true">
-        <description>Generic morphism view with categorical endpoints, operational metadata, and optional composition metadata.
+        <description>Generic morphism view with categorical endpoints, executable binding, and optional composition metadata.
             It is independent from Graph, StatusFlow, and any concrete execution engine.</description>
         <member-entity entity-alias="M" entity-name="moqui.math.ct.Morphism"/>
         <member-entity entity-alias="CAT" entity-name="moqui.math.ct.Category" join-from-alias="M">
@@ -450,8 +450,6 @@ along with this software (see the LICENSE.md file). If not, see
             <key-map field-name="targetObjectId" related="categoryObjectId"/></member-entity>
         <member-entity entity-alias="MT" entity-name="moqui.basic.Enumeration" join-from-alias="M" join-optional="true">
             <key-map field-name="morphismTypeEnumId" related="enumId"/></member-entity>
-        <member-entity entity-alias="MP" entity-name="moqui.basic.Enumeration" join-from-alias="M" join-optional="true">
-            <key-map field-name="morphismPurposeEnumId" related="enumId"/></member-entity>
         <member-entity entity-alias="MC" entity-name="moqui.math.ct.MorphismComposition" join-from-alias="M" join-optional="true">
             <key-map field-name="morphismId"/></member-entity>
         <member-entity entity-alias="MCT" entity-name="moqui.basic.Enumeration" join-from-alias="MC" join-optional="true">
@@ -461,7 +459,6 @@ along with this software (see the LICENSE.md file). If not, see
         <alias entity-alias="M" name="parentMorphismId"/>
         <alias entity-alias="M" name="categoryId"/>
         <alias entity-alias="M" name="morphismTypeEnumId"/>
-        <alias entity-alias="M" name="morphismPurposeEnumId"/>
         <alias entity-alias="M" name="sourceObjectId"/>
         <alias entity-alias="M" name="targetObjectId"/>
         <alias entity-alias="M" name="morphismName"/>
@@ -475,7 +472,6 @@ along with this software (see the LICENSE.md file). If not, see
         <alias entity-alias="TGT" name="targetObjectName" field="objectName"/>
         <alias entity-alias="TGT" name="targetObjectSymbol" field="objectSymbol"/>
         <alias entity-alias="MT" name="morphismTypeDescription" field="description"/>
-        <alias entity-alias="MP" name="morphismPurposeDescription" field="description"/>
         <alias entity-alias="MC" name="compositionMorphismId" field="morphismId"/>
         <alias entity-alias="MC" name="compositionTypeEnumId"/>
         <alias entity-alias="MCT" name="compositionTypeDescription" field="description"/>
@@ -493,8 +489,6 @@ along with this software (see the LICENSE.md file). If not, see
             <key-map field-name="componentMorphismId" related="morphismId"/></member-entity>
         <member-entity entity-alias="MCT" entity-name="moqui.basic.Enumeration" join-from-alias="MC" join-optional="true">
             <key-map field-name="compositionTypeEnumId" related="enumId"/></member-entity>
-        <member-entity entity-alias="CP" entity-name="moqui.basic.Enumeration" join-from-alias="MCC" join-optional="true">
-            <key-map field-name="purposeEnumId" related="enumId"/></member-entity>
         <member-entity entity-alias="CSRC" entity-name="moqui.math.ct.CategoryObject" join-from-alias="CM">
             <key-map field-name="sourceObjectId" related="categoryObjectId"/></member-entity>
         <member-entity entity-alias="CTGT" entity-name="moqui.math.ct.CategoryObject" join-from-alias="CM">
@@ -510,12 +504,9 @@ along with this software (see the LICENSE.md file). If not, see
         <alias entity-alias="CMP" name="compositeServiceName" field="serviceName"/>
 
         <alias entity-alias="MCC" name="componentMorphismId"/>
-        <alias entity-alias="MCC" name="componentPurposeEnumId" field="purposeEnumId"/>
         <alias entity-alias="MCC" name="sequenceNum"/>
         <alias entity-alias="MCC" name="componentDescription" field="description"/>
-        <alias entity-alias="CP" name="componentPurposeDescription" field="description"/>
         <alias entity-alias="CM" name="componentMorphismTypeEnumId" field="morphismTypeEnumId"/>
-        <alias entity-alias="CM" name="componentMorphismPurposeEnumId" field="morphismPurposeEnumId"/>
         <alias entity-alias="CM" name="componentSourceObjectId" field="sourceObjectId"/>
         <alias entity-alias="CM" name="componentTargetObjectId" field="targetObjectId"/>
         <alias entity-alias="CM" name="componentMorphismName" field="morphismName"/>
@@ -526,6 +517,21 @@ along with this software (see the LICENSE.md file). If not, see
         <alias entity-alias="CTGT" name="componentTargetObjectName" field="objectName"/>
 
         <entity-condition><order-by field-name="sequenceNum"/></entity-condition>
+    </view-entity>
+
+    <view-entity entity-name="MorphismParameterBindingDetail" package="moqui.math.ct" cache="true">
+        <description>Explicit service-parameter binding used only when same-name pipeline-context convention is insufficient.</description>
+        <member-entity entity-alias="B" entity-name="moqui.math.ct.MorphismParameterBinding"/>
+        <member-entity entity-alias="M" entity-name="moqui.math.ct.Morphism" join-from-alias="B">
+            <key-map field-name="morphismId"/></member-entity>
+        <member-entity entity-alias="SM" entity-name="moqui.math.ct.Morphism" join-from-alias="B" join-optional="true">
+            <key-map field-name="sourceMorphismId" related="morphismId"/></member-entity>
+
+        <alias-all entity-alias="B"/>
+        <alias entity-alias="M" name="serviceName"/>
+        <alias entity-alias="M" name="morphismName"/>
+        <alias entity-alias="SM" name="sourceServiceName" field="serviceName"/>
+        <alias entity-alias="SM" name="sourceMorphismName" field="morphismName"/>
     </view-entity>
 
     <!-- ========== Category Underlying Graph ========== -->
@@ -613,7 +619,6 @@ along with this software (see the LICENSE.md file). If not, see
         <alias entity-alias="M" name="morphismId"/>
         <alias entity-alias="M" name="parentMorphismId"/>
         <alias entity-alias="M" name="morphismTypeEnumId"/>
-        <alias entity-alias="M" name="morphismPurposeEnumId"/>
         <alias entity-alias="M" name="sourceObjectId"/>
         <alias entity-alias="M" name="targetObjectId"/>
         <alias entity-alias="M" name="morphismName"/>
