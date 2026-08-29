@@ -1102,6 +1102,14 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration enumId="TtTensorSigmoid" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType" description="Sigmoid: Yᵢ = 1 / (1 + e⁻ˣᵢ)"/>
             <moqui.basic.Enumeration description="Tensor Inverse" enumId="TtTensorInv" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType"/>
 
+            <!-- Spatial, Vision & Convolution Transformations -->
+            <moqui.basic.Enumeration description="Gaussian Blur Filter" enumId="TtGaussianBlur" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Sobel Spatial Gradient" enumId="TtSobel" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Canny Edge Detector" enumId="TtCanny" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Affine Geometric Transformation" enumId="TtWarpAffine" parentEnumId="TtAffine" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Perspective Homography Transformation" enumId="TtWarpPerspective" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="2D Spatial Convolution Filter" enumId="TtFilter2D" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
+
             <!-- Binary transformation -->
             <moqui.basic.Enumeration description="Matrix Product" enumId="TtMatrixProduct" parentEnumId="TtBinaryLin" enumTypeId="TransformationType"/>
             <moqui.basic.Enumeration description="Matrix Application to a Vector / Matrix" enumId="TtMatrixApply" parentEnumId="TtBinaryLin" enumTypeId="TransformationType"/>
@@ -1778,6 +1786,7 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration enumId="MmtDataDriven" enumTypeId="MathModelType" description="Data Driven Model"/>
             <moqui.basic.Enumeration enumId="MmtMlModel" parentEnumId="MmtDataDriven" enumTypeId="MathModelType" description="Machine‑Learning Model"/>
             <moqui.basic.Enumeration enumId="MmtDlModel" parentEnumId="MmtDataDriven" enumTypeId="MathModelType" description="Deep‑Learning Model"/>
+            <moqui.basic.Enumeration enumId="MmtComputerVision" parentEnumId="MmtDataDriven" enumTypeId="MathModelType" description="Computer Vision &amp; Image Processing"/>
             <moqui.basic.Enumeration enumId="MmtStochasticProcess" parentEnumId="MmtModelDriven" enumTypeId="MathModelType" description="Stochastic Process"/>
             <!-- Optimization Problems -->
             <moqui.basic.Enumeration enumId="MmtLp" parentEnumId="MmtOptimization" enumTypeId="MathModelType" description="Linear Program (LP)"/>
@@ -2068,6 +2077,12 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration enumId="MmsmHeuristicGA" enumTypeId="MathModelSolvingMethod" description="Genetic / Evolutionary Heuristics"/>
             <moqui.basic.Enumeration enumId="MmsmSimAnn" enumTypeId="MathModelSolvingMethod" description="Simulated Annealing"/>
             <moqui.basic.Enumeration enumId="MmsmTabu" enumTypeId="MathModelSolvingMethod" description="Tabu Search"/>
+            <!-- Computational Engine / Runtime Providers -->
+            <moqui.basic.Enumeration enumId="MmsmOpenCv" enumTypeId="MathModelSolvingMethod" description="OpenCV Computer Vision Runtime"/>
+            <moqui.basic.Enumeration enumId="MmsmJax" enumTypeId="MathModelSolvingMethod" description="Google JAX / OpenXLA Runtime"/>
+            <moqui.basic.Enumeration enumId="MmsmLibTorch" enumTypeId="MathModelSolvingMethod" description="LibTorch Native Runtime"/>
+            <moqui.basic.Enumeration enumId="MmsmPetscTao" enumTypeId="MathModelSolvingMethod" description="PETSc / TAO Numerical Optimizer"/>
+            <moqui.basic.Enumeration enumId="MmsmOrTools" enumTypeId="MathModelSolvingMethod" description="Google OR-Tools Mathematical Optimization"/>
             <!-- Math Model Interpolation -->    
             <moqui.basic.EnumerationType description="Math Model Interpolation" enumTypeId="MathModelInterpolation"/>
             <moqui.basic.Enumeration enumId="MmiLinear" enumTypeId="MathModelInterpolation" description="Linear Interpolation"/>
@@ -2571,6 +2586,8 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Hom(X,-) Contravariant" enumId="FtHomContra" enumTypeId="FunctorType"/>
             <moqui.basic.Enumeration description="Power-Set Functor" enumId="FtPowerset" enumTypeId="FunctorType"/>
             <moqui.basic.Enumeration description="Type Constructor Functor" enumId="FtTypeConstructor" enumTypeId="FunctorType"/>
+            <moqui.basic.Enumeration description="Execution / Interpretation Functor" enumId="FtExecution"
+                    parentEnumId="FtCov" enumTypeId="FunctorType"/>
             <!-- Representation of diagrams -->
             <!-- In the categorical literature, a diagram in a category is a functor D: I -> C, where I is a shape category. -->
             <moqui.basic.Enumeration description="Diagram Functor (Shape Graph to Target Category)" enumId="FtDiagram" enumTypeId="FunctorType"/>

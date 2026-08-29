@@ -168,10 +168,13 @@ The separation that makes this a *lifecycle* system, not just a registry:
   of the implementation or approximation against its declared contract and
   constraints.
 
-`Morphism.serviceName` may bind the abstract contract to an implementation in
-code. `Morphism.transformationId` may bind it to an exact mathematical
-realization. The morphism therefore remains independent of both the executable
-service and the numerical machinery.
+`Morphism.serviceName` may bind the abstract contract directly to an
+implementation in code. In a fully separated execution model an
+`FtExecution` functor instead maps a context-aware semantic morphism to a
+reusable target morphism that carries `serviceName`. `Morphism.transformationId`
+may bind it to an exact mathematical realization. The semantic morphism
+therefore remains independent of both the reusable executable service and the
+numerical machinery.
 
 `Transformation` keeps its optional result references to vectors, matrices,
 tensors, approximated functions, and parameters because it can be evaluated and
@@ -280,9 +283,13 @@ storage entities:
 
 ### Executable categorical pipelines
 
-An executable atomic `Morphism` may bind its abstract arrow to a Moqui service
-through `serviceName`. A `MorphismComposition` reuses the same `morphismId` and
-orders its factors through `MorphismCompositionComponent.sequenceNum`.
+An executable atomic `Morphism` may bind its abstract arrow directly to a Moqui
+service through `serviceName`, or an `FtExecution` functor may map it to a
+separate catalog morphism carrying that service binding. The latter distinguishes
+a reusable computational capability from each context-aware use of it: two
+semantic morphisms with different domains and codomains may share one target
+service implementation. A `MorphismComposition` reuses the same `morphismId`
+and orders its factors through `MorphismCompositionComponent.sequenceNum`.
 Composition components carry no operational purpose: diagnostics, waiting,
 effects, and state changes are semantics of the selected morphisms themselves.
 
