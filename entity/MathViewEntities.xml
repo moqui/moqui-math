@@ -739,4 +739,187 @@ along with this software (see the LICENSE.md file). If not, see
         <alias entity-alias="VC" name="imaginaryValue"/>
         <alias entity-alias="VC" name="symbolicValue"/>
     </view-entity>
+    <!-- ========== Advanced Category Theory ========== -->
+    <view-entity entity-name="MorphismEquationDetail" package="moqui.math.ct" cache="true">
+        <description>Parallel paths related by one equation in a finite categorical presentation.</description>
+        <member-entity entity-alias="E" entity-name="moqui.math.ct.MorphismEquation"/>
+        <member-entity entity-alias="C" entity-name="moqui.math.ct.Category" join-from-alias="E">
+            <key-map field-name="categoryId"/></member-entity>
+        <member-entity entity-alias="L" entity-name="moqui.math.ct.Morphism" join-from-alias="E">
+            <key-map field-name="leftMorphismId" related="morphismId"/></member-entity>
+        <member-entity entity-alias="R" entity-name="moqui.math.ct.Morphism" join-from-alias="E">
+            <key-map field-name="rightMorphismId" related="morphismId"/></member-entity>
+        <alias-all entity-alias="E"/>
+        <alias entity-alias="C" name="categoryName"/>
+        <alias entity-alias="L" name="leftMorphismName" field="morphismName"/>
+        <alias entity-alias="L" name="leftSourceObjectId" field="sourceObjectId"/>
+        <alias entity-alias="L" name="leftTargetObjectId" field="targetObjectId"/>
+        <alias entity-alias="R" name="rightMorphismName" field="morphismName"/>
+        <alias entity-alias="R" name="rightSourceObjectId" field="sourceObjectId"/>
+        <alias entity-alias="R" name="rightTargetObjectId" field="targetObjectId"/>
+    </view-entity>
+
+    <view-entity entity-name="CategoryConstructionOperandDetail" package="moqui.math.ct" cache="true">
+        <description>One Category construction and one of its ordered operands.</description>
+        <member-entity entity-alias="CC" entity-name="moqui.math.ct.CategoryConstruction"/>
+        <member-entity entity-alias="RC" entity-name="moqui.math.ct.Category" join-from-alias="CC">
+            <key-map field-name="resultCategoryId" related="categoryId"/></member-entity>
+        <member-entity entity-alias="CT" entity-name="moqui.basic.Enumeration" join-from-alias="CC">
+            <key-map field-name="constructionTypeEnumId" related="enumId"/></member-entity>
+        <member-entity entity-alias="OP" entity-name="moqui.math.ct.CategoryConstructionOperand" join-from-alias="CC" join-optional="true">
+            <key-map field-name="categoryConstructionId"/></member-entity>
+        <member-entity entity-alias="OC" entity-name="moqui.math.ct.Category" join-from-alias="OP" join-optional="true">
+            <key-map field-name="operandCategoryId" related="categoryId"/></member-entity>
+        <member-entity entity-alias="OO" entity-name="moqui.math.ct.CategoryObject" join-from-alias="OP" join-optional="true">
+            <key-map field-name="operandObjectId" related="categoryObjectId"/></member-entity>
+        <member-entity entity-alias="OM" entity-name="moqui.math.ct.Morphism" join-from-alias="OP" join-optional="true">
+            <key-map field-name="operandMorphismId" related="morphismId"/></member-entity>
+        <member-entity entity-alias="OF" entity-name="moqui.math.ct.Functor" join-from-alias="OP" join-optional="true">
+            <key-map field-name="operandFunctorId" related="functorId"/></member-entity>
+        <alias-all entity-alias="CC"/>
+        <alias entity-alias="RC" name="resultCategoryName" field="categoryName"/>
+        <alias entity-alias="CT" name="constructionTypeDescription" field="description"/>
+        <alias entity-alias="OP" name="sequenceNum"/>
+        <alias entity-alias="OP" name="operandCategoryId"/>
+        <alias entity-alias="OP" name="operandObjectId"/>
+        <alias entity-alias="OP" name="operandMorphismId"/>
+        <alias entity-alias="OP" name="operandFunctorId"/>
+        <alias entity-alias="OP" name="operandGraphId"/>
+        <alias entity-alias="OC" name="operandCategoryName" field="categoryName"/>
+        <alias entity-alias="OO" name="operandObjectName" field="objectName"/>
+        <alias entity-alias="OM" name="operandMorphismName" field="morphismName"/>
+        <alias entity-alias="OF" name="operandFunctorName" field="functorName"/>
+        <entity-condition><order-by field-name="sequenceNum"/></entity-condition>
+    </view-entity>
+
+    <view-entity entity-name="UniversalConstructionDetail" package="moqui.math.ct" cache="true">
+        <member-entity entity-alias="UC" entity-name="moqui.math.ct.UniversalConstruction"/>
+        <member-entity entity-alias="C" entity-name="moqui.math.ct.Category" join-from-alias="UC">
+            <key-map field-name="categoryId"/></member-entity>
+        <member-entity entity-alias="T" entity-name="moqui.basic.Enumeration" join-from-alias="UC">
+            <key-map field-name="constructionTypeEnumId" related="enumId"/></member-entity>
+        <member-entity entity-alias="D" entity-name="moqui.math.ct.Functor" join-from-alias="UC" join-optional="true">
+            <key-map field-name="diagramFunctorId" related="functorId"/></member-entity>
+        <member-entity entity-alias="O" entity-name="moqui.math.ct.CategoryObject" join-from-alias="UC">
+            <key-map field-name="universalObjectId" related="categoryObjectId"/></member-entity>
+        <alias-all entity-alias="UC"/>
+        <alias entity-alias="C" name="categoryName"/>
+        <alias entity-alias="T" name="constructionTypeDescription" field="description"/>
+        <alias entity-alias="D" name="diagramFunctorName" field="functorName"/>
+        <alias entity-alias="O" name="universalObjectName" field="objectName"/>
+    </view-entity>
+
+    <view-entity entity-name="ExponentialObjectDetail" package="moqui.math.ct" cache="true">
+        <member-entity entity-alias="E" entity-name="moqui.math.ct.ExponentialObject"/>
+        <member-entity entity-alias="A" entity-name="moqui.math.ct.CategoryObject" join-from-alias="E">
+            <key-map field-name="argumentObjectId" related="categoryObjectId"/></member-entity>
+        <member-entity entity-alias="B" entity-name="moqui.math.ct.CategoryObject" join-from-alias="E">
+            <key-map field-name="valueObjectId" related="categoryObjectId"/></member-entity>
+        <member-entity entity-alias="X" entity-name="moqui.math.ct.CategoryObject" join-from-alias="E">
+            <key-map field-name="exponentialObjectId" related="categoryObjectId"/></member-entity>
+        <member-entity entity-alias="EV" entity-name="moqui.math.ct.Morphism" join-from-alias="E">
+            <key-map field-name="evaluationMorphismId" related="morphismId"/></member-entity>
+        <alias-all entity-alias="E"/>
+        <alias entity-alias="A" name="argumentObjectName" field="objectName"/>
+        <alias entity-alias="B" name="valueObjectName" field="objectName"/>
+        <alias entity-alias="X" name="exponentialObjectName" field="objectName"/>
+        <alias entity-alias="EV" name="evaluationMorphismName" field="morphismName"/>
+    </view-entity>
+
+    <view-entity entity-name="AdjunctionDetail" package="moqui.math.ct" cache="true">
+        <member-entity entity-alias="A" entity-name="moqui.math.ct.Adjunction"/>
+        <member-entity entity-alias="L" entity-name="moqui.math.ct.Functor" join-from-alias="A">
+            <key-map field-name="leftFunctorId" related="functorId"/></member-entity>
+        <member-entity entity-alias="R" entity-name="moqui.math.ct.Functor" join-from-alias="A">
+            <key-map field-name="rightFunctorId" related="functorId"/></member-entity>
+        <alias-all entity-alias="A"/>
+        <alias entity-alias="L" name="leftFunctorName" field="functorName"/>
+        <alias entity-alias="R" name="rightFunctorName" field="functorName"/>
+    </view-entity>
+
+    <view-entity entity-name="FunctorRepresentationDetail" package="moqui.math.ct" cache="true">
+        <member-entity entity-alias="FR" entity-name="moqui.math.ct.FunctorRepresentation"/>
+        <member-entity entity-alias="F" entity-name="moqui.math.ct.Functor" join-from-alias="FR">
+            <key-map field-name="functorId"/></member-entity>
+        <member-entity entity-alias="O" entity-name="moqui.math.ct.CategoryObject" join-from-alias="FR">
+            <key-map field-name="representingObjectId" related="categoryObjectId"/></member-entity>
+        <member-entity entity-alias="H" entity-name="moqui.math.ct.Functor" join-from-alias="FR">
+            <key-map field-name="homFunctorId" related="functorId"/></member-entity>
+        <alias-all entity-alias="FR"/>
+        <alias entity-alias="F" name="functorName"/>
+        <alias entity-alias="O" name="representingObjectName" field="objectName"/>
+        <alias entity-alias="H" name="homFunctorName" field="functorName"/>
+    </view-entity>
+
+    <view-entity entity-name="MonadDetail" package="moqui.math.ct" cache="true">
+        <member-entity entity-alias="M" entity-name="moqui.math.ct.Monad"/>
+        <member-entity entity-alias="C" entity-name="moqui.math.ct.Category" join-from-alias="M">
+            <key-map field-name="categoryId"/></member-entity>
+        <member-entity entity-alias="F" entity-name="moqui.math.ct.Functor" join-from-alias="M">
+            <key-map field-name="endofunctorId" related="functorId"/></member-entity>
+        <alias-all entity-alias="M"/>
+        <alias entity-alias="C" name="categoryName"/>
+        <alias entity-alias="F" name="endofunctorName" field="functorName"/>
+    </view-entity>
+
+    <view-entity entity-name="ComonadDetail" package="moqui.math.ct" cache="true">
+        <member-entity entity-alias="M" entity-name="moqui.math.ct.Comonad"/>
+        <member-entity entity-alias="C" entity-name="moqui.math.ct.Category" join-from-alias="M">
+            <key-map field-name="categoryId"/></member-entity>
+        <member-entity entity-alias="F" entity-name="moqui.math.ct.Functor" join-from-alias="M">
+            <key-map field-name="endofunctorId" related="functorId"/></member-entity>
+        <alias-all entity-alias="M"/>
+        <alias entity-alias="C" name="categoryName"/>
+        <alias entity-alias="F" name="endofunctorName" field="functorName"/>
+    </view-entity>
+
+    <view-entity entity-name="EndofunctorAlgebraDetail" package="moqui.math.ct" cache="true">
+        <member-entity entity-alias="EA" entity-name="moqui.math.ct.EndofunctorAlgebra"/>
+        <member-entity entity-alias="F" entity-name="moqui.math.ct.Functor" join-from-alias="EA">
+            <key-map field-name="endofunctorId" related="functorId"/></member-entity>
+        <member-entity entity-alias="O" entity-name="moqui.math.ct.CategoryObject" join-from-alias="EA">
+            <key-map field-name="carrierObjectId" related="categoryObjectId"/></member-entity>
+        <member-entity entity-alias="M" entity-name="moqui.math.ct.Morphism" join-from-alias="EA">
+            <key-map field-name="structureMorphismId" related="morphismId"/></member-entity>
+        <member-entity entity-alias="T" entity-name="moqui.basic.Enumeration" join-from-alias="EA">
+            <key-map field-name="algebraTypeEnumId" related="enumId"/></member-entity>
+        <alias-all entity-alias="EA"/>
+        <alias entity-alias="F" name="endofunctorName" field="functorName"/>
+        <alias entity-alias="O" name="carrierObjectName" field="objectName"/>
+        <alias entity-alias="M" name="structureMorphismName" field="morphismName"/>
+        <alias entity-alias="T" name="algebraTypeDescription" field="description"/>
+    </view-entity>
+
+    <view-entity entity-name="SubobjectClassificationDetail" package="moqui.math.ct" cache="true">
+        <member-entity entity-alias="SC" entity-name="moqui.math.ct.SubobjectClassification"/>
+        <member-entity entity-alias="S" entity-name="moqui.math.ct.Morphism" join-from-alias="SC">
+            <key-map field-name="subobjectMorphismId" related="morphismId"/></member-entity>
+        <member-entity entity-alias="C" entity-name="moqui.math.ct.Morphism" join-from-alias="SC">
+            <key-map field-name="characteristicMorphismId" related="morphismId"/></member-entity>
+        <member-entity entity-alias="PB" entity-name="moqui.math.ct.UniversalConstruction" join-from-alias="SC">
+            <key-map field-name="pullbackConstructionId" related="universalConstructionId"/></member-entity>
+        <alias-all entity-alias="SC"/>
+        <alias entity-alias="S" name="subobjectMorphismName" field="morphismName"/>
+        <alias entity-alias="S" name="specificationObjectId" field="sourceObjectId"/>
+        <alias entity-alias="S" name="baseObjectId" field="targetObjectId"/>
+        <alias entity-alias="C" name="characteristicMorphismName" field="morphismName"/>
+        <alias entity-alias="PB" name="pullbackUniversalObjectId" field="universalObjectId"/>
+    </view-entity>
+
+    <view-entity entity-name="SubobjectClassifierDetail" package="moqui.math.ct" cache="true">
+        <member-entity entity-alias="SC" entity-name="moqui.math.ct.SubobjectClassifier"/>
+        <member-entity entity-alias="C" entity-name="moqui.math.ct.Category" join-from-alias="SC">
+            <key-map field-name="categoryId"/></member-entity>
+        <member-entity entity-alias="T" entity-name="moqui.math.ct.CategoryObject" join-from-alias="SC">
+            <key-map field-name="terminalObjectId" related="categoryObjectId"/></member-entity>
+        <member-entity entity-alias="O" entity-name="moqui.math.ct.CategoryObject" join-from-alias="SC">
+            <key-map field-name="classifierObjectId" related="categoryObjectId"/></member-entity>
+        <member-entity entity-alias="M" entity-name="moqui.math.ct.Morphism" join-from-alias="SC">
+            <key-map field-name="truthMorphismId" related="morphismId"/></member-entity>
+        <alias-all entity-alias="SC"/>
+        <alias entity-alias="C" name="categoryName"/>
+        <alias entity-alias="T" name="terminalObjectName" field="objectName"/>
+        <alias entity-alias="O" name="classifierObjectName" field="objectName"/>
+        <alias entity-alias="M" name="truthMorphismName" field="morphismName"/>
+    </view-entity>
 </entities>

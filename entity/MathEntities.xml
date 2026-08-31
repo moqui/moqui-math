@@ -196,7 +196,6 @@ along with this software (see the LICENSE.md file). If not, see
                  actually defined - a real, pre-existing bug hit on every server startup ("record
                  specified does not exist" FK error on PURPOSE_ENUM_ID), unrelated to this project's
                  own work but fixed here since the cause was fully root-caused and purely additive. -->
-            <moqui.basic.Enumeration description="Feedback" enumId="PpFeedback" enumTypeId="ParameterPurpose"/>
             <moqui.basic.Enumeration description="Control" enumId="PpControl" enumTypeId="ParameterPurpose"/>
             <!-- Monitoring parameters describe specific types of information that represent a numeric value, a functioning state, or a health status reported by a piece of equipment. -->
             <moqui.basic.Enumeration description="Monitoring" enumId="PpMonitoring" enumTypeId="ParameterPurpose"/>
@@ -2344,6 +2343,14 @@ along with this software (see the LICENSE.md file). If not, see
             <key-map field-name="categoryId"/></relationship>
         <relationship type="many" related="moqui.math.ct.Morphism" short-alias="morphisms">
             <key-map field-name="categoryId"/></relationship>
+        <relationship type="many" related="moqui.math.ct.MorphismEquation" short-alias="equations">
+            <key-map field-name="categoryId"/></relationship>
+        <relationship type="many" related="moqui.math.ct.CategoryConstruction" short-alias="constructions">
+            <key-map field-name="categoryId" related="resultCategoryId"/></relationship>
+        <relationship type="many" related="moqui.math.ct.UniversalConstruction" short-alias="universalConstructions">
+            <key-map field-name="categoryId"/></relationship>
+        <relationship type="many" related="moqui.math.ct.ExponentialObject" short-alias="exponentials">
+            <key-map field-name="categoryId"/></relationship>
         <seed-data>
             <moqui.basic.EnumerationType description="Category Type" enumTypeId="CategoryType"/>
             <moqui.basic.Enumeration description="Small / finite category" enumId="CtSmall" enumTypeId="CategoryType"/>
@@ -2487,11 +2494,15 @@ along with this software (see the LICENSE.md file). If not, see
     <!-- Morphism-scoped execution configuration. ParameterDef.parameterCode is interpreted by
          convention; the core harness currently recognizes "async" and "distribute". Service
          arguments and data-flow aliases belong in MorphismParameterBinding instead. -->
-    <extend-entity entity-name="Parameter" package="moqui.math" enable-audit-log="update" use="configuration" cache="true" short-alias="parameters">
+    <extend-entity entity-name="Parameter" package="moqui.math" enable-audit-log="update" cache="true">
+        <field name="categoryId" type="id"/>
         <field name="categoryObjectId" type="id"/>
         <field name="morphismId" type="id"/>
+        <field name="functorId" type="id"/>
+        <relationship type="one" related="moqui.math.ct.Category" short-alias="category"/>
         <relationship type="one" related="moqui.math.ct.CategoryObject" short-alias="categoryObject"/>
         <relationship type="one" related="moqui.math.ct.Morphism" short-alias="morphism"/>
+        <relationship type="one" related="moqui.math.ct.Functor" short-alias="functor"/>
     </extend-entity>
     <entity entity-name="MorphismParameterBinding" package="moqui.math.ct" use="configuration" cache="true">
         <description>Optional exception to convention-over-configuration for a Morphism service input.
@@ -2577,6 +2588,8 @@ along with this software (see the LICENSE.md file). If not, see
         <field name="description" type="text-medium"/>
         <field name="sourceCategoryId" type="id"/>
         <field name="targetCategoryId" type="id"/>
+        <field name="categoryMorphismId" type="id">
+            <description>Optional reification of this Functor as a Morphism in the category Cat.</description></field>
 
         <relationship type="one" title="Parent" related="moqui.math.ct.Functor" short-alias="parent">
             <key-map field-name="parentFunctorId" related="functorId"/></relationship>
@@ -2586,6 +2599,8 @@ along with this software (see the LICENSE.md file). If not, see
             <key-map field-name="sourceCategoryId" related="categoryId"/></relationship>
         <relationship type="one" title="TargetCategory" related="moqui.math.ct.Category" short-alias="targetCategory">
             <key-map field-name="targetCategoryId" related="categoryId"/></relationship>
+        <relationship type="one" title="CategoryMorphism" related="moqui.math.ct.Morphism" short-alias="categoryMorphism">
+            <key-map field-name="categoryMorphismId" related="morphismId"/></relationship>
         <relationship type="many" related="moqui.math.ct.FunctorObjectMapping" short-alias="objMap">
             <key-map field-name="functorId"/></relationship>
         <relationship type="many" related="moqui.math.ct.FunctorMorphismMapping" short-alias="morphismMap">
@@ -2617,9 +2632,9 @@ along with this software (see the LICENSE.md file). If not, see
         <field name="targetObjectId" type="id"/>
 
         <relationship type="one" related="moqui.math.ct.Functor" short-alias="functor"/>
-        <relationship type="one" title="sourceObject" related="moqui.math.ct.CategoryObject" short-alias="sourceObject">
+        <relationship type="one" title="SourceObject" related="moqui.math.ct.CategoryObject" short-alias="sourceObject">
             <key-map field-name="sourceObjectId" related="categoryObjectId"/></relationship>
-        <relationship type="one" title="targetObject" related="moqui.math.ct.CategoryObject" short-alias="targetObject">
+        <relationship type="one" title="TargetObject" related="moqui.math.ct.CategoryObject" short-alias="targetObject">
             <key-map field-name="targetObjectId" related="categoryObjectId"/></relationship>
     </entity>
     <entity entity-name="FunctorMorphismMapping" package="moqui.math.ct" enable-audit-log="true" cache="true">
@@ -2639,6 +2654,8 @@ along with this software (see the LICENSE.md file). If not, see
         <field name="naturalTransformationTypeEnumId" type="id"/>
         <field name="sourceFunctorId" type="id"/>
         <field name="targetFunctorId" type="id"/>
+        <field name="categoryMorphismId" type="id">
+            <description>Optional reification as a Morphism in the functor category [C,D].</description></field>
         <field name="description" type="text-medium"/>
 
         <relationship type="one" related="moqui.math.ct.NaturalTransformation" short-alias="parent">
@@ -2649,6 +2666,8 @@ along with this software (see the LICENSE.md file). If not, see
             <key-map field-name="sourceFunctorId" related="functorId"/></relationship>
         <relationship type="one" title="TargetFunctor" related="moqui.math.ct.Functor" short-alias="targetFunctor">
             <key-map field-name="targetFunctorId" related="functorId"/></relationship>
+        <relationship type="one" title="CategoryMorphism" related="moqui.math.ct.Morphism" short-alias="categoryMorphism">
+            <key-map field-name="categoryMorphismId" related="morphismId"/></relationship>
         <seed-data>
             <moqui.basic.EnumerationType description="Natural Transformation Type" enumTypeId="NaturalTransformationType"/>
             <moqui.basic.Enumeration description="Natural Isomorphism" enumId="NtIso" enumTypeId="NaturalTransformationType"/>
@@ -2698,6 +2717,263 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration enumId="NctVertical" enumTypeId="NatTransfCompositionType" description="Vertical composition (o)"/>
         </seed-data>
     </entity>
+    <!-- ========== Categorical presentations and constructions ========== -->
+
+    <entity entity-name="MorphismEquation" package="moqui.math.ct" use="configuration" cache="true">
+        <description>An equality between parallel Morphisms or named compositional paths. Equations generate
+            the congruence of a finitely presented Category and also express commutative diagrams and laws.</description>
+        <field name="morphismEquationId" type="id" is-pk="true"/>
+        <field name="categoryId" type="id" not-null="true"/>
+        <field name="categoryConstructionId" type="id"/>
+        <field name="leftMorphismId" type="id" not-null="true"/>
+        <field name="rightMorphismId" type="id" not-null="true"/>
+        <field name="description" type="text-medium"/>
+        <relationship type="one" related="moqui.math.ct.Category" short-alias="category"/>
+        <relationship type="one" related="moqui.math.ct.CategoryConstruction" short-alias="categoryConstruction"/>
+        <relationship type="one" title="LeftMorphism" related="moqui.math.ct.Morphism" short-alias="leftMorphism">
+            <key-map field-name="leftMorphismId" related="morphismId"/></relationship>
+        <relationship type="one" title="RightMorphism" related="moqui.math.ct.Morphism" short-alias="rightMorphism">
+            <key-map field-name="rightMorphismId" related="morphismId"/></relationship>
+        <index name="MORPHEQ_CAT"><index-field name="categoryId"/></index>
+    </entity>
+
+    <entity entity-name="CategoryConstruction" package="moqui.math.ct" use="configuration" cache="true">
+        <description>A construction producing a Category from Categories and, where applicable, a base Object.
+            Projection, inclusion and interpretation maps remain ordinary Functors.</description>
+        <field name="categoryConstructionId" type="id" is-pk="true"/>
+        <field name="resultCategoryId" type="id" not-null="true"/>
+        <field name="constructionTypeEnumId" type="id" not-null="true"/>
+        <field name="baseObjectId" type="id"/>
+        <field name="description" type="text-medium"/>
+        <relationship type="one" title="ResultCategory" related="moqui.math.ct.Category" short-alias="resultCategory">
+            <key-map field-name="resultCategoryId" related="categoryId"/></relationship>
+        <relationship type="one" title="CategoryConstructionType" related="moqui.basic.Enumeration" short-alias="type">
+            <key-map field-name="constructionTypeEnumId"/></relationship>
+        <relationship type="one" title="BaseObject" related="moqui.math.ct.CategoryObject" short-alias="baseObject">
+            <key-map field-name="baseObjectId" related="categoryObjectId"/></relationship>
+        <relationship type="many" related="moqui.math.ct.CategoryConstructionOperand" short-alias="operands"/>
+        <relationship type="many" related="moqui.math.ct.MorphismEquation" short-alias="equations"/>
+        <index name="CATCONST_RESULT"><index-field name="resultCategoryId"/></index>
+        <seed-data>
+            <moqui.basic.EnumerationType enumTypeId="CategoryConstructionType" description="Category Construction Type"/>
+            <moqui.basic.Enumeration enumId="CcProduct" enumTypeId="CategoryConstructionType" description="Product category"/>
+            <moqui.basic.Enumeration enumId="CcOpposite" enumTypeId="CategoryConstructionType" description="Opposite category"/>
+            <moqui.basic.Enumeration enumId="CcArrow" enumTypeId="CategoryConstructionType" description="Arrow category"/>
+            <moqui.basic.Enumeration enumId="CcSlice" enumTypeId="CategoryConstructionType" description="Slice category"/>
+            <moqui.basic.Enumeration enumId="CcCoslice" enumTypeId="CategoryConstructionType" description="Coslice category"/>
+            <moqui.basic.Enumeration enumId="CcFree" enumTypeId="CategoryConstructionType" description="Free category on a graph"/>
+            <moqui.basic.Enumeration enumId="CcQuotient" enumTypeId="CategoryConstructionType" description="Quotient category by a congruence"/>
+            <moqui.basic.Enumeration enumId="CcFunctorCategory" enumTypeId="CategoryConstructionType" description="Functor category [C,D]"/>
+        </seed-data>
+    </entity>
+
+    <entity entity-name="CategoryConstructionOperand" package="moqui.math.ct" use="configuration" cache="true">
+        <description>Ordered operand of a CategoryConstruction. Exactly one operand reference is normally populated.</description>
+        <field name="categoryConstructionId" type="id" is-pk="true"/>
+        <field name="sequenceNum" type="number-integer" is-pk="true"/>
+        <field name="operandCategoryId" type="id"/>
+        <field name="operandObjectId" type="id"/>
+        <field name="operandMorphismId" type="id"/>
+        <field name="operandFunctorId" type="id"/>
+        <field name="operandGraphId" type="id"/>
+        <relationship type="one" related="moqui.math.ct.CategoryConstruction" short-alias="construction"/>
+        <relationship type="one" title="OperandCategory" related="moqui.math.ct.Category" short-alias="operandCategory">
+            <key-map field-name="operandCategoryId" related="categoryId"/></relationship>
+        <relationship type="one" title="OperandObject" related="moqui.math.ct.CategoryObject" short-alias="operandObject">
+            <key-map field-name="operandObjectId" related="categoryObjectId"/></relationship>
+        <relationship type="one" title="OperandMorphism" related="moqui.math.ct.Morphism" short-alias="operandMorphism">
+            <key-map field-name="operandMorphismId" related="morphismId"/></relationship>
+        <relationship type="one" title="OperandFunctor" related="moqui.math.ct.Functor" short-alias="operandFunctor">
+            <key-map field-name="operandFunctorId" related="functorId"/></relationship>
+        <relationship type="one" title="OperandGraph" related="moqui.math.Graph" short-alias="operandGraph">
+            <key-map field-name="operandGraphId" related="graphId"/></relationship>
+    </entity>
+
+    <entity entity-name="UniversalConstruction" package="moqui.math.ct" use="configuration" cache="true">
+        <description>Candidate universal cone or cocone over a Diagram Functor. Products, coproducts,
+            equalizers, coequalizers, pullbacks and pushouts are named finite special cases.</description>
+        <field name="universalConstructionId" type="id" is-pk="true"/>
+        <field name="categoryId" type="id" not-null="true"/>
+        <field name="constructionTypeEnumId" type="id" not-null="true"/>
+        <field name="diagramFunctorId" type="id"/>
+        <field name="universalObjectId" type="id" not-null="true"/>
+        <field name="universalNaturalTransformationId" type="id"/>
+        <field name="description" type="text-medium"/>
+        <relationship type="one" related="moqui.math.ct.Category" short-alias="category"/>
+        <relationship type="one" title="UniversalConstructionType" related="moqui.basic.Enumeration" short-alias="type">
+            <key-map field-name="constructionTypeEnumId"/></relationship>
+        <relationship type="one" title="DiagramFunctor" related="moqui.math.ct.Functor" short-alias="diagram">
+            <key-map field-name="diagramFunctorId" related="functorId"/></relationship>
+        <relationship type="one" title="UniversalObject" related="moqui.math.ct.CategoryObject" short-alias="universalObject">
+            <key-map field-name="universalObjectId" related="categoryObjectId"/></relationship>
+        <relationship type="one" title="UniversalNaturalTransformation" related="moqui.math.ct.NaturalTransformation" short-alias="universalNaturalTransformation">
+            <key-map field-name="universalNaturalTransformationId" related="naturalTransformationId"/></relationship>
+        <seed-data>
+            <moqui.basic.EnumerationType enumTypeId="UniversalConstructionType" description="Universal Construction Type"/>
+            <moqui.basic.Enumeration enumId="UcInitial" enumTypeId="UniversalConstructionType" description="Initial object"/>
+            <moqui.basic.Enumeration enumId="UcTerminal" enumTypeId="UniversalConstructionType" description="Terminal object"/>
+            <moqui.basic.Enumeration enumId="UcProduct" enumTypeId="UniversalConstructionType" description="Product"/>
+            <moqui.basic.Enumeration enumId="UcCoproduct" enumTypeId="UniversalConstructionType" description="Coproduct"/>
+            <moqui.basic.Enumeration enumId="UcEqualizer" enumTypeId="UniversalConstructionType" description="Equalizer"/>
+            <moqui.basic.Enumeration enumId="UcCoequalizer" enumTypeId="UniversalConstructionType" description="Coequalizer"/>
+            <moqui.basic.Enumeration enumId="UcPullback" enumTypeId="UniversalConstructionType" description="Pullback"/>
+            <moqui.basic.Enumeration enumId="UcPushout" enumTypeId="UniversalConstructionType" description="Pushout"/>
+            <moqui.basic.Enumeration enumId="UcLimit" enumTypeId="UniversalConstructionType" description="Limit"/>
+            <moqui.basic.Enumeration enumId="UcColimit" enumTypeId="UniversalConstructionType" description="Colimit"/>
+        </seed-data>
+    </entity>
+
+    <entity entity-name="ExponentialObject" package="moqui.math.ct" use="configuration" cache="true">
+        <description>An exponential B^A with evaluation ev : B^A x A -> B.</description>
+        <field name="categoryId" type="id" is-pk="true"/>
+        <field name="argumentObjectId" type="id" is-pk="true"/>
+        <field name="valueObjectId" type="id" is-pk="true"/>
+        <field name="exponentialObjectId" type="id" not-null="true"/>
+        <field name="productObjectId" type="id" not-null="true"/>
+        <field name="evaluationMorphismId" type="id" not-null="true"/>
+        <relationship type="one" related="moqui.math.ct.Category" short-alias="category"/>
+        <relationship type="one" title="ArgumentObject" related="moqui.math.ct.CategoryObject" short-alias="argumentObject">
+            <key-map field-name="argumentObjectId" related="categoryObjectId"/></relationship>
+        <relationship type="one" title="ValueObject" related="moqui.math.ct.CategoryObject" short-alias="valueObject">
+            <key-map field-name="valueObjectId" related="categoryObjectId"/></relationship>
+        <relationship type="one" title="ExponentialObject" related="moqui.math.ct.CategoryObject" short-alias="exponentialObject">
+            <key-map field-name="exponentialObjectId" related="categoryObjectId"/></relationship>
+        <relationship type="one" title="ProductObject" related="moqui.math.ct.CategoryObject" short-alias="productObject">
+            <key-map field-name="productObjectId" related="categoryObjectId"/></relationship>
+        <relationship type="one" title="EvaluationMorphism" related="moqui.math.ct.Morphism" short-alias="evaluationMorphism">
+            <key-map field-name="evaluationMorphismId" related="morphismId"/></relationship>
+    </entity>
+
+    <entity entity-name="FunctorRepresentation" package="moqui.math.ct" use="configuration" cache="true">
+        <description>Witness that a Functor is naturally isomorphic to a Hom functor represented by an Object.</description>
+        <field name="functorRepresentationId" type="id" is-pk="true"/>
+        <field name="functorId" type="id" not-null="true"/>
+        <field name="representingObjectId" type="id" not-null="true"/>
+        <field name="homFunctorId" type="id" not-null="true"/>
+        <field name="naturalIsomorphismId" type="id" not-null="true"/>
+        <relationship type="one" related="moqui.math.ct.Functor" short-alias="functor"/>
+        <relationship type="one" title="RepresentingObject" related="moqui.math.ct.CategoryObject" short-alias="representingObject">
+            <key-map field-name="representingObjectId" related="categoryObjectId"/></relationship>
+        <relationship type="one" title="HomFunctor" related="moqui.math.ct.Functor" short-alias="homFunctor">
+            <key-map field-name="homFunctorId" related="functorId"/></relationship>
+        <relationship type="one" title="NaturalIsomorphism" related="moqui.math.ct.NaturalTransformation" short-alias="naturalIsomorphism">
+            <key-map field-name="naturalIsomorphismId" related="naturalTransformationId"/></relationship>
+    </entity>
+
+    <entity entity-name="Adjunction" package="moqui.math.ct" use="configuration" cache="true">
+        <description>An adjunction F |- G recorded by its left and right Functors, unit and counit.</description>
+        <field name="adjunctionId" type="id" is-pk="true"/>
+        <field name="leftFunctorId" type="id" not-null="true"/>
+        <field name="rightFunctorId" type="id" not-null="true"/>
+        <field name="unitNaturalTransformationId" type="id" not-null="true"/>
+        <field name="counitNaturalTransformationId" type="id" not-null="true"/>
+        <field name="description" type="text-medium"/>
+        <relationship type="one" title="LeftFunctor" related="moqui.math.ct.Functor" short-alias="leftFunctor">
+            <key-map field-name="leftFunctorId" related="functorId"/></relationship>
+        <relationship type="one" title="RightFunctor" related="moqui.math.ct.Functor" short-alias="rightFunctor">
+            <key-map field-name="rightFunctorId" related="functorId"/></relationship>
+        <relationship type="one" title="UnitNaturalTransformation" related="moqui.math.ct.NaturalTransformation" short-alias="unit">
+            <key-map field-name="unitNaturalTransformationId" related="naturalTransformationId"/></relationship>
+        <relationship type="one" title="CounitNaturalTransformation" related="moqui.math.ct.NaturalTransformation" short-alias="counit">
+            <key-map field-name="counitNaturalTransformationId" related="naturalTransformationId"/></relationship>
+    </entity>
+
+    <entity entity-name="Monad" package="moqui.math.ct" use="configuration" cache="true">
+        <description>A monad (T, eta, mu) on a Category.</description>
+        <field name="monadId" type="id" is-pk="true"/>
+        <field name="categoryId" type="id" not-null="true"/>
+        <field name="endofunctorId" type="id" not-null="true"/>
+        <field name="unitNaturalTransformationId" type="id" not-null="true"/>
+        <field name="multiplicationNaturalTransformationId" type="id" not-null="true"/>
+        <field name="inducingAdjunctionId" type="id"/>
+        <relationship type="one" related="moqui.math.ct.Category" short-alias="category"/>
+        <relationship type="one" title="Endofunctor" related="moqui.math.ct.Functor" short-alias="endofunctor">
+            <key-map field-name="endofunctorId" related="functorId"/></relationship>
+        <relationship type="one" title="UnitNaturalTransformation" related="moqui.math.ct.NaturalTransformation" short-alias="unit">
+            <key-map field-name="unitNaturalTransformationId" related="naturalTransformationId"/></relationship>
+        <relationship type="one" title="MultiplicationNaturalTransformation" related="moqui.math.ct.NaturalTransformation" short-alias="multiplication">
+            <key-map field-name="multiplicationNaturalTransformationId" related="naturalTransformationId"/></relationship>
+        <relationship type="one" title="InducingAdjunction" related="moqui.math.ct.Adjunction" short-alias="inducingAdjunction">
+            <key-map field-name="inducingAdjunctionId" related="adjunctionId"/></relationship>
+    </entity>
+
+    <entity entity-name="Comonad" package="moqui.math.ct" use="configuration" cache="true">
+        <description>A comonad (G, epsilon, delta) on a Category.</description>
+        <field name="comonadId" type="id" is-pk="true"/>
+        <field name="categoryId" type="id" not-null="true"/>
+        <field name="endofunctorId" type="id" not-null="true"/>
+        <field name="counitNaturalTransformationId" type="id" not-null="true"/>
+        <field name="comultiplicationNaturalTransformationId" type="id" not-null="true"/>
+        <field name="inducingAdjunctionId" type="id"/>
+        <relationship type="one" related="moqui.math.ct.Category" short-alias="category"/>
+        <relationship type="one" title="Endofunctor" related="moqui.math.ct.Functor" short-alias="endofunctor">
+            <key-map field-name="endofunctorId" related="functorId"/></relationship>
+        <relationship type="one" title="CounitNaturalTransformation" related="moqui.math.ct.NaturalTransformation" short-alias="counit">
+            <key-map field-name="counitNaturalTransformationId" related="naturalTransformationId"/></relationship>
+        <relationship type="one" title="ComultiplicationNaturalTransformation" related="moqui.math.ct.NaturalTransformation" short-alias="comultiplication">
+            <key-map field-name="comultiplicationNaturalTransformationId" related="naturalTransformationId"/></relationship>
+        <relationship type="one" title="InducingAdjunction" related="moqui.math.ct.Adjunction" short-alias="inducingAdjunction">
+            <key-map field-name="inducingAdjunctionId" related="adjunctionId"/></relationship>
+    </entity>
+
+    <entity entity-name="EndofunctorAlgebra" package="moqui.math.ct" use="configuration" cache="true">
+        <description>Algebra or coalgebra carried by an Object for an endofunctor, monad or comonad.</description>
+        <field name="endofunctorAlgebraId" type="id" is-pk="true"/>
+        <field name="algebraTypeEnumId" type="id" not-null="true"/>
+        <field name="endofunctorId" type="id" not-null="true"/>
+        <field name="monadId" type="id"/>
+        <field name="comonadId" type="id"/>
+        <field name="carrierObjectId" type="id" not-null="true"/>
+        <field name="structureMorphismId" type="id" not-null="true"/>
+        <relationship type="one" title="EndofunctorAlgebraType" related="moqui.basic.Enumeration" short-alias="type">
+            <key-map field-name="algebraTypeEnumId"/></relationship>
+        <relationship type="one" title="Endofunctor" related="moqui.math.ct.Functor" short-alias="endofunctor">
+            <key-map field-name="endofunctorId" related="functorId"/></relationship>
+        <relationship type="one" related="moqui.math.ct.Monad" short-alias="monad"/>
+        <relationship type="one" related="moqui.math.ct.Comonad" short-alias="comonad"/>
+        <relationship type="one" title="CarrierObject" related="moqui.math.ct.CategoryObject" short-alias="carrierObject">
+            <key-map field-name="carrierObjectId" related="categoryObjectId"/></relationship>
+        <relationship type="one" title="StructureMorphism" related="moqui.math.ct.Morphism" short-alias="structureMorphism">
+            <key-map field-name="structureMorphismId" related="morphismId"/></relationship>
+        <seed-data>
+            <moqui.basic.EnumerationType enumTypeId="EndofunctorAlgebraType" description="Endofunctor Algebra Type"/>
+            <moqui.basic.Enumeration enumId="EatAlgebra" enumTypeId="EndofunctorAlgebraType" description="Algebra F(A) -> A"/>
+            <moqui.basic.Enumeration enumId="EatCoalgebra" enumTypeId="EndofunctorAlgebraType" description="Coalgebra A -> F(A)"/>
+            <moqui.basic.Enumeration enumId="EatEilenbergMoore" enumTypeId="EndofunctorAlgebraType" description="Eilenberg-Moore algebra"/>
+        </seed-data>
+    </entity>
+
+    <entity entity-name="SubobjectClassifier" package="moqui.math.ct" use="configuration" cache="true">
+        <description>A subobject classifier (Omega, true : 1 -> Omega) for a Category.</description>
+        <field name="categoryId" type="id" is-pk="true"/>
+        <field name="terminalObjectId" type="id" not-null="true"/>
+        <field name="classifierObjectId" type="id" not-null="true"/>
+        <field name="truthMorphismId" type="id" not-null="true"/>
+        <relationship type="one" related="moqui.math.ct.Category" short-alias="category"/>
+        <relationship type="one" title="TerminalObject" related="moqui.math.ct.CategoryObject" short-alias="terminalObject">
+            <key-map field-name="terminalObjectId" related="categoryObjectId"/></relationship>
+        <relationship type="one" title="ClassifierObject" related="moqui.math.ct.CategoryObject" short-alias="classifierObject">
+            <key-map field-name="classifierObjectId" related="categoryObjectId"/></relationship>
+        <relationship type="one" title="TruthMorphism" related="moqui.math.ct.Morphism" short-alias="truthMorphism">
+            <key-map field-name="truthMorphismId" related="morphismId"/></relationship>
+    </entity>
+
+    <entity entity-name="SubobjectClassification" package="moqui.math.ct" use="configuration" cache="true">
+        <description>Characteristic Morphism and pullback witness classifying one subobject mono.</description>
+        <field name="subobjectMorphismId" type="id" is-pk="true"/>
+        <field name="classifierCategoryId" type="id" not-null="true"/>
+        <field name="characteristicMorphismId" type="id" not-null="true"/>
+        <field name="pullbackConstructionId" type="id" not-null="true"/>
+        <relationship type="one" title="SubobjectMorphism" related="moqui.math.ct.Morphism" short-alias="subobjectMorphism">
+            <key-map field-name="subobjectMorphismId" related="morphismId"/></relationship>
+        <relationship type="one" title="Classifier" related="moqui.math.ct.SubobjectClassifier" short-alias="classifier">
+            <key-map field-name="classifierCategoryId" related="categoryId"/></relationship>
+        <relationship type="one" title="CharacteristicMorphism" related="moqui.math.ct.Morphism" short-alias="characteristicMorphism">
+            <key-map field-name="characteristicMorphismId" related="morphismId"/></relationship>
+        <relationship type="one" title="PullbackConstruction" related="moqui.math.ct.UniversalConstruction" short-alias="pullbackConstruction">
+            <key-map field-name="pullbackConstructionId" related="universalConstructionId"/></relationship>
+    </entity>
+
     <!-- Category Theory Example Data -->
     <!-- 
     <moqui.math.ct.Category categoryId="CatSet" categoryTypeEnumId="CtSet" categoryName="Set" description="Small Sets and Functions Category"/>
@@ -2930,7 +3206,7 @@ along with this software (see the LICENSE.md file). If not, see
         <relationship type="one" related="moqui.math.Graph" short-alias="graph"/>
         <relationship type="one" title="GraphEdgeType" related="moqui.basic.Enumeration" short-alias="edgeType">
             <key-map field-name="edgeTypeEnumId"/></relationship>
-        <relationship type="one" title="fromVertex" related="moqui.math.GraphVertex" short-alias="fromVertex">
+        <relationship type="one" title="FromVertex" related="moqui.math.GraphVertex" short-alias="fromVertex">
             <key-map field-name="fromVertexId" related="graphVertexId"/></relationship>
         <relationship type="one" title="ToVertex" related="moqui.math.GraphVertex" short-alias="toVertex">
             <key-map field-name="toVertexId" related="graphVertexId"/></relationship>
@@ -2954,7 +3230,7 @@ along with this software (see the LICENSE.md file). If not, see
          component in the moqui-industrial distribution (agent/artifact graphs, PLC/firmware
          graphs, normative-clause graphs, electrical-compliance graphs) - previously declared
          identically via extend-entity in two separate components before being consolidated here. -->
-    <extend-entity entity-name="Parameter" package="moqui.math" enable-audit-log="update" use="configuration" cache="true" short-alias="parameters">
+    <extend-entity entity-name="Parameter" package="moqui.math" enable-audit-log="update" cache="true">
         <field name="graphId" type="id"/>
         <field name="graphVertexId" type="id"/>
         <field name="graphEdgeId" type="id"/>
