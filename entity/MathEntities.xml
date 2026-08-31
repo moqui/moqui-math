@@ -1141,6 +1141,16 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Just-in-time Compilation (XLA, Inductor, ecc.)" enumId="TtJitCompile" parentEnumId="TtMeta" enumTypeId="TransformationType"/>
             <moqui.basic.Enumeration description="Vectorised Map" enumId="TtVmap" parentEnumId="TtMeta" enumTypeId="TransformationType"/>
 
+            <!-- Logical operations -->
+            <moqui.basic.Enumeration enumId="TtLogical" enumTypeId="TransformationType" description="Logical Transformation"/>
+            <moqui.basic.Enumeration enumId="TtAnd" parentEnumId="TtLogical" enumTypeId="TransformationType" description="Logical Conjunction"/>
+            <moqui.basic.Enumeration enumId="TtOr" parentEnumId="TtLogical" enumTypeId="TransformationType" description="Logical Disjunction"/>
+            <moqui.basic.Enumeration enumId="TtNot" parentEnumId="TtLogical" enumTypeId="TransformationType" description="Logical Negation"/>
+            <moqui.basic.Enumeration enumId="TtImplies" parentEnumId="TtLogical" enumTypeId="TransformationType" description="Logical Implication"/>
+            <moqui.basic.Enumeration enumId="TtXor" parentEnumId="TtLogical" enumTypeId="TransformationType" description="Logical Exclusive Or"/>
+            <moqui.basic.Enumeration enumId="TtTrue" parentEnumId="TtLogical" enumTypeId="TransformationType" description="Logical True"/>
+            <moqui.basic.Enumeration enumId="TtFalse" parentEnumId="TtLogical" enumTypeId="TransformationType" description="Logical False"/>
+
             <!-- Transformation Purpose -->
             <moqui.basic.EnumerationType description="Transformation Purpose" enumTypeId="TransformationPurpose"/>
             <moqui.basic.Enumeration description="Coordinate System Transformation" enumId="TpCoordTransform" enumTypeId="TransformationPurpose"/>
@@ -2389,10 +2399,14 @@ along with this software (see the LICENSE.md file). If not, see
             <key-map field-name="categoryObjectId" related="sourceObjectId"/></relationship>
         <relationship type="many" title="Target" related="moqui.math.ct.Morphism" short-alias="incomingMorphisms">
             <key-map field-name="categoryObjectId" related="targetObjectId"/></relationship>
-        <index name="CATOBJ_UNIQ" unique="true"><index-field name="categoryId"/><index-field name="objectEntityName"/>
+        <relationship type="many" related="moqui.math.Parameter" short-alias="parameters"/>
+        <index name="CATOBJ_UNIQ" unique="true">
+            <index-field name="categoryId"/><index-field name="objectEntityName"/>
             <index-field name="objectPkPrimaryValue"/><index-field name="objectPkSecondaryValue"/>
-            <index-field name="objectPkRestCombinedValue"/></index>
-        <index name="CATOBJ_ENTPKPR"><index-field name="objectEntityName"/><index-field name="objectPkPrimaryValue"/></index>
+            <index-field name="objectPkRestCombinedValue"/>
+        </index>
+        <index name="CATOBJ_ENTPKPR"><index-field name="objectEntityName"/>
+            <index-field name="objectPkPrimaryValue"/></index>
         <index name="CATOBJ_PKPRIM"><index-field name="objectPkPrimaryValue"/></index>
         <seed-data>
             <!-- Enumeration for algebraic structures that are one-object categories. -->
@@ -2409,6 +2423,8 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Ring" enumId="CotRing" parentEnumId="CotAlgebraicStruct" enumTypeId="CategoryObjectType"/>
             <moqui.basic.Enumeration description="Field" enumId="CotField" parentEnumId="CotAlgebraicStruct" enumTypeId="CategoryObjectType"/>
             <moqui.basic.Enumeration description="Module" enumId="CotModule" parentEnumId="CotAlgebraicStruct" enumTypeId="CategoryObjectType"/>
+            <moqui.basic.Enumeration enumId="CotSpecification" parentEnumId="CotProposition" enumTypeId="CategoryObjectType" description="Specification or Observable Predicate"/>
+            <moqui.basic.Enumeration enumId="CotOperationalState" parentEnumId="CotSpecification" enumTypeId="CategoryObjectType" description="Operational State Specification"/>
         </seed-data>
     </entity>
     <entity entity-name="Morphism" package="moqui.math.ct" cache="never">
@@ -2472,7 +2488,9 @@ along with this software (see the LICENSE.md file). If not, see
          convention; the core harness currently recognizes "async" and "distribute". Service
          arguments and data-flow aliases belong in MorphismParameterBinding instead. -->
     <extend-entity entity-name="Parameter" package="moqui.math" enable-audit-log="update" use="configuration" cache="true" short-alias="parameters">
+        <field name="categoryObjectId" type="id"/>
         <field name="morphismId" type="id"/>
+        <relationship type="one" related="moqui.math.ct.CategoryObject" short-alias="categoryObject"/>
         <relationship type="one" related="moqui.math.ct.Morphism" short-alias="morphism"/>
     </extend-entity>
     <entity entity-name="MorphismParameterBinding" package="moqui.math.ct" use="configuration" cache="true">
