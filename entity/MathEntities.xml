@@ -243,7 +243,7 @@ along with this software (see the LICENSE.md file). If not, see
         <field name="parameterUomId" type="id">
             <description>Unit of measure for the parameter value.</description></field>
         <field name="numericValue" type="number-decimal"/>
-        <field name="symbolicValue" type="text-short"/>
+        <field name="symbolicValue" type="text-medium"/>
         <field name="parameterEnumId" type="id">
             <description>The parameter actual enumerative value.
                 For example device status word bit combinations, device control word bit combinations, etc.
@@ -2376,7 +2376,7 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Big Category of Small Categories + Functors" enumId="CtCat" enumTypeId="CategoryType"/>
         </seed-data>
     </entity>
-    <entity entity-name="CategoryObject" package="moqui.math.ct" cache="never">
+    <entity entity-name="CategoryObject" package="moqui.math.ct" cache="true">
         <description>An object of a category; optionally a polymorphic reference into any entity.
             Composite primary keys follow the Moqui EntityAuditLog convention: the first and second
             primary-key values are stored separately and any remaining key fields are serialized in
@@ -2393,7 +2393,7 @@ along with this software (see the LICENSE.md file). If not, see
         <field name="objectTypeEnumId" type="id"/>
         <field name="objectName" type="text-short"/>
         <field name="objectSymbol" type="text-short"/>
-        <field name="description" type="text-medium"/>
+        <field name="description" type="text-long"/>
 
         <relationship type="one" title="Parent" related="moqui.math.ct.CategoryObject" short-alias="parent">
             <key-map field-name="parentObjectId" related="categoryObjectId"/></relationship>
@@ -2434,7 +2434,7 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration enumId="CotOperationalState" parentEnumId="CotSpecification" enumTypeId="CategoryObjectType" description="Operational State Specification"/>
         </seed-data>
     </entity>
-    <entity entity-name="Morphism" package="moqui.math.ct" cache="never">
+    <entity entity-name="Morphism" package="moqui.math.ct" cache="true">
         <description>A morphism f : A → B.</description>
         <field name="morphismId" type="id" is-pk="true"/>
         <field name="parentMorphismId" type="id"/>
@@ -2523,7 +2523,7 @@ along with this software (see the LICENSE.md file). If not, see
             <key-map field-name="sourceMorphismId" related="morphismId"/></relationship>
         <index name="MORPH_BIND_SOURCE"><index-field name="sourceMorphismId"/></index>
     </entity>
-    <entity entity-name="MorphismComposition" package="moqui.math.ct" cache="never">
+    <entity entity-name="MorphismComposition" package="moqui.math.ct" cache="true">
         <description>Specialization of a Morphism whose implementation is an ordered composition of other morphisms.
             The shared morphismId primary key follows the same table-per-type pattern used by DeviceGroup and PhysicalDevice.</description>
         <field name="morphismId" type="id" is-pk="true"/>
@@ -2552,7 +2552,7 @@ along with this software (see the LICENSE.md file). If not, see
             </detail>
         </master>
     </entity>
-    <entity entity-name="MorphismCompositionComponent" package="moqui.math.ct" cache="never">
+    <entity entity-name="MorphismCompositionComponent" package="moqui.math.ct" cache="true">
         <description>Places a Morphism inside a composite Morphism. Components are deterministic, ordered factors;
             a component may itself be a MorphismComposition, allowing recursive compositions.</description>
         <field name="morphismId" type="id" is-pk="true"/>
