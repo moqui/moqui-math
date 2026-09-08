@@ -528,6 +528,12 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="SVD V Matrix" enumId="MpSvdV" enumTypeId="MatrixPurpose"/>
             <moqui.basic.Enumeration description="LU L Matrix" enumId="MpLuL" enumTypeId="MatrixPurpose"/>
             <moqui.basic.Enumeration description="LU U Matrix" enumId="MpLuU" enumTypeId="MatrixPurpose"/>
+            <moqui.basic.Enumeration description="Dynamic State Transition Matrix (A)" enumId="MpState" enumTypeId="MatrixPurpose"/>
+            <moqui.basic.Enumeration description="Control Input Matrix (B)" enumId="MpInput" enumTypeId="MatrixPurpose"/>
+            <moqui.basic.Enumeration description="Measurement Output Matrix (C)" enumId="MpOutput" enumTypeId="MatrixPurpose"/>
+            <moqui.basic.Enumeration description="Direct Transmission Feedforward Matrix (D)" enumId="MpFeedforward" enumTypeId="MatrixPurpose"/>
+            <moqui.basic.Enumeration description="State Feedback Gain Matrix (K)" enumId="MpFeedbackGain" enumTypeId="MatrixPurpose"/>
+            <moqui.basic.Enumeration description="Observer or Kalman Gain Matrix (L)" enumId="MpObserverGain" enumTypeId="MatrixPurpose"/>
             <!-- Norm enum -->
             <moqui.basic.EnumerationType enumTypeId="MatrixConditionNorm" description="Norm used for condition number"/>
             <moqui.basic.Enumeration enumTypeId="MatrixConditionNorm" enumId="McnOne" description="||·||₁"/>
@@ -677,6 +683,17 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration enumId="TpPhysicalState" enumTypeId="TensorPurpose" description="Physical Simulation State"/>
             <moqui.basic.Enumeration enumId="TpFuncSampling" enumTypeId="TensorPurpose" description="Sampled Discrete Function"/>
             <moqui.basic.Enumeration enumId="TpCovariance" enumTypeId="TensorPurpose" description="Covariance / Correlation Matrix"/>
+            <!-- Discrete State-Space & Automatic Controls / Physics Matrix/Vectors -->
+            <moqui.basic.Enumeration enumId="TpStateMatrix" enumTypeId="TensorPurpose" description="Dynamic State Transition Matrix (A)"/>
+            <moqui.basic.Enumeration enumId="TpInputMatrix" enumTypeId="TensorPurpose" description="Control Input Matrix (B)"/>
+            <moqui.basic.Enumeration enumId="TpOutputMatrix" enumTypeId="TensorPurpose" description="Measurement Output Matrix (C)"/>
+            <moqui.basic.Enumeration enumId="TpFeedforwardMatrix" enumTypeId="TensorPurpose" description="Direct Transmission Feedforward Matrix (D)"/>
+            <moqui.basic.Enumeration enumId="TpStateVector" enumTypeId="TensorPurpose" description="State Vector x(t)"/>
+            <moqui.basic.Enumeration enumId="TpControlVector" enumTypeId="TensorPurpose" description="Control Input Vector u(t)"/>
+            <moqui.basic.Enumeration enumId="TpFeedbackGain" enumTypeId="TensorPurpose" description="State Feedback Gain Matrix (K)"/>
+            <moqui.basic.Enumeration enumId="TpObserverGain" enumTypeId="TensorPurpose" description="Observer / Kalman Gain Matrix (L)"/>
+            <moqui.basic.Enumeration enumId="TpCovarianceProcess" enumTypeId="TensorPurpose" description="Process Noise Covariance Matrix (Q)"/>
+            <moqui.basic.Enumeration enumId="TpCovarianceMeasurement" enumTypeId="TensorPurpose" description="Measurement Noise Covariance Matrix (R)"/>
 
             <!-- Tensor Approximation / Compression Method -->
             <moqui.basic.EnumerationType enumTypeId="TensorApproxMethod" description="Tensor Approximation / Compression Method"/>
