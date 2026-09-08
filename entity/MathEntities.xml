@@ -182,6 +182,12 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Math Model Parameter" enumId="PpMathModel" enumTypeId="ParameterPurpose"/>
             <moqui.basic.Enumeration description="Mesh Parameter" enumId="PpMesh" enumTypeId="ParameterPurpose"/>
             <moqui.basic.Enumeration description="Machine Learning Hyperparameter" enumId="PpMlHyperparameter" enumTypeId="ParameterPurpose"/>
+            <moqui.basic.Enumeration description="Learning Rate" enumId="PpLearningRate" parentEnumId="PpMlHyperparameter" enumTypeId="ParameterPurpose"/>
+            <moqui.basic.Enumeration description="Weight Decay" enumId="PpWeightDecay" parentEnumId="PpMlHyperparameter" enumTypeId="ParameterPurpose"/>
+            <moqui.basic.Enumeration description="Batch Size" enumId="PpBatchSize" parentEnumId="PpMlHyperparameter" enumTypeId="ParameterPurpose"/>
+            <moqui.basic.Enumeration description="Epochs" enumId="PpEpochs" parentEnumId="PpMlHyperparameter" enumTypeId="ParameterPurpose"/>
+            <moqui.basic.Enumeration description="Momentum" enumId="PpMomentum" parentEnumId="PpMlHyperparameter" enumTypeId="ParameterPurpose"/>
+            <moqui.basic.Enumeration description="Dropout Rate" enumId="PpDropoutRate" parentEnumId="PpMlHyperparameter" enumTypeId="ParameterPurpose"/>
             <moqui.basic.Enumeration description="Initial Condition" enumId="PpInitialCondition" enumTypeId="ParameterPurpose"/>
             <!-- Boundary conditions define how a system, for example a structure or a fluid, interacts with the environment.
                  Fixations, loads, pressures, flow rates, or velocities are all examples of boundary conditions. -->
@@ -211,6 +217,10 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration enumId="PpMeshRendering" enumTypeId="ParameterPurpose" description="Mesh Visual/Rendering Property Assignment"/>
             <!-- Physical and engineering purposes. -->
             <moqui.basic.Enumeration enumId="PpPhysical" description="Physical quantity" enumTypeId="ParameterPurpose"/>
+            <moqui.basic.Enumeration enumId="PpFluidProperty" parentEnumId="PpPhysical" enumTypeId="ParameterPurpose" description="Fluid Transport/Thermodynamic Property"/>
+            <moqui.basic.Enumeration enumId="PpBoundaryCondition" parentEnumId="PpControl" enumTypeId="ParameterPurpose" description="Boundary Patch Field Specification"/>
+            <moqui.basic.Enumeration enumId="PpSolverControl" parentEnumId="PpControl" enumTypeId="ParameterPurpose" description="Simulation Runtime &amp; Convergence Control"/>
+            <moqui.basic.Enumeration enumId="PpNumericalScheme" parentEnumId="PpControl" enumTypeId="ParameterPurpose" description="FVM Discretization Scheme"/>
             <moqui.basic.Enumeration enumId="PpMechanical" description="Mechanical property" enumTypeId="ParameterPurpose"/>
             <moqui.basic.Enumeration enumId="PpThermal" description="Thermal property" enumTypeId="ParameterPurpose"/>
             <moqui.basic.Enumeration enumId="PpElectrical" description="Electrical property" enumTypeId="ParameterPurpose"/>
@@ -1099,6 +1109,17 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration enumId="TtTensorSqrt" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType" description="Element-wise square-root: Yᵢ = √xᵢ"/>
             <moqui.basic.Enumeration enumId="TtTensorReLu" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType" description="ReLU: Yᵢ = max(0, xᵢ)"/>
             <moqui.basic.Enumeration enumId="TtTensorSigmoid" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType" description="Sigmoid: Yᵢ = 1 / (1 + e⁻ˣᵢ)"/>
+            <moqui.basic.Enumeration enumId="TtTensorGelu" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType" description="Gaussian Error Linear Unit (GELU)"/>
+            <moqui.basic.Enumeration enumId="TtTensorSilu" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType" description="Sigmoid Linear Unit / Swish (SiLU)"/>
+            <moqui.basic.Enumeration enumId="TtTensorTanh" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType" description="Hyperbolic Tangent: tanh(x)"/>
+            <moqui.basic.Enumeration enumId="TtTensorLeakyReLu" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType" description="Leaky ReLU: max(αx, x)"/>
+            <moqui.basic.Enumeration enumId="TtTensorElu" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType" description="Exponential Linear Unit (ELU)"/>
+            <moqui.basic.Enumeration enumId="TtTensorSoftmax" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType" description="Softmax Normalization"/>
+            <moqui.basic.Enumeration enumId="TtTensorLogSoftmax" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType" description="Log-Softmax Normalization"/>
+            <moqui.basic.Enumeration enumId="TtLayerNorm" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType" description="Layer Normalization"/>
+            <moqui.basic.Enumeration enumId="TtRMSNorm" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType" description="Root Mean Square Layer Normalization"/>
+            <moqui.basic.Enumeration enumId="TtBatchNorm" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType" description="Batch Normalization"/>
+            <moqui.basic.Enumeration enumId="TtGroupNorm" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType" description="Group Normalization"/>
             <moqui.basic.Enumeration description="Tensor Inverse" enumId="TtTensorInv" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType"/>
 
             <!-- Spatial, Vision & Convolution Transformations -->
@@ -1108,6 +1129,14 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Affine Geometric Transformation" enumId="TtWarpAffine" parentEnumId="TtAffine" enumTypeId="TransformationType"/>
             <moqui.basic.Enumeration description="Perspective Homography Transformation" enumId="TtWarpPerspective" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
             <moqui.basic.Enumeration description="2D Spatial Convolution Filter" enumId="TtFilter2D" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="1D Temporal Convolution" enumId="TtConv1d" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="2D Spatial Convolution" enumId="TtConv2d" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="2D Spatial Max Pooling" enumId="TtMaxPool2d" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="2D Spatial Average Pooling" enumId="TtAvgPool2d" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="2D Adaptive Average Pooling" enumId="TtAdaptiveAvgPool2d" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Attention Additive Mask" enumId="TtAttentionMask" parentEnumId="TtBinaryLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Scaled Dot-Product Attention" enumId="TtScaledDotProductAttention" parentEnumId="TtNaryNonLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Embedding Lookup Table" enumId="TtEmbedding" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
 
             <!-- Binary transformation -->
             <moqui.basic.Enumeration description="Matrix Product" enumId="TtMatrixProduct" parentEnumId="TtBinaryLin" enumTypeId="TransformationType"/>
@@ -1117,6 +1146,19 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="3-D Cross Product (a x b)" enumId="TtVectorCross" parentEnumId="TtBinaryLin" enumTypeId="TransformationType"/>
             <moqui.basic.Enumeration description="Vector Dot Product" enumId="TtVectorDot" parentEnumId="TtBinaryLin" enumTypeId="TransformationType"/>
             <moqui.basic.Enumeration description="Tensor Solve" enumId="TtTensorSolve" parentEnumId="TtBinaryNonLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Tensor Element-wise Addition" enumId="TtTensorAdd" parentEnumId="TtBinaryLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Tensor Element-wise Subtraction" enumId="TtTensorSub" parentEnumId="TtBinaryLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Tensor Element-wise Multiplication" enumId="TtTensorMul" parentEnumId="TtBinaryLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Tensor Element-wise Division" enumId="TtTensorDiv" parentEnumId="TtBinaryNonLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Tensor Element-wise Power" enumId="TtTensorPow" parentEnumId="TtBinaryNonLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Tensor Concatenation" enumId="TtTensorConcat" parentEnumId="TtNaryLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Tensor Split" enumId="TtTensorSplit" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Tensor Squeeze" enumId="TtTensorSqueeze" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Tensor Unsqueeze" enumId="TtTensorUnsqueeze" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Tensor Sum Reduction" enumId="TtTensorSum" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Tensor Mean Reduction" enumId="TtTensorMean" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Tensor Max Reduction" enumId="TtTensorMax" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Tensor Min Reduction" enumId="TtTensorMin" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType"/>
             <!-- Affine and linear tranformation -->
             <moqui.basic.Enumeration description="Affine Map (y = A·x + b)" enumId="TtAffine" parentEnumId="TtBinaryNonLin" enumTypeId="TransformationType"/>
             <moqui.basic.Enumeration description="Linear Map (y = A·x)" enumId="TtLinearMap" parentEnumId="TtBinaryLin" enumTypeId="TransformationType"/>
@@ -1139,6 +1181,14 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Hessian ∇²f(x)" enumId="TtHessian" parentEnumId="TtMeta" enumTypeId="TransformationType"/>
             <moqui.basic.Enumeration description="Just-in-time Compilation (XLA, Inductor, ecc.)" enumId="TtJitCompile" parentEnumId="TtMeta" enumTypeId="TransformationType"/>
             <moqui.basic.Enumeration description="Vectorised Map" enumId="TtVmap" parentEnumId="TtMeta" enumTypeId="TransformationType"/>
+            <!-- Deep Learning Loss & Optimization -->
+            <moqui.basic.Enumeration description="Mean Squared Error Loss (MSE)" enumId="TtLossMse" parentEnumId="TtBinaryNonLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Cross Entropy Classification Loss" enumId="TtLossCrossEntropy" parentEnumId="TtBinaryNonLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Binary Cross Entropy with Logits" enumId="TtLossBceWithLogits" parentEnumId="TtBinaryNonLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="L1 / Mean Absolute Error Loss" enumId="TtLossL1" parentEnumId="TtBinaryNonLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Stochastic Gradient Descent Optimizer" enumId="TtOptimizerSgd" parentEnumId="TtMeta" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Adam Optimizer" enumId="TtOptimizerAdam" parentEnumId="TtMeta" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="AdamW Optimizer" enumId="TtOptimizerAdamW" parentEnumId="TtMeta" enumTypeId="TransformationType"/>
 
             <!-- Logical operations -->
             <moqui.basic.Enumeration enumId="TtLogical" enumTypeId="TransformationType" description="Logical Transformation"/>
@@ -1787,6 +1837,7 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration enumId="MmtRationalFunc" parentEnumId="MmtModelDriven" enumTypeId="MathModelType" description="Rational Function"/>
             <moqui.basic.Enumeration enumId="MmtParametricPath" parentEnumId="MmtModelDriven" enumTypeId="MathModelType" description="Parametric Path"/>
             <moqui.basic.Enumeration enumId="MmtPDEs" parentEnumId="MmtModelDriven" enumTypeId="MathModelType" description="Partial Differential Equation PDE System"/>
+            <moqui.basic.Enumeration enumId="MmtCFD" parentEnumId="MmtPDEs" enumTypeId="MathModelType" description="Computational Fluid Dynamics"/>
             <moqui.basic.Enumeration enumId="MmtODEs" parentEnumId="MmtModelDriven" enumTypeId="MathModelType" description="Ordinary Differential Equations ODE System"/>
             <moqui.basic.Enumeration enumId="MmtDynamicSystem" parentEnumId="MmtModelDriven" enumTypeId="MathModelType" description="Dynamic System"/>
             <moqui.basic.Enumeration enumId="MmtLinearEqSystem" parentEnumId="MmtModelDriven" enumTypeId="MathModelType" description="Linear Equation System"/>
@@ -2089,9 +2140,14 @@ along with this software (see the LICENSE.md file). If not, see
             <!-- Computational Engine / Runtime Providers -->
             <moqui.basic.Enumeration enumId="MmsmOpenCv" enumTypeId="MathModelSolvingMethod" description="OpenCV Computer Vision Runtime"/>
             <moqui.basic.Enumeration enumId="MmsmJax" enumTypeId="MathModelSolvingMethod" description="Google JAX / OpenXLA Runtime"/>
+            <moqui.basic.Enumeration enumId="MmsmJaxJit" parentEnumId="MmsmJax" enumTypeId="MathModelSolvingMethod" description="Google JAX XLA JIT Compiled / Autograd Runtime"/>
             <moqui.basic.Enumeration enumId="MmsmLibTorch" enumTypeId="MathModelSolvingMethod" description="LibTorch Native Runtime"/>
+            <moqui.basic.Enumeration enumId="MmsmLibTorchTraining" parentEnumId="MmsmLibTorch" enumTypeId="MathModelSolvingMethod" description="LibTorch Autograd &amp; Training Runtime"/>
             <moqui.basic.Enumeration enumId="MmsmPetscTao" enumTypeId="MathModelSolvingMethod" description="PETSc / TAO Numerical Optimizer"/>
             <moqui.basic.Enumeration enumId="MmsmOrTools" enumTypeId="MathModelSolvingMethod" description="Google OR-Tools Mathematical Optimization"/>
+            <moqui.basic.Enumeration enumId="MmsmOpenFoam" enumTypeId="MathModelSolvingMethod" description="OpenFOAM Finite Volume CFD Engine"/>
+            <moqui.basic.Enumeration enumId="MmsmOpenFoamIcoFoam" parentEnumId="MmsmOpenFoam" enumTypeId="MathModelSolvingMethod" description="OpenFOAM Incompressible Laminar Transient Solver"/>
+            <moqui.basic.Enumeration enumId="MmsmOpenFoamSimpleFoam" parentEnumId="MmsmOpenFoam" enumTypeId="MathModelSolvingMethod" description="OpenFOAM Incompressible Turbulent Steady-State Solver"/>
             <!-- Math Model Interpolation -->    
             <moqui.basic.EnumerationType description="Math Model Interpolation" enumTypeId="MathModelInterpolation"/>
             <moqui.basic.Enumeration enumId="MmiLinear" enumTypeId="MathModelInterpolation" description="Linear Interpolation"/>
