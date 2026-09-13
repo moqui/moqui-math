@@ -639,11 +639,21 @@ along with this software (see the LICENSE.md file). If not, see
         <field name="elementBlob" type="binary-very-long"/>
         <field name="arrayEncodingEnumId" type="id"/>
         <field name="arrayChecksum" type="text-short"/>
+        <field name="dataTypeEnumId" type="id">
+            <description>Element scalar type of the tensor. Distinct from storageTypeEnumId, which
+                describes the memory layout, and from quantSchemeEnumId, which describes
+                quantization: this is what a single element is.</description></field>
+        <field name="deviceEnumId" type="id">
+            <description>Device the tensor is expected to live on.</description></field>
 
         <relationship type="one" title="Parent" related="moqui.math.Tensor" short-alias="parent">
             <key-map field-name="parentTensorId" related="tensorId"/></relationship>
         <relationship type="one" title="TensorType" related="moqui.basic.Enumeration" short-alias="type">
             <key-map field-name="tensorTypeEnumId"/></relationship>
+        <relationship type="one" title="TensorDataType" related="moqui.basic.Enumeration" short-alias="dataType">
+            <key-map field-name="dataTypeEnumId"/></relationship>
+        <relationship type="one" title="TensorDevice" related="moqui.basic.Enumeration" short-alias="device">
+            <key-map field-name="deviceEnumId"/></relationship>
         <relationship type="one" title="TensorPurpose" related="moqui.basic.Enumeration" short-alias="purpose">
             <key-map field-name="purposeEnumId"/></relationship>
         <relationship type="one" title="VectorSpace" related="moqui.basic.Enumeration" short-alias="vectorSpace">
@@ -2115,7 +2125,11 @@ along with this software (see the LICENSE.md file). If not, see
         <field name="sourceEnumId" type="id"/>
         <field name="modelAlias" type="text-short"/>
         <field name="description" type="text-medium"/>
-        <field name="statusId" type="id" not-null="true"/>
+        <field name="statusId" type="id">
+            <description>Optional, as on WorkEffort: a model with no statusId runs no state
+                machine at all. With a statusId and no statusFlowId, changes are still checked
+                against the declared StatusFlowTransition rows. With both, the flow can also
+                advance the model on its own.</description></field>
         <field name="statusFlowId" type="id"/>
 
         <relationship type="one" related="moqui.math.MathModelDef" short-alias="modelDef"/>

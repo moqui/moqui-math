@@ -149,4 +149,47 @@ along with this software (see the LICENSE.md file). If not, see
     <moqui.basic.EnumGroupMember enumId="DimY" enumGroupEnumId="EngSpaceTime"/>
     <moqui.basic.EnumGroupMember enumId="DimZ" enumGroupEnumId="EngSpaceTime"/>
     <moqui.basic.EnumGroupMember enumId="DimTime" enumGroupEnumId="EngSpaceTime"/>
+
+    <!-- Math Model Type: linear algebra as a model category in its own right, alongside
+         MmtLinearEqSystem. Referenced by MathModelDef.modelTypeEnumId. -->
+    <moqui.basic.Enumeration description="Linear Algebra" enumId="MmtLinearAlgebra" enumCode="LINEAR_ALGEBRA"
+        parentEnumId="MmtModelDriven" enumTypeId="MathModelType"/>
+
+    <!-- Matrix Type: the counterpart of MtSparse, which was the only one of the pair declared. -->
+    <moqui.basic.Enumeration description="Dense Matrix" enumId="MtDense" enumCode="DENSE" enumTypeId="MatrixType"/>
+
+    <!-- 2D Euclidean Space: the planar counterpart of Eng3DEuclideanSpace below. Matrix
+         domainSpaceEnumId / codomainSpaceEnumId take an enum-group id, so a plane needs a group
+         of its own rather than a bare literal. -->
+    <moqui.basic.Enumeration description="2D Euclidean Space" enumId="Eng2DEuclideanSpace" enumTypeId="EnumGroup"/>
+    <moqui.basic.EnumGroupMember enumId="DimX" enumGroupEnumId="Eng2DEuclideanSpace"/>
+    <moqui.basic.EnumGroupMember enumId="DimY" enumGroupEnumId="Eng2DEuclideanSpace"/>
+
+    <!-- Tensor Data Type: the scalar type of a single element. The codes are the names the
+         numerical libraries themselves use, so a declaration reads the same as the backend. -->
+    <moqui.basic.EnumerationType description="Tensor Data Type" enumTypeId="TensorDataType"/>
+    <moqui.basic.Enumeration description="32-bit IEEE 754 Floating Point" enumId="DtFloat32" enumCode="float32" enumTypeId="TensorDataType"/>
+    <moqui.basic.Enumeration description="64-bit IEEE 754 Floating Point" enumId="DtFloat64" enumCode="float64" enumTypeId="TensorDataType"/>
+    <moqui.basic.Enumeration description="16-bit IEEE 754 Floating Point" enumId="DtFloat16" enumCode="float16" enumTypeId="TensorDataType"/>
+    <moqui.basic.Enumeration description="16-bit Brain Floating Point" enumId="DtBFloat16" enumCode="bfloat16" enumTypeId="TensorDataType"/>
+    <moqui.basic.Enumeration description="32-bit Signed Integer" enumId="DtInt32" enumCode="int32" enumTypeId="TensorDataType"/>
+    <moqui.basic.Enumeration description="64-bit Signed Integer" enumId="DtInt64" enumCode="int64" enumTypeId="TensorDataType"/>
+    <moqui.basic.Enumeration description="8-bit Signed Integer" enumId="DtInt8" enumCode="int8" enumTypeId="TensorDataType"/>
+    <moqui.basic.Enumeration description="8-bit Unsigned Integer" enumId="DtUInt8" enumCode="uint8" enumTypeId="TensorDataType"/>
+    <moqui.basic.Enumeration description="Boolean" enumId="DtBool" enumCode="bool" enumTypeId="TensorDataType"/>
+    <moqui.basic.Enumeration description="64-bit Complex" enumId="DtComplex64" enumCode="complex64" enumTypeId="TensorDataType"/>
+    <moqui.basic.Enumeration description="128-bit Complex" enumId="DtComplex128" enumCode="complex128" enumTypeId="TensorDataType"/>
+
+    <!-- Tensor Device: where the tensor is expected to live. -->
+    <moqui.basic.EnumerationType description="Tensor Device" enumTypeId="TensorDevice"/>
+    <moqui.basic.Enumeration description="Host CPU" enumId="DevCpu" enumCode="cpu" enumTypeId="TensorDevice"/>
+    <moqui.basic.Enumeration description="NVIDIA CUDA Device" enumId="DevCuda" enumCode="cuda" enumTypeId="TensorDevice"/>
+    <moqui.basic.Enumeration description="AMD ROCm Device" enumId="DevRocm" enumCode="rocm" enumTypeId="TensorDevice"/>
+    <moqui.basic.Enumeration description="Apple Metal Performance Shaders" enumId="DevMps" enumCode="mps" enumTypeId="TensorDevice"/>
+    <moqui.basic.Enumeration description="Tensor Processing Unit" enumId="DevTpu" enumCode="tpu" enumTypeId="TensorDevice"/>
+
+    <!-- Parameter Type: a parameter whose value is a vector or a matrix. The type already
+         declares scalar, text and temporal kinds; these two were referenced but never declared. -->
+    <moqui.basic.Enumeration description="Vector Parameter" enumId="PtVector" enumCode="VECTOR" enumTypeId="ParameterType"/>
+    <moqui.basic.Enumeration description="Matrix Parameter" enumId="PtMatrix" enumCode="MATRIX" enumTypeId="ParameterType"/>
 </entity-facade-xml>
