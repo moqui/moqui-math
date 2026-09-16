@@ -247,7 +247,7 @@ It records the fact, and only the fact. Not everything (you drown), not nothing
 | Transformations | `Transformation`, `TransformationOperand`, `DiagonalExtraction`, `TriangularExtraction`, `BandExtraction`, `BlockMatrixExtraction`, `NormResult` |
 | Equations and predicates | Recursive `Transformation` expressions, typed/scalar operands, equality, inequality, membership, constraints, and predicates |
 | Approximated Functions | `ApproximatedFunction`, `ApproximatedFunctionSample`, `ApproximatedFunctionDerivative` |
-| Mathematical Models | `MathModelDef`, `MathModelDefIdentification`, `MathModelDefContent`, `MathModel`, `MathModelRun`, `MathModelEvent`, `MathModelPerf`, `MathModelData` |
+| Mathematical Models | `MathModelDef`, `MathModelDefIdentification`, `MathModelDefContent`, `MathModelDefPipeline`, `MathModel`, `MathModelRun`, `MathModelEvent`, `MathModelPerf`, `MathModelData` |
 | Graph Theory | `Graph`, `GraphVertex`, `GraphEdge`, `GraphContent` |
 | Finite-Element Mesh | `Mesh`, `MeshContent`, `MeshQuality`, `MeshKCell`, `MeshKCellVertex`, `MeshKCellEdge`, `MeshKCellIncidence`, `MeshGroup`, `MeshGroupMember` |
 | Trajectories | `ParametricPath`, `ParametricPathPoint`, `ParametricPathContent`, `ParametricPathEvent`, `Trajectory`, `TrajectoryPoint`, `TrajectoryPointRun`, `TrajectoryRun`, `TrajectoryStats` |
@@ -290,8 +290,49 @@ a reusable computational capability from each context-aware use of it: two
 semantic morphisms with different domains and codomains may share one target
 service implementation. A `MorphismComposition` reuses the same `morphismId`
 and orders its factors through `MorphismCompositionComponent.sequenceNum`.
+
+A `MorphismCompositionComponent` row is one *occurrence* of a Morphism in that
+word, not the Morphism itself. A composite denotes a path in the free category,
+which is a list rather than a set, so the same Morphism may legitimately be
+traversed at more than one position (`f o g o f`).
+
+An occurrence is identified relative to its composite, so the entity follows the
+ordinary Moqui ordered-child shape of `OrderItem` and `ShipmentPackage`:
+
+```text
+MorphismCompositionComponent PK = (morphismId, componentSeqId)
+```
+
+`componentSeqId` is a secondary sequenced key. `setSequencedIdSecondary()` and
+`create#moqui.math.ct.MorphismCompositionComponent` assign it per `morphismId`,
+padded to `sequence-secondary-padded-length`, so an author never has to invent
+one. It is stable for the life of the occurrence.
+
+`sequenceNum` carries the position and may be renumbered without changing
+identity. The unique index `MORPHCOMP_SEQ_UNIQ` on (`morphismId`, `sequenceNum`)
+keeps the order of the word total, so no two occurrences can claim the same
+position and the compiled word stays deterministic.
 Composition components carry no operational purpose: diagnostics, waiting,
 effects, and state changes are semantics of the selected morphisms themselves.
+
+For an executable `CotSpecification` or `CotOperationalState`, the state
+predicate is not stored in `CategoryObject.description`; that field is human
+documentation only. The executable witness is the object's identity Morphism
+`id_P : P -> P`. An identity may itself have a `MorphismComposition`, so a
+state can be recognized by an ordered, fail-closed composition of pure
+diagnostic Morphisms. The harness discovers the unique non-component `MtId`
+endomorphism for `P`, evaluates it before or after a business Morphism as
+appropriate, and rejects ambiguous or effectful identity implementations.
+
+This operational convention is a finite runtime interpretation, not a claim
+that a failing computation is an ordinary total categorical identity. More
+formally, the check behaves as a restriction identity: it leaves an admitted
+snapshot unchanged and is undefined for a snapshot outside `P`. When the full
+categorical construction is needed, `SubobjectClassifier` and
+`SubobjectClassification` represent the subobject inclusion, characteristic
+Morphism, truth arrow, and pullback witness explicitly. `UniversalConstruction`
+represents finite products/pullbacks and other composite refinements without a
+second predicate-expression entity hierarchy.
 
 Service input/output definitions are not duplicated in this model. Moqui
 `ServiceDefinition`, `EntityDefinition`, view-entity metadata, and XSD remain the
@@ -316,11 +357,36 @@ meaning stays in.
 
 ### Mathematical Models
 
-`MathModelDef` carries the PLM lifecycle (Draft → Approved → Production →
-Retired) and external-registry identification (Hugging Face ID, OpenAI model
-name, MLflow registered model ID, etc.). `MathModel` is a concrete instance;
-`MathModelRun` tracks training, eval, or inference runs with status flows,
-metrics, and events.
+The metamodel separates algorithmic definition/routing from execution instances and runtime artifacts:
+
+- **`MathModelDef`**: Carries the algorithmic specification, PLM lifecycle (Draft → Approved → Production → Retired), and external-registry identification (Hugging Face ID, OpenAI model name, MLflow registered model ID, etc.).
+- **`MathModelDefPipeline`**: Defines the ordered computational tasks of the pipeline (analogous to manufacturing routing tasks). Each task references the transformation or approximated function to execute, along with execution-method metadata (`solvingMethodEnumId`, `interpolationEnumId`, `basisFunctionEnumId`, `basisOrder`).
+- **`MathModel`**: Concrete instance of the computational model, bound to optional domain discretization (`Graph`, `Mesh`), parameters, and lifecycle state machines (`statusId`, `statusFlowId`).
+- **`MathModelData`**: Pure data binding table linking the concrete mathematical entities (`Tensor`, `Matrix`, `Vector`, `MeshKCell`, `GraphVertex`, etc.) consumed or produced by the model.
+- **`MathModelRun`**: Tracks training, eval, or inference runs with status flows, metrics, events, and performance records (`MathModelPerf`).
+
+### Declarative Mathematical DSL & Fluent API Alignment
+
+The relational model is reflected 1:1 into the JVM via **Groovy Math** (`groovy-math`), providing a declarative DSL and type-safe Fluent API that directly correspond to the underlying entity definitions:
+
+| Relational Metamodel Entity | Role / Shape | Declarative DSL / Fluent API | Key Mappings |
+| :--- | :--- | :--- | :--- |
+| `moqui.math.Matrix` | Linear transformation operator | `matrix('A', rows: 2, cols: 3)` | `domainSpaceEnumId`, `codomainSpaceEnumId`, `componentArray` |
+| `moqui.math.Vector` | State or coordinate vector | `vector('x', size: 3)` | `domainSpaceEnumId`, `componentArray` |
+| `moqui.math.Tensor` | Multi-dimensional array | `tensor('T', rank: 3, shape: [10, 10, 10])` | `dataTypeEnumId`, `deviceEnumId`, `shape`, `rank` |
+| `moqui.math.Transformation` | Root operation / morphism | `transformation('Op') { ... }` | `transformationTypeEnumId`, `resultMatrixId`, `resultVectorId` |
+| `moqui.math.TransformationOperand` | Inputs to transformations | `leftMatrix 'A'`, `operandVector 'x'` | `operandTypeEnumId`, `operandMatrixId`, `operandIndex` |
+| `moqui.math.MatrixDecomposition` | Satellite entity (shared PK) | `matrixDecomposition('Svd') { ... }` | `leftMatrixId`, `diagMatrixId`, `rightMatrixId`, `rankApproximation` |
+| `moqui.math.DiagonalExtraction` | Satellite entity (shared PK) | `diagonalExtraction('Diag') { ... }` | `axis1`, `axis2`, `axisOffset` |
+| `moqui.math.TriangularExtraction` | Satellite entity (shared PK) | `triangularExtraction('Tri') { ... }` | `extractionTypeEnumId`, `extractionOffset` |
+| `moqui.math.BandExtraction` | Satellite entity (shared PK) | `bandExtraction('Band') { ... }` | `lowerBand`, `upperBand` |
+| `moqui.math.BlockMatrixExtraction` | Satellite entity (shared PK) | `blockMatrixExtraction('Block') { ... }` | `startRowBlock`, `endRowBlock`, `startColBlock`, `endColBlock` |
+| `moqui.math.NormResult` | Satellite entity (shared PK) | `normResult('Norm') { ... }` | `domainEnumId`, `orderEnumId`, `normValue` |
+| `moqui.math.TensorDecomposition` | Satellite entity (shared PK) | `tensorDecomposition('Tucker') { ... }` | `decompositionMethodEnumId`, `coreTensorId`, `sourceTensorId` |
+| `moqui.math.CoordinateSystemTransformation` | Satellite entity (shared PK) | `coordinateSystemTransformation('Frame')` | `sourceCoordinateSystemId`, `targetCoordinateSystemId`, `matrixId` |
+| `moqui.math.MathModelDef` | Routing template / PLM | `modelDef('PipelineDef') { ... }` | `modelTypeEnumId`, `usageContextEnumId` |
+| `moqui.math.MathModelDefPipeline` | Pipeline task sequence | nested `transformation('Step')` | `sequenceNum`, `stepName`, `transformationId` |
+| `moqui.math.MathModel` | Concrete model instance | `model('ModelInstance') { ... }` | `solvingMethodEnumId`, `statusId`, `statusFlowId` |
 
 ## Dependencies
 

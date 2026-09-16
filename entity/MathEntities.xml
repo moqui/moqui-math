@@ -1050,8 +1050,6 @@ along with this software (see the LICENSE.md file). If not, see
             <description>Human-readable name or label for the transformation (e.g., "World to Robot Base").</description></field>
         <field name="symbol" type="text-short"/>
         <field name="description" type="text-medium"/>
-        <field name="lastApplicationDate" type="date-time">
-            <description>Timestamp of the most recent use or evaluation of this transformation (optional analytical metadata).</description></field>
         <!-- Optional primary result; many transforms also have decomposition tables for richer outputs. -->
         <field name="resultVectorId" type="id"/>
         <field name="resultMatrixId" type="id"/>
@@ -1850,6 +1848,8 @@ along with this software (see the LICENSE.md file). If not, see
             <key-map field-name="releaseStatusId" related="statusId"/></relationship>
         <relationship type="many" related="moqui.math.MathModel" short-alias="models">
             <key-map field-name="mathModelDefId"/></relationship>
+        <relationship type="many" related="moqui.math.MathModelDefPipeline" short-alias="pipeline">
+            <key-map field-name="mathModelDefId"/></relationship>
         <seed-data>
             <!-- Math Model Type -->
             <moqui.basic.EnumerationType description="Math Model Type" enumTypeId="MathModelType"/>
@@ -2111,44 +2111,30 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Symbolic Derivation" enumId="MmCnpSymDer" enumCode="SymbolicDerivation" enumTypeId="MathModelContentPurpose"/>
         </seed-data>
     </entity>
-    <entity entity-name="MathModel" package="moqui.math" use="configuration" cache="true">
-        <description>Defines an instance of a computational model, including supporting graph structure and mesh for domain discretization.</description>
-        <field name="mathModelId" type="id" is-pk="true"/>
-        <field name="mathModelDefId" type="id" not-null="true"/>
-        <field name="graphId" type="id"/>
-        <field name="meshId" type="id"/>
+    <entity entity-name="MathModelDefPipeline" package="moqui.math" use="configuration" cache="true">
+        <description>Ordered tasks/steps of the computational pipeline (analogous to a manufacturing routing task).</description>
+        <field name="mathModelDefId" type="id" is-pk="true"/>
+        <field name="stepSeqId" type="id" is-pk="true">
+            <description>Sequenced step identifier within the model definition.</description></field>
+        <field name="stepName" type="text-short"/>
+        <field name="sequenceNum" type="number-integer" not-null="true"/>
+        <field name="transformationId" type="id"/>
+        <field name="approximatedFunctionId" type="id"/>
         <field name="solvingMethodEnumId" type="id"/>
         <field name="interpolationEnumId" type="id"/>
         <field name="basisFunctionEnumId" type="id"/>
         <field name="basisOrder" type="number-integer">
             <description>For higher-order FEM/SEM or spectral bases (p-refinement).</description></field>
-        <field name="sourceEnumId" type="id"/>
-        <field name="modelAlias" type="text-short"/>
-        <field name="description" type="text-medium"/>
-        <field name="statusId" type="id">
-            <description>Optional, as on WorkEffort: a model with no statusId runs no state
-                machine at all. With a statusId and no statusFlowId, changes are still checked
-                against the declared StatusFlowTransition rows. With both, the flow can also
-                advance the model on its own.</description></field>
-        <field name="statusFlowId" type="id"/>
 
         <relationship type="one" related="moqui.math.MathModelDef" short-alias="modelDef"/>
-        <relationship type="one" related="moqui.math.Graph" short-alias="graph"/>
-        <relationship type="one" related="moqui.math.Mesh" short-alias="mesh"/>
+        <relationship type="one" related="moqui.math.Transformation" short-alias="transformation"/>
+        <relationship type="one" related="moqui.math.ApproximatedFunction" short-alias="approxFunc"/>
         <relationship type="one" title="MathModelSolvingMethod" related="moqui.basic.Enumeration" short-alias="solvingMethod">
             <key-map field-name="solvingMethodEnumId"/></relationship>
         <relationship type="one" title="MathModelInterpolation" related="moqui.basic.Enumeration" short-alias="interpolation">
             <key-map field-name="interpolationEnumId"/></relationship>
         <relationship type="one" title="MathModelBasisFunction" related="moqui.basic.Enumeration" short-alias="basisFunc">
             <key-map field-name="basisFunctionEnumId"/></relationship>
-        <relationship type="one" title="MathModelSource" related="moqui.basic.Enumeration" short-alias="source">
-            <key-map field-name="sourceEnumId"/></relationship>
-        <relationship type="one" related="moqui.basic.StatusItem" short-alias="status"/>
-        <relationship type="one" related="moqui.basic.StatusFlow" short-alias="flow"/>
-        <relationship type="many" related="moqui.math.MathModelData" short-alias="data">
-            <key-map field-name="mathModelId"/></relationship>
-        <relationship type="many" title="MathModelParameter" related="moqui.math.Parameter" short-alias="parameters">
-            <key-map field-name="mathModelId"/></relationship>
         <seed-data>
             <!-- Math Model Solving Method -->
             <moqui.basic.EnumerationType description="Math Model Solving Method" enumTypeId="MathModelSolvingMethod"/>
@@ -2196,6 +2182,36 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration enumId="MmbChebyshev" enumTypeId="MathModelBasisFunc" description="Chebyshev Basis"/>
             <moqui.basic.Enumeration enumId="MmbLegendre" enumTypeId="MathModelBasisFunc" description="Legendre Basis"/>
             <moqui.basic.Enumeration enumId="MmbFourier" enumTypeId="MathModelBasisFunc" description="Fourier Basis"/>
+        </seed-data>
+    </entity>
+    <entity entity-name="MathModel" package="moqui.math" use="configuration" cache="true">
+        <description>Defines an instance of a computational model, including supporting graph structure and mesh for domain discretization.</description>
+        <field name="mathModelId" type="id" is-pk="true"/>
+        <field name="mathModelDefId" type="id" not-null="true"/>
+        <field name="graphId" type="id"/>
+        <field name="meshId" type="id"/>
+        <field name="sourceEnumId" type="id"/>
+        <field name="modelAlias" type="text-short"/>
+        <field name="description" type="text-medium"/>
+        <field name="statusId" type="id">
+            <description>Optional, as on WorkEffort: a model with no statusId runs no state
+                machine at all. With a statusId and no statusFlowId, changes are still checked
+                against the declared StatusFlowTransition rows. With both, the flow can also
+                advance the model on its own.</description></field>
+        <field name="statusFlowId" type="id"/>
+
+        <relationship type="one" related="moqui.math.MathModelDef" short-alias="modelDef"/>
+        <relationship type="one" related="moqui.math.Graph" short-alias="graph"/>
+        <relationship type="one" related="moqui.math.Mesh" short-alias="mesh"/>
+        <relationship type="one" title="MathModelSource" related="moqui.basic.Enumeration" short-alias="source">
+            <key-map field-name="sourceEnumId"/></relationship>
+        <relationship type="one" related="moqui.basic.StatusItem" short-alias="status"/>
+        <relationship type="one" related="moqui.basic.StatusFlow" short-alias="flow"/>
+        <relationship type="many" related="moqui.math.MathModelData" short-alias="data">
+            <key-map field-name="mathModelId"/></relationship>
+        <relationship type="many" title="MathModelParameter" related="moqui.math.Parameter" short-alias="parameters">
+            <key-map field-name="mathModelId"/></relationship>
+        <seed-data>
             <!-- Math Model Source -->
             <!-- Where the data driving the model comes from. -->
             <moqui.basic.EnumerationType enumTypeId="MathModelSource" description="Math Model Source"/>
@@ -2314,8 +2330,6 @@ along with this software (see the LICENSE.md file). If not, see
         <field name="vectorId" type="id"/>
         <field name="matrixId" type="id"/>
         <field name="tensorId" type="id"/>
-        <field name="transformationId" type="id"/>
-        <field name="approximatedFunctionId" type="id"/>
         <field name="graphVertexId" type="id"/>
         <field name="graphEdgeId" type="id"/>
         <field name="meshKCellId" type="id"/>
@@ -2331,13 +2345,11 @@ along with this software (see the LICENSE.md file). If not, see
             <key-map field-name="dataTypeEnumId"/></relationship>
         <relationship type="one" title="MathModelDataPurpose" related="moqui.basic.Enumeration" short-alias="purpose">
             <key-map field-name="purposeEnumId"/></relationship>
-        <relationship type="one" related="moqui.math.MathModelRun" short-alias="genRun">
+        <relationship type="one" title="GeneratedByRun" related="moqui.math.MathModelRun" short-alias="genRun">
             <key-map field-name="generatedByRunId" related="mathModelRunId"/></relationship>
         <relationship type="one" related="moqui.math.Vector" short-alias="vector"/>
         <relationship type="one" related="moqui.math.Matrix" short-alias="matrix"/>
         <relationship type="one" related="moqui.math.Tensor" short-alias="tensor"/>
-        <relationship type="one" related="moqui.math.Transformation" short-alias="transformation"/>
-        <relationship type="one" related="moqui.math.ApproximatedFunction" short-alias="approxFunc"/>
         <relationship type="one" related="moqui.math.GraphVertex" short-alias="graphVertex"/>
         <relationship type="one" related="moqui.math.GraphEdge" short-alias="graphEdge"/>
         <relationship type="one" related="moqui.math.MeshKCell" short-alias="meshKCell"/>
@@ -2349,8 +2361,6 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Vector" enumId="MmdtVector" enumTypeId="MathModelDataType"/>
             <moqui.basic.Enumeration description="Matrix" enumId="MmdtMatrix" enumTypeId="MathModelDataType"/>
             <moqui.basic.Enumeration description="Tensor" enumId="MmdtTensor" enumTypeId="MathModelDataType"/>
-            <moqui.basic.Enumeration description="Transformation" enumId="MmdtTransformation" enumTypeId="MathModelDataType"/>
-            <moqui.basic.Enumeration description="Approximated Function" enumId="MmdtApproxFunc" enumTypeId="MathModelDataType"/>
             <!-- Math Model Data Purpose -->
             <moqui.basic.EnumerationType description="Math Model Data Purpose" enumTypeId="MathModelDataPurpose"/>
             <moqui.basic.Enumeration description="Initial Condition" enumId="MmdpInitialCondition" enumTypeId="MathModelDataPurpose"/>
@@ -2378,8 +2388,6 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Validation Data" enumId="MmdpValidationData" enumTypeId="MathModelDataPurpose"/>
             <moqui.basic.Enumeration description="Core Tensor (HOSVD/Tucker)" enumId="MmdpCoreTensor" enumTypeId="MathModelDataPurpose"/>
             <moqui.basic.Enumeration description="Factor Matrix (mode-k)" enumId="MmdpFactorMatrix" enumTypeId="MathModelDataPurpose"/>
-            <moqui.basic.Enumeration description="Input Approximated Function" enumId="MmdpInputputApproxFunc" enumTypeId="MathModelDataPurpose"/>
-            <moqui.basic.Enumeration description="Output Approximated Function" enumId="MmdpOutputApproxFunc" enumTypeId="MathModelDataPurpose"/>
             <!-- Derivative Purpose -->
             <moqui.basic.Enumeration enumId="MmdpDerivative" enumTypeId="MathModelDataPurpose" description="Derivative"/>
             <moqui.basic.Enumeration enumId="MmdpGradient" parentEnumId="MmdpDerivative" enumTypeId="MathModelDataPurpose" description="Gradient"/>
@@ -2465,6 +2473,11 @@ along with this software (see the LICENSE.md file). If not, see
     </entity>
     <entity entity-name="CategoryObject" package="moqui.math.ct" cache="true">
         <description>An object of a category; optionally a polymorphic reference into any entity.
+            The description field is documentation only. For an executable operational object, its
+            unique identity Morphism may be implemented by a pure, fail-closed MorphismComposition:
+            evaluating that identity validates that the current runtime snapshot inhabits the object.
+            The formal subobject interpretation remains available through SubobjectClassifier and
+            SubobjectClassification; finite logical refinement remains available through universal constructions.
             Composite primary keys follow the Moqui EntityAuditLog convention: the first and second
             primary-key values are stored separately and any remaining key fields are serialized in
             objectPkRestCombinedValue.</description>
@@ -2522,7 +2535,10 @@ along with this software (see the LICENSE.md file). If not, see
         </seed-data>
     </entity>
     <entity entity-name="Morphism" package="moqui.math.ct" cache="true">
-        <description>A morphism f : A → B.</description>
+        <description>A morphism f : A → B. An identity Morphism may itself be represented by a
+            MorphismComposition. For CotSpecification and CotOperationalState objects the executable
+            identity is interpreted by a harness as a pure, fail-closed witness that the current
+            runtime snapshot inhabits that object; it must not perform business mutations.</description>
         <field name="morphismId" type="id" is-pk="true"/>
         <field name="parentMorphismId" type="id"/>
         <field name="categoryId" type="id" not-null="true"/>
@@ -2556,6 +2572,8 @@ along with this software (see the LICENSE.md file). If not, see
         <index name="MORPHISM_SRCTGT"><index-field name="sourceObjectId"/><index-field name="targetObjectId"/></index>
         <index name="MORPHISM_UNIQ"><index-field name="categoryId"/><index-field name="sourceObjectId"/>
             <index-field name="targetObjectId"/><index-field name="morphismName"/></index>
+        <index name="MORPHISM_IDLOOKUP"><index-field name="categoryId"/><index-field name="morphismTypeEnumId"/>
+            <index-field name="sourceObjectId"/><index-field name="targetObjectId"/></index>
         <seed-data>
             <moqui.basic.EnumerationType description="Morphism Type" enumTypeId="MorphismType"/>
             <moqui.basic.Enumeration description="General Morphism" enumId="MtGeneral" enumTypeId="MorphismType"/>
@@ -2563,7 +2581,7 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Endomorphism" enumId="MtEndo" enumTypeId="MorphismType"/>
             <moqui.basic.Enumeration description="Epimorphism" enumId="MtEpi" enumTypeId="MorphismType"/>
             <moqui.basic.Enumeration description="Monomorphism" enumId="MtMono" enumTypeId="MorphismType"/>
-            <moqui.basic.Enumeration description="Identity morphism" enumId="MtId" enumTypeId="MorphismType"/>
+            <moqui.basic.Enumeration description="Identity morphism; may have a composite implementation" enumId="MtId" enumTypeId="MorphismType"/>
             <moqui.basic.Enumeration description="Zero morphism" enumId="MphZero" enumTypeId="MorphismType"/>
             <moqui.basic.Enumeration description="Typed Term from a Context to a Type" enumId="MtTerm" enumTypeId="MorphismType"/>
             <moqui.basic.Enumeration description="Display Map representing a Dependent Type" enumId="MtDisplayMap" enumTypeId="MorphismType"/>
@@ -2640,10 +2658,19 @@ along with this software (see the LICENSE.md file). If not, see
         </master>
     </entity>
     <entity entity-name="MorphismCompositionComponent" package="moqui.math.ct" cache="true">
-        <description>Places a Morphism inside a composite Morphism. Components are deterministic, ordered factors;
-            a component may itself be a MorphismComposition, allowing recursive compositions.</description>
+        <description>One occurrence of a Morphism inside a composite Morphism. A composite denotes a word
+            (a path in the free category), which is a list and not a set: the same Morphism may legitimately be
+            traversed at more than one position, as in f o g o f. The identity of a row is therefore the occurrence,
+            not the Morphism it names. An occurrence is identified relative to its composite, so this follows the
+            ordinary Moqui ordered-child shape of OrderItem and ShipmentPackage: componentSeqId is a secondary
+            sequenced key that setSequencedIdSecondary generates per morphismId, and is stable for the life of the
+            occurrence. sequenceNum carries the position and may be renumbered without changing identity;
+            MORPHCOMP_SEQ_UNIQ makes that order total, so no two occurrences can claim the same position and the
+            compiled word stays deterministic. A component may itself be a MorphismComposition, allowing recursive
+            compositions.</description>
         <field name="morphismId" type="id" is-pk="true"/>
-        <field name="componentMorphismId" type="id" is-pk="true"/>
+        <field name="componentSeqId" type="id" is-pk="true"/>
+        <field name="componentMorphismId" type="id" not-null="true"/>
         <field name="sequenceNum" type="number-integer" not-null="true"/>
         <field name="description" type="text-medium"/>
 

@@ -420,6 +420,22 @@ along with this software (see the LICENSE.md file). If not, see
         <alias-all entity-alias="AFS"><exclude field="approximatedFunctionId"/></alias-all>
     </view-entity>
 
+    <!-- ========== Math Model Def Pipeline ========== -->
+    <view-entity entity-name="MathModelDefPipelineDetail" package="moqui.math" cache="true">
+        <member-entity entity-alias="MMDP" entity-name="moqui.math.MathModelDefPipeline"/>
+        <member-entity entity-alias="MMD" entity-name="moqui.math.MathModelDef" join-from-alias="MMDP">
+            <key-map field-name="mathModelDefId"/></member-entity>
+        <member-entity entity-alias="TR" entity-name="moqui.math.Transformation" join-from-alias="MMDP" join-optional="true">
+            <key-map field-name="transformationId"/></member-entity>
+        <member-entity entity-alias="AF" entity-name="moqui.math.ApproximatedFunction" join-from-alias="MMDP" join-optional="true">
+            <key-map field-name="approximatedFunctionId"/></member-entity>
+        <alias-all entity-alias="MMDP"/>
+        <alias entity-alias="MMD" name="modelName"/>
+        <alias entity-alias="MMD" name="modelTypeEnumId"/>
+        <alias entity-alias="TR" name="transformationName"/>
+        <alias entity-alias="AF" name="functionName"/>
+    </view-entity>
+
     <!-- ========== Graph ========== -->
     <view-entity entity-name="GraphEdgeEndpoint" package="moqui.math" cache="true">
         <description>View combining a graph edge and its vertices.</description>

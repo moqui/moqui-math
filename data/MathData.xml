@@ -15,6 +15,54 @@ along with this software (see the LICENSE.md file). If not, see
 <entity-facade-xml type="seed">
     <!-- Note: Fundamental enumerations for the math package. Enumerations are finite sets. -->
 
+    <!-- Category Theory Core: keep these in ordinary seed data so component data files
+         and tests can rely on them before any category/morphism records are loaded. -->
+    <moqui.basic.EnumerationType description="Category Type" enumTypeId="CategoryType"/>
+    <moqui.basic.Enumeration description="Small / finite category" enumId="CtSmall" enumTypeId="CategoryType"/>
+    <moqui.basic.Enumeration description="Monoidal category" enumId="CtMonoidal" enumTypeId="CategoryType"/>
+    <moqui.basic.Enumeration description="Topos" enumId="CtTopos" enumTypeId="CategoryType"/>
+    <moqui.basic.Enumeration description="Large category" enumId="CtLarge" enumTypeId="CategoryType"/>
+    <moqui.basic.Enumeration description="Cartesian-closed category" enumId="CtCCC" enumTypeId="CategoryType"/>
+    <moqui.basic.Enumeration description="Syntactic category of a type theory" enumId="CtSyntactic" enumTypeId="CategoryType"/>
+    <moqui.basic.Enumeration description="Locally Cartesian-closed category for dependent types" enumId="CtLCCC" enumTypeId="CategoryType"/>
+    <moqui.basic.Enumeration description="Abelian category" enumId="CtAbelian" enumTypeId="CategoryType"/>
+    <moqui.basic.Enumeration description="Enriched (V-) category" enumId="CtEnriched" enumTypeId="CategoryType"/>
+    <moqui.basic.Enumeration description="Groupoid" enumId="CtGroupoid" enumTypeId="CategoryType"/>
+    <moqui.basic.Enumeration description="Poset viewed as category" enumId="CtPoset" enumTypeId="CategoryType"/>
+    <moqui.basic.Enumeration description="Discrete category" enumId="CtDiscrete" enumTypeId="CategoryType"/>
+    <moqui.basic.Enumeration description="Pre-additive category" enumId="CtPreAdditive" enumTypeId="CategoryType"/>
+    <moqui.basic.Enumeration description="Category of small sets: objects = sets, morphisms = functions" enumId="CtSet" enumTypeId="CategoryType"/>
+    <moqui.basic.Enumeration description="Finite sets" enumId="CtFinSet" enumTypeId="CategoryType"/>
+    <moqui.basic.Enumeration description="Category of Groups and Group Homomorphisms" enumId="CtGrp" enumTypeId="CategoryType"/>
+    <moqui.basic.Enumeration description="Abelian Groups and Homomorphisms" enumId="CtAb" enumTypeId="CategoryType"/>
+    <moqui.basic.Enumeration description="Real Vector Spaces (finite dimension) with Linear Maps" enumId="CtVectR" enumTypeId="CategoryType"/>
+    <moqui.basic.Enumeration description="Complex Vector Spaces (finite dimension) with Linear Maps" enumId="CtVectC" enumTypeId="CategoryType"/>
+    <moqui.basic.Enumeration description="Topological Spaces with Continuous Maps" enumId="CtTop" enumTypeId="CategoryType"/>
+    <moqui.basic.Enumeration description="Big Category of Small Categories + Functors" enumId="CtCat" enumTypeId="CategoryType"/>
+
+    <moqui.basic.EnumerationType enumTypeId="CategoryObjectType" description="Category Object Type"/>
+    <moqui.basic.Enumeration description="Generic object" enumId="CotGeneric" enumTypeId="CategoryObjectType"/>
+    <moqui.basic.Enumeration description="Type" enumId="CotType" enumTypeId="CategoryObjectType"/>
+    <moqui.basic.Enumeration description="Typing Context" enumId="CotContext" enumTypeId="CategoryObjectType"/>
+    <moqui.basic.Enumeration description="Proposition as Type" enumId="CotProposition" parentEnumId="CotType" enumTypeId="CategoryObjectType"/>
+    <moqui.basic.Enumeration description="Universe of Types" enumId="CotUniverse" parentEnumId="CotType" enumTypeId="CategoryObjectType"/>
+    <moqui.basic.Enumeration description="Algebraic Structure (one-object category)" enumId="CotAlgebraicStruct" enumTypeId="CategoryObjectType"/>
+    <moqui.basic.Enumeration description="Monoid" enumId="CotMonoid" parentEnumId="CotAlgebraicStruct" enumTypeId="CategoryObjectType"/>
+    <moqui.basic.Enumeration description="Group" enumId="CotGroup" parentEnumId="CotAlgebraicStruct" enumTypeId="CategoryObjectType"/>
+    <moqui.basic.Enumeration description="Abelian group" enumId="CotAbGroup" parentEnumId="CotGroup" enumTypeId="CategoryObjectType"/>
+    <moqui.basic.Enumeration description="Ring" enumId="CotRing" parentEnumId="CotAlgebraicStruct" enumTypeId="CategoryObjectType"/>
+    <moqui.basic.Enumeration description="Field" enumId="CotField" parentEnumId="CotAlgebraicStruct" enumTypeId="CategoryObjectType"/>
+    <moqui.basic.Enumeration description="Module" enumId="CotModule" parentEnumId="CotAlgebraicStruct" enumTypeId="CategoryObjectType"/>
+    <moqui.basic.Enumeration enumId="CotSpecification" parentEnumId="CotProposition" enumTypeId="CategoryObjectType" description="Specification or Observable Predicate"/>
+    <moqui.basic.Enumeration enumId="CotOperationalState" parentEnumId="CotSpecification" enumTypeId="CategoryObjectType" description="Operational State Specification"/>
+
+    <moqui.basic.EnumerationType description="Morphism Type" enumTypeId="MorphismType"/>
+    <moqui.basic.Enumeration description="General Morphism" enumId="MtGeneral" enumTypeId="MorphismType"/>
+    <moqui.basic.Enumeration description="Isomorphism" enumId="MtIso" enumTypeId="MorphismType"/>
+    <moqui.basic.Enumeration description="Endomorphism" enumId="MtEndo" enumTypeId="MorphismType"/>
+    <moqui.basic.Enumeration description="Epimorphism" enumId="MtEpi" enumTypeId="MorphismType"/>
+    <moqui.basic.Enumeration description="Monomorphism" enumId="MtMono" enumTypeId="MorphismType"/>
+
     <!-- Logical Operator -->
     <moqui.basic.EnumerationType description="Logical Operator" enumTypeId="LogicalOperator"/>
     <moqui.basic.Enumeration description="Conjunction - AND" enumId="OpAnd" enumCode="AND" enumTypeId="LogicalOperator"/>
