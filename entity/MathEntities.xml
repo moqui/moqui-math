@@ -309,6 +309,8 @@ along with this software (see the LICENSE.md file). If not, see
         <!-- Cache for fast IO or processing -->
         <field name="componentArray" type="text-very-long"/>
         <field name="componentBlob" type="binary-very-long"/>
+        <field name="contentLocation" type="text-medium"/>
+        <field name="contentTypeEnumId" type="id"/>
 
         <relationship type="one" title="Parent" related="moqui.math.Vector" short-alias="parent">
             <key-map field-name="parentVectorId" related="vectorId"/></relationship>
@@ -466,6 +468,8 @@ along with this software (see the LICENSE.md file). If not, see
         <!-- Cache for fast IO or processing -->
         <field name="componentArray" type="text-very-long"/>
         <field name="componentBlob" type="binary-very-long"/>
+        <field name="contentLocation" type="text-medium"/>
+        <field name="contentTypeEnumId" type="id"/>
 
         <relationship type="one" title="Parent" related="moqui.math.Matrix" short-alias="parent">
             <key-map field-name="parentMatrixId" related="matrixId"/></relationship>
@@ -637,6 +641,8 @@ along with this software (see the LICENSE.md file). If not, see
         <!-- Cache for fast IO or processing -->
         <field name="elementArray" type="text-very-long"/>
         <field name="elementBlob" type="binary-very-long"/>
+        <field name="contentLocation" type="text-medium"/>
+        <field name="contentTypeEnumId" type="id"/>
         <field name="arrayEncodingEnumId" type="id"/>
         <field name="arrayChecksum" type="text-short"/>
         <field name="dataTypeEnumId" type="id">
@@ -2156,6 +2162,7 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration enumId="MmsmTabu" enumTypeId="MathModelSolvingMethod" description="Tabu Search"/>
             <!-- Computational Engine / Runtime Providers -->
             <moqui.basic.Enumeration enumId="MmsmOpenCv" enumTypeId="MathModelSolvingMethod" description="OpenCV Computer Vision Runtime"/>
+            <moqui.basic.Enumeration enumId="MmsmOnnx" enumTypeId="MathModelSolvingMethod" description="ONNX Runtime Neural Network Inference Engine"/>
             <moqui.basic.Enumeration enumId="MmsmJax" enumTypeId="MathModelSolvingMethod" description="Google JAX / OpenXLA Runtime"/>
             <moqui.basic.Enumeration enumId="MmsmJaxJit" parentEnumId="MmsmJax" enumTypeId="MathModelSolvingMethod" description="Google JAX XLA JIT Compiled / Autograd Runtime"/>
             <moqui.basic.Enumeration enumId="MmsmLibTorch" enumTypeId="MathModelSolvingMethod" description="LibTorch Native Runtime"/>
@@ -2199,6 +2206,9 @@ along with this software (see the LICENSE.md file). If not, see
                 against the declared StatusFlowTransition rows. With both, the flow can also
                 advance the model on its own.</description></field>
         <field name="statusFlowId" type="id"/>
+        <field name="location" type="text-medium"/>
+        <field name="contentLocation" type="text-medium"/>
+        <field name="contentTypeEnumId" type="id"/>
 
         <relationship type="one" related="moqui.math.MathModelDef" short-alias="modelDef"/>
         <relationship type="one" related="moqui.math.Graph" short-alias="graph"/>
@@ -2633,6 +2643,12 @@ along with this software (see the LICENSE.md file). If not, see
             The shared morphismId primary key follows the same table-per-type pattern used by DeviceGroup and PhysicalDevice.</description>
         <field name="morphismId" type="id" is-pk="true"/>
         <field name="compositionTypeEnumId" type="id"/>
+        <field name="iterateContextPath" type="text-medium">
+            <description>McIterate only: the context key holding the list whose elements the single component is
+                applied to, in list order. Each element is a Map merged over the context for its own occurrence.</description></field>
+        <field name="collectContextPath" type="text-medium">
+            <description>McIterate only: the context key that receives, after the loop, one Map per element with the
+                element and the outputs of its occurrence. Defaults to iterateContextPath.</description></field>
 
         <relationship type="one" related="moqui.math.ct.Morphism" short-alias="morphism"/>
         <relationship type="one" title="MorphismCompositionType" related="moqui.basic.Enumeration" short-alias="type">
@@ -2648,6 +2664,7 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Zero-Arrow Annihilation" enumId="McZeroLaw" enumTypeId="MorphismCompositionType"/>
             <moqui.basic.Enumeration description="N-ary Composition (f1 o f2 o ... o fn)" enumId="McNary" enumTypeId="MorphismCompositionType"/>
             <moqui.basic.Enumeration description="Natural-Transformation Vertical Composition" enumId="McNatVert" enumTypeId="MorphismCompositionType"/>
+            <moqui.basic.Enumeration description="Iterated Composition (f o f o ... o f, once per element of a context list)" enumId="McIterate" enumTypeId="MorphismCompositionType"/>
         </seed-data>
         <master name="catalog">
             <detail relationship="morphism"/>

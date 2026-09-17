@@ -432,8 +432,8 @@ along with this software (see the LICENSE.md file). If not, see
         <alias-all entity-alias="MMDP"/>
         <alias entity-alias="MMD" name="modelName"/>
         <alias entity-alias="MMD" name="modelTypeEnumId"/>
-        <alias entity-alias="TR" name="transformationName"/>
-        <alias entity-alias="AF" name="functionName"/>
+        <alias entity-alias="TR" name="transformationName" field="name"/>
+        <alias entity-alias="AF" name="functionName" field="name"/>
     </view-entity>
 
     <!-- ========== Graph ========== -->
