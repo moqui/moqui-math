@@ -339,8 +339,6 @@ along with this software (see the LICENSE.md file). If not, see
         <!-- Cache for fast IO or processing -->
         <field name="componentArray" type="text-very-long"/>
         <field name="componentBlob" type="binary-very-long"/>
-        <field name="contentLocation" type="text-medium"/>
-        <field name="contentTypeEnumId" type="id"/>
 
         <relationship type="one" title="Parent" related="moqui.math.Vector" short-alias="parent">
             <key-map field-name="parentVectorId" related="vectorId"/></relationship>
@@ -498,8 +496,6 @@ along with this software (see the LICENSE.md file). If not, see
         <!-- Cache for fast IO or processing -->
         <field name="componentArray" type="text-very-long"/>
         <field name="componentBlob" type="binary-very-long"/>
-        <field name="contentLocation" type="text-medium"/>
-        <field name="contentTypeEnumId" type="id"/>
 
         <relationship type="one" title="Parent" related="moqui.math.Matrix" short-alias="parent">
             <key-map field-name="parentMatrixId" related="matrixId"/></relationship>
@@ -671,8 +667,6 @@ along with this software (see the LICENSE.md file). If not, see
         <!-- Cache for fast IO or processing -->
         <field name="elementArray" type="text-very-long"/>
         <field name="elementBlob" type="binary-very-long"/>
-        <field name="contentLocation" type="text-medium"/>
-        <field name="contentTypeEnumId" type="id"/>
         <field name="arrayEncodingEnumId" type="id"/>
         <field name="arrayChecksum" type="text-short"/>
         <field name="dataTypeEnumId" type="id">
@@ -2242,8 +2236,6 @@ along with this software (see the LICENSE.md file). If not, see
                 advance the model on its own.</description></field>
         <field name="statusFlowId" type="id"/>
         <field name="location" type="text-medium"/>
-        <field name="contentLocation" type="text-medium"/>
-        <field name="contentTypeEnumId" type="id"/>
 
         <relationship type="one" related="moqui.math.MathModelDef" short-alias="modelDef"/>
         <relationship type="one" related="moqui.math.Graph" short-alias="graph"/>
