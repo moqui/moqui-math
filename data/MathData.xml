@@ -90,6 +90,15 @@ along with this software (see the LICENSE.md file). If not, see
     <moqui.math.ParameterDef parameterDefId="MorphismDistribute" parameterTypeEnumId="PtTextIndicator"
         purposeEnumId="PpControl" parameterCode="distribute" parameterName="Distributed Morphism Execution"
         description="When Y/true, distribute an asynchronous root pipeline. Requires async=Y and serializable runtime parameters."/>
+    <moqui.math.ParameterDef parameterDefId="RandomSeed" parameterTypeEnumId="PtNumberInteger"
+        purposeEnumId="PpSolverControl" parameterCode="randomSeed" parameterName="Random Number Generator Seed"
+        description="Seed value for pseudo-random number generators in stochastic solvers and models."/>
+    <moqui.math.ParameterDef parameterDefId="RngAlgorithm" parameterTypeEnumId="PtTextShort"
+        purposeEnumId="PpSolverControl" parameterCode="rngAlgorithm" parameterName="RNG Algorithm"
+        description="Algorithm or distribution generator for random numbers (e.g. MersenneTwister, Philox)."/>
+    <moqui.math.ParameterDef parameterDefId="RequiresGrad" parameterTypeEnumId="PtTextIndicator"
+        purposeEnumId="PpMlHyperparameter" parameterCode="requiresGrad" parameterName="Requires Gradient"
+        description="When Y/true, automatic differentiation engine records operations on this tensor for backward pass."/>
 
     <!-- Math Function -->
     <moqui.basic.EnumerationType description="Mathematical Function" enumTypeId="MathFunction"/>
@@ -187,7 +196,7 @@ along with this software (see the LICENSE.md file). If not, see
     <moqui.basic.Enumeration description="Relative Humidity Dimension" enumId="DimRelativeHumidity" enumCode="RH" enumTypeId="ThermodynamicDimension"/>
             
     <!-- 3D Euclidean Space -->
-    <moqui.basic.Enumeration description="3D Euclidean Space" enumId="Eng3DEuclideanSpace" enumTypeId="EnumGroup"/>
+    <moqui.basic.Enumeration description="3D Euclidean Space" enumId="Eng3DEuclideanSpace" enumCode="R3" enumTypeId="EnumGroup"/>
     <moqui.basic.EnumGroupMember enumId="DimX" enumGroupEnumId="Eng3DEuclideanSpace"/>
     <moqui.basic.EnumGroupMember enumId="DimY" enumGroupEnumId="Eng3DEuclideanSpace"/>
     <moqui.basic.EnumGroupMember enumId="DimZ" enumGroupEnumId="Eng3DEuclideanSpace"/>
@@ -209,7 +218,7 @@ along with this software (see the LICENSE.md file). If not, see
     <!-- 2D Euclidean Space: the planar counterpart of Eng3DEuclideanSpace below. Matrix
          domainSpaceEnumId / codomainSpaceEnumId take an enum-group id, so a plane needs a group
          of its own rather than a bare literal. -->
-    <moqui.basic.Enumeration description="2D Euclidean Space" enumId="Eng2DEuclideanSpace" enumTypeId="EnumGroup"/>
+    <moqui.basic.Enumeration description="2D Euclidean Space" enumId="Eng2DEuclideanSpace" enumCode="R2" enumTypeId="EnumGroup"/>
     <moqui.basic.EnumGroupMember enumId="DimX" enumGroupEnumId="Eng2DEuclideanSpace"/>
     <moqui.basic.EnumGroupMember enumId="DimY" enumGroupEnumId="Eng2DEuclideanSpace"/>
 

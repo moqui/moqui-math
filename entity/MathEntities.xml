@@ -258,10 +258,40 @@ along with this software (see the LICENSE.md file). If not, see
             <description>The parameter actual enumerative value.
                 For example device status word bit combinations, device control word bit combinations, etc.
                 The default value is null.</description></field>
+        <field name="textValue" type="text-long"/>
+        <field name="mathModelId" type="id"/>
+        <field name="categoryId" type="id"/>
+        <field name="categoryObjectId" type="id"/>
+        <field name="morphismId" type="id"/>
+        <field name="functorId" type="id"/>
+        <field name="graphId" type="id"/>
+        <field name="graphVertexId" type="id"/>
+        <field name="graphEdgeId" type="id"/>
+        <field name="meshKCellId" type="id"/>
+        <field name="deviceId" type="id"/>
+        <field name="deviceConfigId" type="id"/>
 
         <relationship type="one" related="moqui.math.ParameterDef" short-alias="parameterDef"/>
         <relationship type="one" related="moqui.basic.Uom" short-alias="uom">
             <key-map field-name="parameterUomId" related="uomId"/></relationship>
+        <relationship type="one" related="moqui.math.MathModel" short-alias="model">
+            <key-map field-name="mathModelId"/></relationship>
+        <relationship type="one" related="moqui.math.ct.Category" short-alias="category">
+            <key-map field-name="categoryId"/></relationship>
+        <relationship type="one" related="moqui.math.ct.CategoryObject" short-alias="categoryObject">
+            <key-map field-name="categoryObjectId"/></relationship>
+        <relationship type="one" related="moqui.math.ct.Morphism" short-alias="morphism">
+            <key-map field-name="morphismId"/></relationship>
+        <relationship type="one" related="moqui.math.ct.Functor" short-alias="functor">
+            <key-map field-name="functorId"/></relationship>
+        <relationship type="one" related="moqui.math.Graph" short-alias="graph">
+            <key-map field-name="graphId"/></relationship>
+        <relationship type="one" related="moqui.math.GraphVertex" short-alias="graphVertex">
+            <key-map field-name="graphVertexId"/></relationship>
+        <relationship type="one" related="moqui.math.GraphEdge" short-alias="graphEdge">
+            <key-map field-name="graphEdgeId"/></relationship>
+        <relationship type="one" related="moqui.math.MeshKCell" short-alias="cell">
+            <key-map field-name="meshKCellId"/></relationship>
         <!-- <relationship type="one" title="Parameter" related="moqui.basic.Enumeration"> -->
             <!-- The title won't match the enumTypeId for this field -->
             <!-- <key-map field-name="parameterEnumId"/></relationship> -->
@@ -1088,7 +1118,7 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.EnumerationType description="Transformation Type (Algebraic / Numerical)" enumTypeId="TransformationType"/>
             <!-- Root types: linear / non-linear / meta -->
             <moqui.basic.Enumeration enumId="TtLinear" enumTypeId="TransformationType" description="Linear Transformation"/>
-            <moqui.basic.Enumeration enumId="TtnonLinear" enumTypeId="TransformationType" description="Non-linear Transformation"/>
+            <moqui.basic.Enumeration enumId="TtNonLinear" enumTypeId="TransformationType" description="Non-linear Transformation"/>
             <moqui.basic.Enumeration enumId="TtMeta" enumTypeId="TransformationType" description="Meta-Transformation (composition, decomposition, compilation, etc.)"/>
             <!-- Relations are exact predicates over finite descriptions of their operands. -->
             <moqui.basic.Enumeration enumId="TtRelation" enumTypeId="TransformationType" description="Relational Transformation or Predicate"/>
@@ -1104,9 +1134,9 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration enumId="TtUnaryLin" parentEnumId="TtLinear" enumTypeId="TransformationType" description="Unary linear transformation"/>
             <moqui.basic.Enumeration enumId="TtBinaryLin" parentEnumId="TtLinear" enumTypeId="TransformationType" description="Binary linear transformation"/>
             <!-- Arity for non-linear transformations -->
-            <moqui.basic.Enumeration enumId="TtUnaryNonLin" parentEnumId="TtnonLinear" enumTypeId="TransformationType" description="Unary non-linear transformation"/>
-            <moqui.basic.Enumeration enumId="TtBinaryNonLin" parentEnumId="TtnonLinear" enumTypeId="TransformationType" description="Binary non-linear transformation"/>
-            <moqui.basic.Enumeration enumId="TtNaryNonLin" parentEnumId="TtnonLinear" enumTypeId="TransformationType" description="N-ary non-linear transformation"/>
+            <moqui.basic.Enumeration enumId="TtUnaryNonLin" parentEnumId="TtNonLinear" enumTypeId="TransformationType" description="Unary non-linear transformation"/>
+            <moqui.basic.Enumeration enumId="TtBinaryNonLin" parentEnumId="TtNonLinear" enumTypeId="TransformationType" description="Binary non-linear transformation"/>
+            <moqui.basic.Enumeration enumId="TtNaryNonLin" parentEnumId="TtNonLinear" enumTypeId="TransformationType" description="N-ary non-linear transformation"/>
 
             <!-- Unary transformation -->
             <moqui.basic.Enumeration description="Set Permutation" enumId="TtSetPermutation" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
@@ -1115,6 +1145,8 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Matrix Flip Up Down" enumId="TtMatrixFlipUpDown" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
             <moqui.basic.Enumeration description="Matrix Rotate 90°" enumId="TtMatrixRotate90" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
             <moqui.basic.Enumeration description="Matrix Transpose" enumId="TtMatrixTranspose" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Matrix Conjugate Transpose / Adjoint" enumId="TtMatrixAdjoint" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Matrix Trace" enumId="TtMatrixTrace" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
             <moqui.basic.Enumeration description="Matrix Diagonal" enumId="TtMatrixDiagonal" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
             <moqui.basic.Enumeration description="Matrix AntiDiagonal" enumId="TtMatrixAntiDiagonal" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
             <moqui.basic.Enumeration description="Matrix Vectorize" enumId="TtMatrixVectorize" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
@@ -1123,12 +1155,15 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Matrix Band Extract" enumId="TtMatrixBandExtract" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
             <moqui.basic.Enumeration description="Tensor Reshape" enumId="TtTensorReshape" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
             <moqui.basic.Enumeration description="Tensor Axis Permute / Transpose" enumId="TtTensorPermute" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Tensor Vectorize" enumId="TtTensorVectorize" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Tensor Matricization / Unfold" enumId="TtTensorUnfold" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
             <moqui.basic.Enumeration enumId="TtTensorFlip" parentEnumId="TtUnaryLin" enumTypeId="TransformationType" description="Reverse tensor along given axis/axes"/>
             <moqui.basic.Enumeration enumId="TtTensorFlipUpDown" parentEnumId="TtTensorFlip" enumTypeId="TransformationType" description="Flip up/down (reverse axis 0)"/>
             <moqui.basic.Enumeration enumId="TtTensorFlipLeftRight" parentEnumId="TtTensorFlip" enumTypeId="TransformationType" description="Flip left/right (reverse axis 1)"/>
             <moqui.basic.Enumeration enumId="TtTensorRotate90" parentEnumId="TtUnaryLin" enumTypeId="TransformationType" description="Rotate 90° k times around the last two axes"/>
             <moqui.basic.Enumeration description="Vector or Matrix Norm, Frobenius, Nuclear, etc." enumId="TtNorm" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType"/>
             <moqui.basic.Enumeration description="Matrix Reciprocal" enumId="TtMatrixReciprocal" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Tensor Reciprocal" enumId="TtTensorReciprocal" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType"/>
             <moqui.basic.Enumeration description="Matrix Inversion" enumId="TtMatrixInverse" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType"/>
             <moqui.basic.Enumeration description="Matrix Exponential (eᴬ)" enumId="TtMatrixExp" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType"/>
             <moqui.basic.Enumeration description="Matrix Integer Power (Aⁿ)" enumId="TtMatrixPower" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType"/>
@@ -2325,10 +2360,6 @@ along with this software (see the LICENSE.md file). If not, see
         <relationship type="one" related="moqui.math.MathModelRun" short-alias="run"/>
     </entity>
     <!-- Math Model Data -->
-    <extend-entity entity-name="Parameter" package="moqui.math" enable-audit-log="update" cache="true">
-        <field name="mathModelId" type="id"/>
-        <relationship type="one" related="moqui.math.MathModel" short-alias="model"/>
-    </extend-entity>
     <entity entity-name="MathModelData" package="moqui.math" use="nontransactional" cache="never">
         <description>A snowflake table for connecting mathematical objects to the model.</description>
         <field name="mathModelDataId" type="id" is-pk="true"/>
@@ -2412,6 +2443,10 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration enumId="MmdpConstraintMatrix" enumTypeId="MathModelDataPurpose" description="Constraint Matrix (A)"/>
             <moqui.basic.Enumeration enumId="MmdpRhsVector" enumTypeId="MathModelDataPurpose" description="Right-Hand Side (b)"/>
             <moqui.basic.Enumeration enumId="MmdpVarBounds" enumTypeId="MathModelDataPurpose" description="Variable Bounds"/>
+            <moqui.basic.Enumeration enumId="MmdpDualValue" enumTypeId="MathModelDataPurpose" description="Dual Value / Shadow Price (y)"/>
+            <moqui.basic.Enumeration enumId="MmdpReducedCost" enumTypeId="MathModelDataPurpose" description="Reduced Cost (rc)"/>
+            <moqui.basic.Enumeration enumId="MmdpSensitivity" enumTypeId="MathModelDataPurpose" description="Sensitivity Range"/>
+            <moqui.basic.Enumeration enumId="MmdpVariableDomain" enumTypeId="MathModelDataPurpose" description="Variable Domain (Continuous/Integer/Binary)"/>
             <!-- Queueing Parameters -->
             <moqui.basic.Enumeration enumId="MmdpArrivalRate" enumTypeId="MathModelDataPurpose" description="Arrival Rate (λ)"/>
             <moqui.basic.Enumeration enumId="MmdpServiceRate" enumTypeId="MathModelDataPurpose" description="Service Rate (μ)"/>
@@ -2425,6 +2460,13 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration enumId="MmdpPolicy" enumTypeId="MathModelDataPurpose" description="Policy (π)"/>
             <moqui.basic.Enumeration enumId="MmdpValueFunction" enumTypeId="MathModelDataPurpose" description="State-Value Function (V)"/>
             <moqui.basic.Enumeration enumId="MmdpQFunction" enumTypeId="MathModelDataPurpose" description="Action-Value Function (Q)"/>
+
+            <!-- Variable Domain -->
+            <moqui.basic.EnumerationType description="Variable Domain" enumTypeId="VariableDomain"/>
+            <moqui.basic.Enumeration description="Continuous" enumId="VdContinuous" enumTypeId="VariableDomain"/>
+            <moqui.basic.Enumeration description="Integer" enumId="VdInteger" enumTypeId="VariableDomain"/>
+            <moqui.basic.Enumeration description="Binary" enumId="VdBinary" enumTypeId="VariableDomain"/>
+            <moqui.basic.Enumeration description="Semi-Continuous" enumId="VdSemiContinuous" enumTypeId="VariableDomain"/>
         </seed-data>
     </entity>
 
@@ -2609,16 +2651,6 @@ along with this software (see the LICENSE.md file). If not, see
     <!-- Morphism-scoped execution configuration. ParameterDef.parameterCode is interpreted by
          convention; the core harness currently recognizes "async" and "distribute". Service
          arguments and data-flow aliases belong in MorphismParameterBinding instead. -->
-    <extend-entity entity-name="Parameter" package="moqui.math" enable-audit-log="update" cache="true">
-        <field name="categoryId" type="id"/>
-        <field name="categoryObjectId" type="id"/>
-        <field name="morphismId" type="id"/>
-        <field name="functorId" type="id"/>
-        <relationship type="one" related="moqui.math.ct.Category" short-alias="category"/>
-        <relationship type="one" related="moqui.math.ct.CategoryObject" short-alias="categoryObject"/>
-        <relationship type="one" related="moqui.math.ct.Morphism" short-alias="morphism"/>
-        <relationship type="one" related="moqui.math.ct.Functor" short-alias="functor"/>
-    </extend-entity>
     <entity entity-name="MorphismParameterBinding" package="moqui.math.ct" use="configuration" cache="true">
         <description>Optional exception to convention-over-configuration for a Morphism service input.
             With no binding, an input is read from the accumulated pipeline context using the same name.
@@ -3361,17 +3393,6 @@ along with this software (see the LICENSE.md file). If not, see
          component in the moqui-industrial distribution (agent/artifact graphs, PLC/firmware
          graphs, normative-clause graphs, electrical-compliance graphs) - previously declared
          identically via extend-entity in two separate components before being consolidated here. -->
-    <extend-entity entity-name="Parameter" package="moqui.math" enable-audit-log="update" cache="true">
-        <field name="graphId" type="id"/>
-        <field name="graphVertexId" type="id"/>
-        <field name="graphEdgeId" type="id"/>
-        <field name="textValue" type="text-long"/>
-
-        <relationship type="one" related="moqui.math.Graph" short-alias="graph"/>
-        <relationship type="one" related="moqui.math.GraphVertex" short-alias="graphVertex"/>
-        <relationship type="one" related="moqui.math.GraphEdge" short-alias="graphEdge"/>
-    </extend-entity>
-
     <!-- ========================================================= -->
     <!-- Category Theory / Graph Associative Entities              -->
     <!-- ========================================================= -->
@@ -3800,15 +3821,13 @@ along with this software (see the LICENSE.md file). If not, see
         <relationship type="one" title="MeshGroupMemberPurpose" related="moqui.basic.Enumeration" short-alias="purpose">
             <key-map field-name="purposeEnumId"/></relationship>
     </entity>
-    <!-- Mesh K-Cell Parameter -->
+    <!-- Mesh K-Cell Parameter Extensions -->
     <extend-entity entity-name="Parameter" package="moqui.math" enable-audit-log="update" use="configuration" cache="true" short-alias="parameters">
-        <field name="meshKCellId" type="id"/>
         <!-- Material and shader info specific to this parameter assignment. -->
         <field name="materialEnumId" type="id">
-            <description>>Material used to compute or interpret this parameter (e.g., steel, glass).</description></field>
+            <description>Material used to compute or interpret this parameter (e.g., steel, glass).</description></field>
         <field name="shaderProfileEnumId" type="id">
             <description>Shading model (e.g., Phong, Lambert) to interpret visual/rendering parameters.</description></field>
-        <relationship type="one" related="moqui.math.MeshKCell" short-alias="cell"/>
         <seed-data>
             <!-- Mesh Shader Profile -->
             <!-- Shading methods used for mesh element or material. -->
