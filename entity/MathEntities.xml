@@ -350,6 +350,8 @@ along with this software (see the LICENSE.md file). If not, see
             <key-map field-name="vectorSpaceEnumId" related="enumId"/></relationship>
         <relationship type="one" related="moqui.math.CoordinateSystem" short-alias="coordSystem"/>
         <relationship type="many" related="moqui.math.VectorComponent" short-alias="components"/>
+        <relationship type="many" related="moqui.math.VectorContent" short-alias="contents">
+            <key-map field-name="vectorId"/></relationship>
         <seed-data>
             <!-- =========================== Vector Type Data ============================ -->
             <moqui.basic.EnumerationType description="Vector Type" enumTypeId="VectorType"/>
@@ -454,6 +456,26 @@ along with this software (see the LICENSE.md file). If not, see
                         componentTypeEnumId="VctInCoordinateSystem" parentComponentId="vc2"/>
         -->
     </entity>
+    <entity entity-name="VectorContent" package="moqui.math" cache="never">
+        <description>Links a vector to one or more content records (NPY, raw binary blob, etc.).
+            Either the vector has components, an inline blob/array, or a content record.</description>
+        <field name="vectorContentId" type="id" is-pk="true"/>
+        <field name="vectorId" type="id" not-null="true"/>
+        <field name="contentLocation" type="text-medium"/>
+        <field name="contentTypeEnumId" type="id"/>
+        <field name="arrayChecksum" type="text-short"/>
+        <field name="arrayEncodingEnumId" type="id"/>
+        <field name="contentDate" type="date-time" default="ec.user.nowTimestamp"/>
+        <field name="description" type="text-long"/>
+        <field name="userId" type="id" default="ec.user.userId"/>
+
+        <relationship type="one" related="moqui.math.Vector" short-alias="vector"/>
+        <relationship type="one" title="TensorContentType" related="moqui.basic.Enumeration" short-alias="type">
+            <key-map field-name="contentTypeEnumId"/></relationship>
+        <relationship type="one" title="TensorArrayEncoding" related="moqui.basic.Enumeration" short-alias="arrayEncoding">
+            <key-map field-name="arrayEncodingEnumId"/></relationship>
+        <relationship type="one" related="moqui.security.UserAccount"/>
+    </entity>
 
     <!-- ========== Matrix ========== -->
     <entity entity-name="Matrix" package="moqui.math" use="configuration" cache="true" short-alias="matrices">
@@ -516,6 +538,8 @@ along with this software (see the LICENSE.md file). If not, see
         <relationship type="one" title="ConditionNorm" related="moqui.basic.Enumeration" short-alias="conditionNorm">
             <key-map field-name="conditionNormEnumId"/></relationship>
         <relationship type="many" related="moqui.math.MatrixComponent" short-alias="components">
+            <key-map field-name="matrixId"/></relationship>
+        <relationship type="many" related="moqui.math.MatrixContent" short-alias="contents">
             <key-map field-name="matrixId"/></relationship>
         <index name="MATRIX_DOM_COD"><index-field name="domainSpaceEnumId"/>
             <index-field name="codomainSpaceEnumId"/></index>
@@ -609,6 +633,26 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Symbolic Matrix Component" enumId="MctSymbolic" enumTypeId="MatrixComponentType"/>
         </seed-data>
     </entity>
+    <entity entity-name="MatrixContent" package="moqui.math" cache="never">
+        <description>Links a matrix to one or more content records (NPY, MatrixMarket, raw binary blob, etc.).
+            Either the matrix has components, an inline blob/array, or a content record.</description>
+        <field name="matrixContentId" type="id" is-pk="true"/>
+        <field name="matrixId" type="id" not-null="true"/>
+        <field name="contentLocation" type="text-medium"/>
+        <field name="contentTypeEnumId" type="id"/>
+        <field name="arrayChecksum" type="text-short"/>
+        <field name="arrayEncodingEnumId" type="id"/>
+        <field name="contentDate" type="date-time" default="ec.user.nowTimestamp"/>
+        <field name="description" type="text-long"/>
+        <field name="userId" type="id" default="ec.user.userId"/>
+
+        <relationship type="one" related="moqui.math.Matrix" short-alias="matrix"/>
+        <relationship type="one" title="TensorContentType" related="moqui.basic.Enumeration" short-alias="type">
+            <key-map field-name="contentTypeEnumId"/></relationship>
+        <relationship type="one" title="TensorArrayEncoding" related="moqui.basic.Enumeration" short-alias="arrayEncoding">
+            <key-map field-name="arrayEncodingEnumId"/></relationship>
+        <relationship type="one" related="moqui.security.UserAccount"/>
+    </entity>
 
     <!-- ========== Tensor ========== --> 
     <entity entity-name="Tensor" package="moqui.math" cache="true" short-alias="tensors">
@@ -667,8 +711,6 @@ along with this software (see the LICENSE.md file). If not, see
         <!-- Cache for fast IO or processing -->
         <field name="elementArray" type="text-very-long"/>
         <field name="elementBlob" type="binary-very-long"/>
-        <field name="arrayEncodingEnumId" type="id"/>
-        <field name="arrayChecksum" type="text-short"/>
         <field name="dataTypeEnumId" type="id">
             <description>Element scalar type of the tensor. Distinct from storageTypeEnumId, which
                 describes the memory layout, and from quantSchemeEnumId, which describes
@@ -697,9 +739,9 @@ along with this software (see the LICENSE.md file). If not, see
             <key-map field-name="memoryFormatEnumId"/></relationship>
         <relationship type="one" title="TensorQuantScheme" related="moqui.basic.Enumeration" short-alias="quantScheme">
             <key-map field-name="quantSchemeEnumId"/></relationship>
-        <relationship type="one" title="TensorArrayEncoding" related="moqui.basic.Enumeration" short-alias="arrayEncoding">
-            <key-map field-name="arrayEncodingEnumId"/></relationship>
         <relationship type="many" related="moqui.math.TensorElement" short-alias="elements">
+            <key-map field-name="tensorId"/></relationship>
+        <relationship type="many" related="moqui.math.TensorContent" short-alias="contents">
             <key-map field-name="tensorId"/></relationship>
         <seed-data>
             <!-- Tensor Type Data -->
@@ -799,12 +841,6 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration enumId="TqsPerTensorAff" description="Per-Tensor Affine (INT8)" enumTypeId="TensorQuantScheme"/>
             <moqui.basic.Enumeration enumId="TqsPerChannelAff" description="Per-Channel Affine (INT8)" enumTypeId="TensorQuantScheme"/>
             <moqui.basic.Enumeration enumId="TqsPerTensorSym" description="Per-Tensor Symmetric" enumTypeId="TensorQuantScheme"/>
-
-            <!-- Tensor Array Encoding -->
-            <moqui.basic.EnumerationType enumTypeId="TensorArrayEncoding" description="Tensor Array Encoding"/>
-            <moqui.basic.Enumeration enumTypeId="TensorArrayEncoding" enumId="TaeJson" description="JSON Numbers"/>
-            <moqui.basic.Enumeration enumTypeId="TensorArrayEncoding" enumId="TaeCbor" description="CBOR"/>
-            <moqui.basic.Enumeration enumTypeId="TensorArrayEncoding" enumId="TaeMsgPack" description="Message Pack"/>
         </seed-data>
     </entity>
     <entity entity-name="TensorContent" package="moqui.math" cache="never">
@@ -814,6 +850,8 @@ along with this software (see the LICENSE.md file). If not, see
         <field name="tensorId" type="id" not-null="true"/>
         <field name="contentLocation" type="text-medium"/>
         <field name="contentTypeEnumId" type="id"/>
+        <field name="arrayChecksum" type="text-short"/>
+        <field name="arrayEncodingEnumId" type="id"/>
         <field name="contentDate" type="date-time" default="ec.user.nowTimestamp"/>
         <field name="description" type="text-long"/>
         <field name="userId" type="id" default="ec.user.userId"/>
@@ -821,6 +859,8 @@ along with this software (see the LICENSE.md file). If not, see
         <relationship type="one" related="moqui.math.Tensor" short-alias="tensor"/>
         <relationship type="one" title="TensorContentType" related="moqui.basic.Enumeration" short-alias="type">
             <key-map field-name="contentTypeEnumId"/></relationship>
+        <relationship type="one" title="TensorArrayEncoding" related="moqui.basic.Enumeration" short-alias="arrayEncoding">
+            <key-map field-name="arrayEncodingEnumId"/></relationship>
         <relationship type="one" related="moqui.security.UserAccount"/>
         <seed-data>
             <!-- Tensor Content Type -->
@@ -833,6 +873,12 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration enumId="TCntArrowIpc" enumCode="ArrowIpc" description="Arrow IPC Stream" enumTypeId="TensorContentType"/>
             <moqui.basic.Enumeration enumId="TCntCBOR" enumCode="Cbor" description="CBOR Encoded Dense Tensor" enumTypeId="TensorContentType"/>
             <moqui.basic.Enumeration enumId="TCntManifest" enumCode="Manifest" description="External Manifest / Metadata File" enumTypeId="TensorContentType"/>
+
+            <!-- Tensor Array Encoding -->
+            <moqui.basic.EnumerationType enumTypeId="TensorArrayEncoding" description="Tensor Array Encoding"/>
+            <moqui.basic.Enumeration enumTypeId="TensorArrayEncoding" enumId="TaeJson" description="JSON Numbers"/>
+            <moqui.basic.Enumeration enumTypeId="TensorArrayEncoding" enumId="TaeCbor" description="CBOR"/>
+            <moqui.basic.Enumeration enumTypeId="TensorArrayEncoding" enumId="TaeMsgPack" description="Message Pack"/>
         </seed-data>
     </entity>
     <!-- Tensor Axis -->
@@ -2107,7 +2153,7 @@ along with this software (see the LICENSE.md file). If not, see
                 Configuration files: YAML, JSON for fixed parameters, neural network definitions (e.g. TensorFlow GraphDefs).
                 Symbolic formulas: SymPy, Mathematica expression files.
         </description>
-        <field name="mathModelContentId" type="id" is-pk="true"/>
+        <field name="mathModelDefContentId" type="id" is-pk="true"/>
         <field name="mathModelDefId" type="id" not-null="true"/>
         <field name="contentLocation" type="text-medium"/>
         <field name="contentTypeEnumId" type="id"/>
@@ -2117,33 +2163,35 @@ along with this software (see the LICENSE.md file). If not, see
         <field name="userId" type="id" default="ec.user.userId"/>
 
         <relationship type="one" related="moqui.math.MathModelDef" short-alias="model"/>
-        <relationship type="one" title="MathModelContentType" related="moqui.basic.Enumeration" short-alias="type">
+        <relationship type="one" title="MathModelDefContentType" related="moqui.basic.Enumeration" short-alias="type">
             <key-map field-name="contentTypeEnumId"/></relationship>
+        <relationship type="one" title="MathModelDefContentPurpose" related="moqui.basic.Enumeration" short-alias="purpose">
+            <key-map field-name="purposeEnumId"/></relationship>
         <relationship type="one" related="moqui.security.UserAccount"/>
         <seed-data>
-            <!-- Math Model Content Type -->
-            <moqui.basic.EnumerationType description="Math Model Content Type" enumTypeId="MathModelContentType"/>
-            <moqui.basic.Enumeration description="Python Script" enumId="MmCntPython" enumCode="Python" enumTypeId="MathModelContentType"/>
-            <moqui.basic.Enumeration description="YAML" enumId="MmCntYaml" enumCode="Yaml" enumTypeId="MathModelContentType"/>
-            <moqui.basic.Enumeration description="JSON" enumId="MmCntJson" enumCode="Json" enumTypeId="MathModelContentType"/>
-            <moqui.basic.Enumeration description="CSV" enumId="MmCntCsv" enumCode="Csv" enumTypeId="MathModelContentType"/>
-            <moqui.basic.Enumeration description="SymPy Script" enumId="MmCntSymPy" enumCode="SymPy" enumTypeId="MathModelContentType"/>
+            <!-- Math Model Def Content Type -->
+            <moqui.basic.EnumerationType description="Math Model Def Content Type" enumTypeId="MathModelDefContentType"/>
+            <moqui.basic.Enumeration description="Python Script" enumId="MmCntPython" enumCode="Python" enumTypeId="MathModelDefContentType"/>
+            <moqui.basic.Enumeration description="YAML" enumId="MmCntYaml" enumCode="Yaml" enumTypeId="MathModelDefContentType"/>
+            <moqui.basic.Enumeration description="JSON" enumId="MmCntJson" enumCode="Json" enumTypeId="MathModelDefContentType"/>
+            <moqui.basic.Enumeration description="CSV" enumId="MmCntCsv" enumCode="Csv" enumTypeId="MathModelDefContentType"/>
+            <moqui.basic.Enumeration description="SymPy Script" enumId="MmCntSymPy" enumCode="SymPy" enumTypeId="MathModelDefContentType"/>
             <!-- ML Framework Script/Bundle Flavors -->
-            <moqui.basic.Enumeration description="TorchScript Bundle" enumId="MmCntTorchScript" enumCode="TorchScript" enumTypeId="MathModelContentType"/>
-            <moqui.basic.Enumeration description="JAX / XLA Program" enumId="MmCntJax" enumCode="JAX" enumTypeId="MathModelContentType"/>
+            <moqui.basic.Enumeration description="TorchScript Bundle" enumId="MmCntTorchScript" enumCode="TorchScript" enumTypeId="MathModelDefContentType"/>
+            <moqui.basic.Enumeration description="JAX / XLA Program" enumId="MmCntJax" enumCode="JAX" enumTypeId="MathModelDefContentType"/>
             <!-- For Pre-Trained ML Model .h5, .pt, .pb, etc. -->
-            <moqui.basic.Enumeration description="Binary Model Blob" enumId="MmCntBinaryModel" enumCode="BinaryModel" enumTypeId="MathModelContentType"/>
-            <moqui.basic.Enumeration description="ONNX exports" enumId="MmCntOnnx" enumCode="Onnx" enumTypeId="MathModelContentType"/>
-            <moqui.basic.Enumeration description="Documentation" enumId="MmCntDocs" enumCode="Docs" enumTypeId="MathModelContentType"/>
-            <!-- Math Model Content Purpose -->
-            <moqui.basic.EnumerationType description="Math Model Content Purpose" enumTypeId="MathModelContentPurpose"/>
-            <moqui.basic.Enumeration description="Main Executable Logic" enumId="MmCnpMainLogic" enumCode="MainLogic" enumTypeId="MathModelContentPurpose"/>
-            <moqui.basic.Enumeration description="Helper Fuction" enumId="MmCnpHelperFunc" enumCode="HelperFunc" enumTypeId="MathModelContentPurpose"/>
-            <moqui.basic.Enumeration description="Model Definition" enumId="MmCnpModelDef" enumCode="ModelDef" enumTypeId="MathModelContentPurpose"/>
-            <moqui.basic.Enumeration description="Solver Configuration" enumId="MmCnpSolverConfig" enumCode="SolverConfig" enumTypeId="MathModelContentPurpose"/>
-            <moqui.basic.Enumeration description="Pre-processing Script" enumId="MmCnpPreProcessingScript" enumCode="PreProcessingScript" enumTypeId="MathModelContentPurpose"/>
-            <moqui.basic.Enumeration description="Post-processing Script" enumId="MmCnpPostProcessingScript" enumCode="PostProcessingScript" enumTypeId="MathModelContentPurpose"/>
-            <moqui.basic.Enumeration description="Symbolic Derivation" enumId="MmCnpSymDer" enumCode="SymbolicDerivation" enumTypeId="MathModelContentPurpose"/>
+            <moqui.basic.Enumeration description="Binary Model Blob" enumId="MmCntBinaryModel" enumCode="BinaryModel" enumTypeId="MathModelDefContentType"/>
+            <moqui.basic.Enumeration description="ONNX exports" enumId="MmCntOnnx" enumCode="Onnx" enumTypeId="MathModelDefContentType"/>
+            <moqui.basic.Enumeration description="Documentation" enumId="MmCntDocs" enumCode="Docs" enumTypeId="MathModelDefContentType"/>
+            <!-- Math Model Def Content Purpose -->
+            <moqui.basic.EnumerationType description="Math Model Def Content Purpose" enumTypeId="MathModelDefContentPurpose"/>
+            <moqui.basic.Enumeration description="Main Executable Logic" enumId="MmCnpMainLogic" enumCode="MainLogic" enumTypeId="MathModelDefContentPurpose"/>
+            <moqui.basic.Enumeration description="Helper Fuction" enumId="MmCnpHelperFunc" enumCode="HelperFunc" enumTypeId="MathModelDefContentPurpose"/>
+            <moqui.basic.Enumeration description="Model Definition" enumId="MmCnpModelDef" enumCode="ModelDef" enumTypeId="MathModelDefContentPurpose"/>
+            <moqui.basic.Enumeration description="Solver Configuration" enumId="MmCnpSolverConfig" enumCode="SolverConfig" enumTypeId="MathModelDefContentPurpose"/>
+            <moqui.basic.Enumeration description="Pre-processing Script" enumId="MmCnpPreProcessingScript" enumCode="PreProcessingScript" enumTypeId="MathModelDefContentPurpose"/>
+            <moqui.basic.Enumeration description="Post-processing Script" enumId="MmCnpPostProcessingScript" enumCode="PostProcessingScript" enumTypeId="MathModelDefContentPurpose"/>
+            <moqui.basic.Enumeration description="Symbolic Derivation" enumId="MmCnpSymDer" enumCode="SymbolicDerivation" enumTypeId="MathModelDefContentPurpose"/>
         </seed-data>
     </entity>
     <entity entity-name="MathModelDefPipeline" package="moqui.math" use="configuration" cache="true">
@@ -2235,7 +2283,6 @@ along with this software (see the LICENSE.md file). If not, see
                 against the declared StatusFlowTransition rows. With both, the flow can also
                 advance the model on its own.</description></field>
         <field name="statusFlowId" type="id"/>
-        <field name="location" type="text-medium"/>
 
         <relationship type="one" related="moqui.math.MathModelDef" short-alias="modelDef"/>
         <relationship type="one" related="moqui.math.Graph" short-alias="graph"/>
