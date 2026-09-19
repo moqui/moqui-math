@@ -458,10 +458,12 @@ along with this software (see the LICENSE.md file). If not, see
     </entity>
     <entity entity-name="VectorContent" package="moqui.math" cache="never">
         <description>Links a vector to one or more content records (NPY, raw binary blob, etc.).
-            Either the vector has components, an inline blob/array, or a content record.</description>
+            Either the vector has components, an inline blob/array, or a content record.
+            The optional contentKey field identifies an individual vector within a multi-vector container file.</description>
         <field name="vectorContentId" type="id" is-pk="true"/>
         <field name="vectorId" type="id" not-null="true"/>
         <field name="contentLocation" type="text-medium"/>
+        <field name="contentKey" type="text-medium"/>
         <field name="contentTypeEnumId" type="id"/>
         <field name="arrayChecksum" type="text-short"/>
         <field name="arrayEncodingEnumId" type="id"/>
@@ -635,10 +637,12 @@ along with this software (see the LICENSE.md file). If not, see
     </entity>
     <entity entity-name="MatrixContent" package="moqui.math" cache="never">
         <description>Links a matrix to one or more content records (NPY, MatrixMarket, raw binary blob, etc.).
-            Either the matrix has components, an inline blob/array, or a content record.</description>
+            Either the matrix has components, an inline blob/array, or a content record.
+            The optional contentKey field identifies an individual matrix within a multi-matrix container file.</description>
         <field name="matrixContentId" type="id" is-pk="true"/>
         <field name="matrixId" type="id" not-null="true"/>
         <field name="contentLocation" type="text-medium"/>
+        <field name="contentKey" type="text-medium"/>
         <field name="contentTypeEnumId" type="id"/>
         <field name="arrayChecksum" type="text-short"/>
         <field name="arrayEncodingEnumId" type="id"/>
@@ -776,6 +780,7 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration enumId="TpObserverGain" enumTypeId="TensorPurpose" description="Observer / Kalman Gain Matrix (L)"/>
             <moqui.basic.Enumeration enumId="TpCovarianceProcess" enumTypeId="TensorPurpose" description="Process Noise Covariance Matrix (Q)"/>
             <moqui.basic.Enumeration enumId="TpCovarianceMeasurement" enumTypeId="TensorPurpose" description="Measurement Noise Covariance Matrix (R)"/>
+            <moqui.basic.Enumeration enumId="TpOptimizerState" enumTypeId="TensorPurpose" description="Optimizer State (momentum, variance)"/>
 
             <!-- Tensor Approximation / Compression Method -->
             <moqui.basic.EnumerationType enumTypeId="TensorApproxMethod" description="Tensor Approximation / Compression Method"/>
@@ -845,10 +850,12 @@ along with this software (see the LICENSE.md file). If not, see
     </entity>
     <entity entity-name="TensorContent" package="moqui.math" cache="never">
         <description>Links a tensor to one or more content records (Zarr chunk, NPY, safetensors, etc.).
-            Either the tensor has components or a content blob, not both.</description>
+            Either the tensor has components or a content blob, not both.
+            The optional contentKey field identifies an individual tensor within a multi-tensor container file (such as a safetensors archive or HDF5 group).</description>
         <field name="tensorContentId" type="id" is-pk="true"/>
         <field name="tensorId" type="id" not-null="true"/>
         <field name="contentLocation" type="text-medium"/>
+        <field name="contentKey" type="text-medium"/>
         <field name="contentTypeEnumId" type="id"/>
         <field name="arrayChecksum" type="text-short"/>
         <field name="arrayEncodingEnumId" type="id"/>
@@ -1226,6 +1233,10 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration enumId="TtRMSNorm" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType" description="Root Mean Square Layer Normalization"/>
             <moqui.basic.Enumeration enumId="TtBatchNorm" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType" description="Batch Normalization"/>
             <moqui.basic.Enumeration enumId="TtGroupNorm" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType" description="Group Normalization"/>
+            <moqui.basic.Enumeration enumId="TtDropout" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType" description="Dropout Regularization"/>
+            <moqui.basic.Enumeration enumId="TtPositionalEncoding" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType" description="Positional Encoding"/>
+            <moqui.basic.Enumeration enumId="TtRotaryEmbedding" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType" description="Rotary Position Embedding"/>
+            <moqui.basic.Enumeration enumId="TtTensorNeg" parentEnumId="TtUnaryLin" enumTypeId="TransformationType" description="Element-wise Negation"/>
             <moqui.basic.Enumeration description="Tensor Inverse" enumId="TtTensorInv" parentEnumId="TtUnaryNonLin" enumTypeId="TransformationType"/>
 
             <!-- Spatial, Vision & Convolution Transformations -->
@@ -1242,6 +1253,7 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="2D Adaptive Average Pooling" enumId="TtAdaptiveAvgPool2d" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
             <moqui.basic.Enumeration description="Attention Additive Mask" enumId="TtAttentionMask" parentEnumId="TtBinaryLin" enumTypeId="TransformationType"/>
             <moqui.basic.Enumeration description="Scaled Dot-Product Attention" enumId="TtScaledDotProductAttention" parentEnumId="TtNaryNonLin" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration enumId="TtMultiHeadAttention" parentEnumId="TtNaryNonLin" enumTypeId="TransformationType" description="Multi-Head Attention"/>
             <moqui.basic.Enumeration description="Embedding Lookup Table" enumId="TtEmbedding" parentEnumId="TtUnaryLin" enumTypeId="TransformationType"/>
 
             <!-- Binary transformation -->
@@ -2275,6 +2287,7 @@ along with this software (see the LICENSE.md file). If not, see
         <field name="graphId" type="id"/>
         <field name="meshId" type="id"/>
         <field name="sourceEnumId" type="id"/>
+        <field name="solvingMethodEnumId" type="id"/>
         <field name="modelAlias" type="text-short"/>
         <field name="description" type="text-medium"/>
         <field name="statusId" type="id">
@@ -2287,6 +2300,9 @@ along with this software (see the LICENSE.md file). If not, see
         <relationship type="one" related="moqui.math.MathModelDef" short-alias="modelDef"/>
         <relationship type="one" related="moqui.math.Graph" short-alias="graph"/>
         <relationship type="one" related="moqui.math.Mesh" short-alias="mesh"/>
+        <relationship type="one" title="MathModelSolvingMethod" related="moqui.basic.Enumeration" short-alias="solvingMethod">
+            <key-map field-name="solvingMethodEnumId" related="enumId"/>
+        </relationship>
         <relationship type="one" title="MathModelSource" related="moqui.basic.Enumeration" short-alias="source">
             <key-map field-name="sourceEnumId"/></relationship>
         <relationship type="one" related="moqui.basic.StatusItem" short-alias="status"/>
