@@ -100,6 +100,39 @@ along with this software (see the LICENSE.md file). If not, see
         purposeEnumId="PpMlHyperparameter" parameterCode="requiresGrad" parameterName="Requires Gradient"
         description="When Y/true, automatic differentiation engine records operations on this tensor for backward pass."/>
 
+    <!-- Deep-learning hyper-parameters. The codes are the argument names PyTorch uses (in camelCase),
+         so a DSL call names a hyper-parameter the way torch.nn does. Codes are unique: a named DSL
+         argument resolves to exactly one ParameterDef. RMSNorm's epsilon is rmsEps, not eps, for that
+         reason. Boolean-like settings are 0/1 integers because defaultValue is number-decimal. -->
+    <moqui.math.ParameterDef parameterDefId="NumHeads" parameterTypeEnumId="PtNumberInteger"
+        purposeEnumId="PpMlHyperparameter" parameterCode="numHeads" parameterName="Number of Attention Heads"
+        isRequired="Y" minValue="1"
+        description="Number of parallel attention heads (torch.nn.MultiheadAttention num_heads). No default: PyTorch requires it."/>
+    <moqui.math.ParameterDef parameterDefId="LayerNormEpsilon" parameterTypeEnumId="PtNumberDecimal"
+        purposeEnumId="PpMlHyperparameter" parameterCode="eps" parameterName="Layer Normalization Epsilon"
+        defaultValue="1e-5" minValue="0"
+        description="Value added to the variance for numerical stability (torch.nn.LayerNorm eps, default 1e-5)."/>
+    <moqui.math.ParameterDef parameterDefId="RmsNormEpsilon" parameterTypeEnumId="PtNumberDecimal"
+        purposeEnumId="PpMlHyperparameter" parameterCode="rmsEps" parameterName="RMS Normalization Epsilon"
+        defaultValue="1e-6" minValue="0"
+        description="Value added to the mean square for numerical stability. Default 1e-6 as Hugging Face LlamaRMSNorm; torch.nn.RMSNorm defaults to the dtype machine epsilon."/>
+    <moqui.math.ParameterDef parameterDefId="DropoutProbability" parameterTypeEnumId="PtNumberDecimal"
+        purposeEnumId="PpMlHyperparameter" parameterCode="p" parameterName="Dropout Probability"
+        defaultValue="0.5" minValue="0" maxValue="1"
+        description="Probability of an element being zeroed during training (torch.nn.Dropout p, default 0.5). Identity in inference."/>
+    <moqui.math.ParameterDef parameterDefId="GeluApproximate" parameterTypeEnumId="PtNumberInteger"
+        purposeEnumId="PpMlHyperparameter" parameterCode="approximate" parameterName="GELU Approximation"
+        defaultValue="0" minValue="0" maxValue="1"
+        description="0 = exact erf GELU, 1 = tanh approximation (torch.nn.GELU approximate 'none' / 'tanh', default 'none')."/>
+    <moqui.math.ParameterDef parameterDefId="RopeTheta" parameterTypeEnumId="PtNumberDecimal"
+        purposeEnumId="PpMlHyperparameter" parameterCode="ropeTheta" parameterName="Rotary Embedding Base"
+        defaultValue="10000" minValue="0"
+        description="Base of the rotary position embedding frequencies (Hugging Face rope_theta, default 10000 as RoFormer and Llama)."/>
+    <moqui.math.ParameterDef parameterDefId="LayerNormAffine" parameterTypeEnumId="PtNumberInteger"
+        purposeEnumId="PpMlHyperparameter" parameterCode="elementwiseAffine" parameterName="Layer Normalization Affine"
+        defaultValue="1" minValue="0" maxValue="1"
+        description="1 = learnable weight and bias, 0 = none (torch.nn.LayerNorm elementwise_affine, default True)."/>
+
     <!-- Math Function -->
     <moqui.basic.EnumerationType description="Mathematical Function" enumTypeId="MathFunction"/>
     <moqui.basic.Enumeration description="Sine Function" enumId="MfSin" enumTypeId="MathFunction"/>
@@ -236,6 +269,27 @@ along with this software (see the LICENSE.md file). If not, see
     <moqui.basic.Enumeration description="Boolean" enumId="DtBool" enumCode="bool" enumTypeId="TensorDataType"/>
     <moqui.basic.Enumeration description="64-bit Complex" enumId="DtComplex64" enumCode="complex64" enumTypeId="TensorDataType"/>
     <moqui.basic.Enumeration description="128-bit Complex" enumId="DtComplex128" enumCode="complex128" enumTypeId="TensorDataType"/>
+
+    <!-- Transformation Operand Type: the codes are the argument names PyTorch uses for the same
+         operand (in camelCase), so a DSL call names its operands the way torch.nn and
+         torch.nn.functional do, and the role is derived from that name. PyTorch packs the three
+         input-projection biases into in_proj_bias; qProjBias, kProjBias and vProjBias follow
+         q_proj_weight by analogy. -->
+    <moqui.basic.Enumeration description="Single operand" enumId="TotSingle" enumCode="input" enumTypeId="TransformationOperandType"/>
+    <moqui.basic.Enumeration description="Kernel / filter – Tensor" enumId="TotKernelTensor" enumCode="weight" parentEnumId="TotKernel" enumTypeId="TransformationOperandType"/>
+    <moqui.basic.Enumeration description="Bias term - Tensor" enumId="TotBiasTensor" enumCode="bias" parentEnumId="TotBias" enumTypeId="TransformationOperandType"/>
+    <moqui.basic.Enumeration description="Attention query projection weight" enumId="TotQueryKernel" enumCode="qProjWeight" parentEnumId="TotKernel" enumTypeId="TransformationOperandType"/>
+    <moqui.basic.Enumeration description="Attention key projection weight" enumId="TotKeyKernel" enumCode="kProjWeight" parentEnumId="TotKernel" enumTypeId="TransformationOperandType"/>
+    <moqui.basic.Enumeration description="Attention value projection weight" enumId="TotValueKernel" enumCode="vProjWeight" parentEnumId="TotKernel" enumTypeId="TransformationOperandType"/>
+    <moqui.basic.Enumeration description="Attention output projection weight" enumId="TotOutputKernel" enumCode="outProjWeight" parentEnumId="TotKernel" enumTypeId="TransformationOperandType"/>
+    <moqui.basic.Enumeration description="Attention query projection bias" enumId="TotQueryBias" enumCode="qProjBias" parentEnumId="TotBias" enumTypeId="TransformationOperandType"/>
+    <moqui.basic.Enumeration description="Attention key projection bias" enumId="TotKeyBias" enumCode="kProjBias" parentEnumId="TotBias" enumTypeId="TransformationOperandType"/>
+    <moqui.basic.Enumeration description="Attention value projection bias" enumId="TotValueBias" enumCode="vProjBias" parentEnumId="TotBias" enumTypeId="TransformationOperandType"/>
+    <moqui.basic.Enumeration description="Attention output projection bias" enumId="TotOutputBias" enumCode="outProjBias" parentEnumId="TotBias" enumTypeId="TransformationOperandType"/>
+    <moqui.basic.Enumeration description="Attention query tensor" enumId="TotQueryTensor" enumCode="query" parentEnumId="TotTensor" enumTypeId="TransformationOperandType"/>
+    <moqui.basic.Enumeration description="Attention key tensor" enumId="TotKeyTensor" enumCode="key" parentEnumId="TotTensor" enumTypeId="TransformationOperandType"/>
+    <moqui.basic.Enumeration description="Attention value tensor" enumId="TotValueTensor" enumCode="value" parentEnumId="TotTensor" enumTypeId="TransformationOperandType"/>
+    <moqui.basic.Enumeration description="Additive attention mask tensor" enumId="TotMaskTensor" enumCode="attnMask" parentEnumId="TotTensor" enumTypeId="TransformationOperandType"/>
 
     <!-- Tensor Device: where the tensor is expected to live. -->
     <moqui.basic.EnumerationType description="Tensor Device" enumTypeId="TensorDevice"/>
