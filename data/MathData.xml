@@ -100,38 +100,113 @@ along with this software (see the LICENSE.md file). If not, see
         purposeEnumId="PpMlHyperparameter" parameterCode="requiresGrad" parameterName="Requires Gradient"
         description="When Y/true, automatic differentiation engine records operations on this tensor for backward pass."/>
 
-    <!-- Deep-learning hyper-parameters. The codes are the argument names PyTorch uses (in camelCase),
-         so a DSL call names a hyper-parameter the way torch.nn does. Codes are unique: a named DSL
-         argument resolves to exactly one ParameterDef. RMSNorm's epsilon is rmsEps, not eps, for that
-         reason. Boolean-like settings are 0/1 integers because defaultValue is number-decimal. -->
-    <moqui.math.ParameterDef parameterDefId="NumHeads" parameterTypeEnumId="PtNumberInteger"
-        purposeEnumId="PpMlHyperparameter" parameterCode="numHeads" parameterName="Number of Attention Heads"
-        isRequired="Y" minValue="1"
-        description="Number of parallel attention heads (torch.nn.MultiheadAttention num_heads). No default: PyTorch requires it."/>
-    <moqui.math.ParameterDef parameterDefId="LayerNormEpsilon" parameterTypeEnumId="PtNumberDecimal"
-        purposeEnumId="PpMlHyperparameter" parameterCode="eps" parameterName="Layer Normalization Epsilon"
+    <!-- Operation-scoped parameters. ParameterDef.classEnumId names a ParameterClass value under
+         PcOperation whose relatedEnumId is the TransformationType the parameter belongs to; a
+         class without relatedEnumId groups the classes beneath it (PcReduction for sum, mean, max
+         and min). A DSL argument of a call of type TtX resolves among the ParameterDefs of the
+         classes related to TtX and their ancestors below PcOperation, then among ParameterDefs
+         with no class, which are global (RandomSeed). Codes are unique within a scope, not
+         globally: eps is LayerNorm's epsilon in layerNorm() and RMSNorm's in rmsNorm().
+         Naming: parameterCode is the argument name in the reference library, in camelCase;
+         parameterName is the textbook name; description cites the library argument with its
+         default and the mathematical reference. Boolean settings are 0/1 integers because
+         defaultValue is number-decimal. -->
+    <moqui.basic.Enumeration description="Operation-scoped parameter" enumId="PcOperation" enumTypeId="ParameterClass"/>
+    <moqui.basic.Enumeration description="Layer normalization parameters" enumId="PcLayerNorm" parentEnumId="PcOperation"
+        enumTypeId="ParameterClass" relatedEnumId="TtLayerNorm" relatedEnumTypeId="TransformationType"/>
+    <moqui.basic.Enumeration description="RMS normalization parameters" enumId="PcRmsNorm" parentEnumId="PcOperation"
+        enumTypeId="ParameterClass" relatedEnumId="TtRMSNorm" relatedEnumTypeId="TransformationType"/>
+    <moqui.basic.Enumeration description="Dropout parameters" enumId="PcDropout" parentEnumId="PcOperation"
+        enumTypeId="ParameterClass" relatedEnumId="TtDropout" relatedEnumTypeId="TransformationType"/>
+    <moqui.basic.Enumeration description="Multi-head attention parameters" enumId="PcMultiHeadAttention" parentEnumId="PcOperation"
+        enumTypeId="ParameterClass" relatedEnumId="TtMultiHeadAttention" relatedEnumTypeId="TransformationType"/>
+    <moqui.basic.Enumeration description="Scaled dot-product attention parameters" enumId="PcScaledDotProductAttention" parentEnumId="PcOperation"
+        enumTypeId="ParameterClass" relatedEnumId="TtScaledDotProductAttention" relatedEnumTypeId="TransformationType"/>
+    <moqui.basic.Enumeration description="GELU parameters" enumId="PcGelu" parentEnumId="PcOperation"
+        enumTypeId="ParameterClass" relatedEnumId="TtTensorGelu" relatedEnumTypeId="TransformationType"/>
+    <moqui.basic.Enumeration description="Leaky ReLU parameters" enumId="PcLeakyRelu" parentEnumId="PcOperation"
+        enumTypeId="ParameterClass" relatedEnumId="TtTensorLeakyReLu" relatedEnumTypeId="TransformationType"/>
+    <moqui.basic.Enumeration description="ELU parameters" enumId="PcElu" parentEnumId="PcOperation"
+        enumTypeId="ParameterClass" relatedEnumId="TtTensorElu" relatedEnumTypeId="TransformationType"/>
+    <moqui.basic.Enumeration description="Softmax family parameters" enumId="PcSoftmax" parentEnumId="PcOperation" enumTypeId="ParameterClass"/>
+    <moqui.basic.Enumeration description="Softmax parameters" enumId="PcTensorSoftmax" parentEnumId="PcSoftmax"
+        enumTypeId="ParameterClass" relatedEnumId="TtTensorSoftmax" relatedEnumTypeId="TransformationType"/>
+    <moqui.basic.Enumeration description="Log-softmax parameters" enumId="PcTensorLogSoftmax" parentEnumId="PcSoftmax"
+        enumTypeId="ParameterClass" relatedEnumId="TtTensorLogSoftmax" relatedEnumTypeId="TransformationType"/>
+    <moqui.basic.Enumeration description="Reduction parameters" enumId="PcReduction" parentEnumId="PcOperation" enumTypeId="ParameterClass"/>
+    <moqui.basic.Enumeration description="Sum parameters" enumId="PcTensorSum" parentEnumId="PcReduction"
+        enumTypeId="ParameterClass" relatedEnumId="TtTensorSum" relatedEnumTypeId="TransformationType"/>
+    <moqui.basic.Enumeration description="Mean parameters" enumId="PcTensorMean" parentEnumId="PcReduction"
+        enumTypeId="ParameterClass" relatedEnumId="TtTensorMean" relatedEnumTypeId="TransformationType"/>
+    <moqui.basic.Enumeration description="Maximum parameters" enumId="PcTensorMax" parentEnumId="PcReduction"
+        enumTypeId="ParameterClass" relatedEnumId="TtTensorMax" relatedEnumTypeId="TransformationType"/>
+    <moqui.basic.Enumeration description="Minimum parameters" enumId="PcTensorMin" parentEnumId="PcReduction"
+        enumTypeId="ParameterClass" relatedEnumId="TtTensorMin" relatedEnumTypeId="TransformationType"/>
+    <moqui.basic.Enumeration description="Power parameters" enumId="PcTensorPow" parentEnumId="PcOperation"
+        enumTypeId="ParameterClass" relatedEnumId="TtTensorPow" relatedEnumTypeId="TransformationType"/>
+    <moqui.basic.Enumeration description="Rotary position embedding parameters" enumId="PcRotaryEmbedding" parentEnumId="PcOperation"
+        enumTypeId="ParameterClass" relatedEnumId="TtRotaryEmbedding" relatedEnumTypeId="TransformationType"/>
+    <moqui.basic.Enumeration description="Sinusoidal positional encoding parameters" enumId="PcPositionalEncoding" parentEnumId="PcOperation"
+        enumTypeId="ParameterClass" relatedEnumId="TtPositionalEncoding" relatedEnumTypeId="TransformationType"/>
+
+    <moqui.math.ParameterDef parameterDefId="LayerNormEpsilon" parameterTypeEnumId="PtNumberDecimal" classEnumId="PcLayerNorm"
+        purposeEnumId="PpMlHyperparameter" parameterCode="eps" parameterName="ε (numerical stability)"
         defaultValue="1e-5" minValue="0"
-        description="Value added to the variance for numerical stability (torch.nn.LayerNorm eps, default 1e-5)."/>
-    <moqui.math.ParameterDef parameterDefId="RmsNormEpsilon" parameterTypeEnumId="PtNumberDecimal"
-        purposeEnumId="PpMlHyperparameter" parameterCode="rmsEps" parameterName="RMS Normalization Epsilon"
-        defaultValue="1e-6" minValue="0"
-        description="Value added to the mean square for numerical stability. Default 1e-6 as Hugging Face LlamaRMSNorm; torch.nn.RMSNorm defaults to the dtype machine epsilon."/>
-    <moqui.math.ParameterDef parameterDefId="DropoutProbability" parameterTypeEnumId="PtNumberDecimal"
-        purposeEnumId="PpMlHyperparameter" parameterCode="p" parameterName="Dropout Probability"
-        defaultValue="0.5" minValue="0" maxValue="1"
-        description="Probability of an element being zeroed during training (torch.nn.Dropout p, default 0.5). Identity in inference."/>
-    <moqui.math.ParameterDef parameterDefId="GeluApproximate" parameterTypeEnumId="PtNumberInteger"
-        purposeEnumId="PpMlHyperparameter" parameterCode="approximate" parameterName="GELU Approximation"
-        defaultValue="0" minValue="0" maxValue="1"
-        description="0 = exact erf GELU, 1 = tanh approximation (torch.nn.GELU approximate 'none' / 'tanh', default 'none')."/>
-    <moqui.math.ParameterDef parameterDefId="RopeTheta" parameterTypeEnumId="PtNumberDecimal"
-        purposeEnumId="PpMlHyperparameter" parameterCode="ropeTheta" parameterName="Rotary Embedding Base"
-        defaultValue="10000" minValue="0"
-        description="Base of the rotary position embedding frequencies (Hugging Face rope_theta, default 10000 as RoFormer and Llama)."/>
-    <moqui.math.ParameterDef parameterDefId="LayerNormAffine" parameterTypeEnumId="PtNumberInteger"
-        purposeEnumId="PpMlHyperparameter" parameterCode="elementwiseAffine" parameterName="Layer Normalization Affine"
+        description="Added to the variance before the square root. torch.nn.LayerNorm(eps=1e-05); Ba, Kiros &amp; Hinton 2016, Layer Normalization."/>
+    <moqui.math.ParameterDef parameterDefId="LayerNormAffine" parameterTypeEnumId="PtNumberInteger" classEnumId="PcLayerNorm"
+        purposeEnumId="PpMlHyperparameter" parameterCode="elementwiseAffine" parameterName="Learnable gain and bias (γ, β)"
         defaultValue="1" minValue="0" maxValue="1"
-        description="1 = learnable weight and bias, 0 = none (torch.nn.LayerNorm elementwise_affine, default True)."/>
+        description="1: the output is scaled by γ and shifted by β; 0: neither exists. torch.nn.LayerNorm(elementwise_affine=True); Ba et al. 2016."/>
+    <moqui.math.ParameterDef parameterDefId="RmsNormEpsilon" parameterTypeEnumId="PtNumberDecimal" classEnumId="PcRmsNorm"
+        purposeEnumId="PpMlHyperparameter" parameterCode="eps" parameterName="ε (numerical stability)"
+        defaultValue="1e-6" minValue="0"
+        description="Added to the mean square before the square root. transformers LlamaRMSNorm(eps=1e-6); torch.nn.RMSNorm(eps=None) uses the machine epsilon of the dtype instead. Zhang &amp; Sennrich 2019, Root Mean Square Layer Normalization."/>
+    <moqui.math.ParameterDef parameterDefId="DropoutProbability" parameterTypeEnumId="PtNumberDecimal" classEnumId="PcDropout"
+        purposeEnumId="PpMlHyperparameter" parameterCode="p" parameterName="Drop probability"
+        defaultValue="0.5" minValue="0" maxValue="1"
+        description="Probability that an element is zeroed in training; survivors are scaled by 1/(1-p); identity in inference. torch.nn.Dropout(p=0.5); Srivastava et al. 2014."/>
+    <moqui.math.ParameterDef parameterDefId="NumHeads" parameterTypeEnumId="PtNumberInteger" classEnumId="PcMultiHeadAttention"
+        purposeEnumId="PpMlHyperparameter" parameterCode="numHeads" parameterName="Number of attention heads (h)"
+        isRequired="Y" minValue="1"
+        description="Number of parallel heads; must divide the model width. torch.nn.MultiheadAttention(num_heads), no default; Vaswani et al. 2017, section 3.2.2."/>
+    <moqui.math.ParameterDef parameterDefId="AttentionScale" parameterTypeEnumId="PtNumberDecimal" classEnumId="PcScaledDotProductAttention"
+        purposeEnumId="PpMlHyperparameter" parameterCode="scale" parameterName="Score scaling factor"
+        description="Multiplies Q K^T before the softmax. No defaultValue: when absent the factor is 1/sqrt(d_k), as torch.nn.functional.scaled_dot_product_attention(scale=None); Vaswani et al. 2017, section 3.2.1."/>
+    <moqui.math.ParameterDef parameterDefId="GeluApproximate" parameterTypeEnumId="PtNumberInteger" classEnumId="PcGelu"
+        purposeEnumId="PpMlHyperparameter" parameterCode="approximate" parameterName="tanh approximation of Φ"
+        defaultValue="0" minValue="0" maxValue="1"
+        description="0: exact x·Φ(x) with the Gaussian CDF; 1: the tanh approximation. torch.nn.GELU(approximate='none'|'tanh'); Hendrycks &amp; Gimpel 2016."/>
+    <moqui.math.ParameterDef parameterDefId="LeakyReluNegativeSlope" parameterTypeEnumId="PtNumberDecimal" classEnumId="PcLeakyRelu"
+        purposeEnumId="PpMlHyperparameter" parameterCode="negativeSlope" parameterName="Slope of the negative part (α)"
+        defaultValue="0.01"
+        description="max(0, x) + α·min(0, x). torch.nn.LeakyReLU(negative_slope=0.01); Maas, Hannun &amp; Ng 2013."/>
+    <moqui.math.ParameterDef parameterDefId="EluAlpha" parameterTypeEnumId="PtNumberDecimal" classEnumId="PcElu"
+        purposeEnumId="PpMlHyperparameter" parameterCode="alpha" parameterName="Saturation value of the negative part (α)"
+        defaultValue="1.0"
+        description="x for x > 0, α(exp(x) - 1) otherwise. torch.nn.ELU(alpha=1.0); Clevert, Unterthiner &amp; Hochreiter 2016."/>
+    <moqui.math.ParameterDef parameterDefId="SoftmaxDim" parameterTypeEnumId="PtNumberInteger" classEnumId="PcSoftmax"
+        purposeEnumId="PpMlHyperparameter" parameterCode="dim" parameterName="Normalized axis"
+        defaultValue="-1"
+        description="Axis along which the values sum to one; negative counts from the last. torch.nn.functional.softmax(dim), -1 as used for attention scores and logits; jax.nn.softmax(axis=-1)."/>
+    <moqui.math.ParameterDef parameterDefId="ReductionDim" parameterTypeEnumId="PtNumberInteger" classEnumId="PcReduction"
+        purposeEnumId="PpMlHyperparameter" parameterCode="dim" parameterName="Reduced axis"
+        description="Axis to reduce; negative counts from the last. No defaultValue: when absent every axis is reduced, as torch.sum/torch.mean(dim=None) and numpy.sum(axis=None)."/>
+    <moqui.math.ParameterDef parameterDefId="ReductionKeepdim" parameterTypeEnumId="PtNumberInteger" classEnumId="PcReduction"
+        purposeEnumId="PpMlHyperparameter" parameterCode="keepdim" parameterName="Keep reduced axes with size one"
+        defaultValue="0" minValue="0" maxValue="1"
+        description="1: reduced axes stay with size 1; 0: they are removed. torch.sum(keepdim=False); numpy.sum(keepdims=False)."/>
+    <moqui.math.ParameterDef parameterDefId="PowExponent" parameterTypeEnumId="PtNumberDecimal" classEnumId="PcTensorPow"
+        purposeEnumId="PpMlHyperparameter" parameterCode="exponent" parameterName="Exponent"
+        isRequired="Y"
+        description="Element-wise x^exponent. torch.pow(input, exponent), required; numpy.power(x1, x2)."/>
+    <moqui.math.ParameterDef parameterDefId="RopeTheta" parameterTypeEnumId="PtNumberDecimal" classEnumId="PcRotaryEmbedding"
+        purposeEnumId="PpMlHyperparameter" parameterCode="ropeTheta" parameterName="Frequency base (θ)"
+        defaultValue="10000" minValue="0"
+        description="inv_freq_i = θ^(-2i/d). transformers LlamaConfig(rope_theta=10000.0); Su et al. 2021, RoFormer."/>
+    <moqui.math.ParameterDef parameterDefId="PositionalEncodingMaxTimescale" parameterTypeEnumId="PtNumberDecimal" classEnumId="PcPositionalEncoding"
+        purposeEnumId="PpMlHyperparameter" parameterCode="maxTimescale" parameterName="Longest wavelength scale"
+        defaultValue="10000" minValue="0"
+        description="PE(t, 2i) = sin(t / s^(2i/D)), PE(t, 2i+1) = cos(t / s^(2i/D)). tensor2tensor common_attention.get_timing_signal_1d(max_timescale=1.0e4); Vaswani et al. 2017, section 3.5."/>
 
     <!-- Math Function -->
     <moqui.basic.EnumerationType description="Mathematical Function" enumTypeId="MathFunction"/>
