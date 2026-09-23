@@ -147,7 +147,10 @@ along with this software (see the LICENSE.md file). If not, see
         <relationship type="one" related="moqui.security.UserAccount" short-alias="userAccount"/>
         <relationship type="one" title="UomType" related="moqui.basic.Enumeration">
             <key-map field-name="uomTypeEnumId"/></relationship>
-        <index name="PAR_UNQCD" unique="true"><index-field name="parameterCode"/></index>
+        <index name="PAR_UNQCD" unique="true">
+            <index-field name="classEnumId"/>
+            <index-field name="parameterCode"/>
+        </index>
         <seed-data>
             <!-- Parameter Type -->
             <moqui.basic.EnumerationType description="Parameter Type" enumTypeId="ParameterType"/>
