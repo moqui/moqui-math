@@ -149,6 +149,46 @@ along with this software (see the LICENSE.md file). If not, see
     <moqui.basic.Enumeration description="Sinusoidal positional encoding parameters" enumId="PcPositionalEncoding" parentEnumId="PcOperation"
         enumTypeId="ParameterClass" relatedEnumId="TtPositionalEncoding" relatedEnumTypeId="TransformationType"/>
 
+    <!-- Engine-scoped parameter classes linked to MathModelSolvingMethod -->
+    <moqui.basic.Enumeration description="Engine-scoped parameter" enumId="PcEngine" enumTypeId="ParameterClass"/>
+    <moqui.basic.Enumeration description="LibTorch engine defaults" enumId="PcEngineLibTorch" parentEnumId="PcEngine"
+        enumTypeId="ParameterClass" relatedEnumId="MmsmLibTorch" relatedEnumTypeId="MathModelSolvingMethod"/>
+    <moqui.basic.Enumeration description="JAX engine defaults" enumId="PcEngineJax" parentEnumId="PcEngine"
+        enumTypeId="ParameterClass" relatedEnumId="MmsmJax" relatedEnumTypeId="MathModelSolvingMethod"/>
+    <moqui.basic.Enumeration description="OR-Tools engine defaults" enumId="PcEngineOrTools" parentEnumId="PcEngine"
+        enumTypeId="ParameterClass" relatedEnumId="MmsmOrTools" relatedEnumTypeId="MathModelSolvingMethod"/>
+    <moqui.basic.Enumeration description="PETSc TAO engine defaults" enumId="PcEnginePetscTao" parentEnumId="PcEngine"
+        enumTypeId="ParameterClass" relatedEnumId="MmsmPetscTao" relatedEnumTypeId="MathModelSolvingMethod"/>
+    <moqui.basic.Enumeration description="OpenFOAM engine defaults" enumId="PcEngineOpenFoam" parentEnumId="PcEngine"
+        enumTypeId="ParameterClass" relatedEnumId="MmsmOpenFoam" relatedEnumTypeId="MathModelSolvingMethod"/>
+    <moqui.basic.Enumeration description="OpenCV engine defaults" enumId="PcEngineOpenCv" parentEnumId="PcEngine"
+        enumTypeId="ParameterClass" relatedEnumId="MmsmOpenCv" relatedEnumTypeId="MathModelSolvingMethod"/>
+    <moqui.basic.Enumeration description="Jena engine defaults" enumId="PcEngineJena" parentEnumId="PcEngine"
+        enumTypeId="ParameterClass" relatedEnumId="MmsmJena" relatedEnumTypeId="MathModelSolvingMethod"/>
+
+    <!-- Vision operation parameter classes -->
+    <moqui.basic.Enumeration description="1D Convolution parameters" enumId="PcConv1d" parentEnumId="PcOperation"
+        enumTypeId="ParameterClass" relatedEnumId="TtConv1d" relatedEnumTypeId="TransformationType"/>
+    <moqui.basic.Enumeration description="2D Convolution parameters" enumId="PcConv2d" parentEnumId="PcOperation"
+        enumTypeId="ParameterClass" relatedEnumId="TtConv2d" relatedEnumTypeId="TransformationType"/>
+    <moqui.basic.Enumeration description="2D Max Pooling parameters" enumId="PcMaxPool2d" parentEnumId="PcOperation"
+        enumTypeId="ParameterClass" relatedEnumId="TtMaxPool2d" relatedEnumTypeId="TransformationType"/>
+    <moqui.basic.Enumeration description="2D Average Pooling parameters" enumId="PcAvgPool2d" parentEnumId="PcOperation"
+        enumTypeId="ParameterClass" relatedEnumId="TtAvgPool2d" relatedEnumTypeId="TransformationType"/>
+    <moqui.basic.Enumeration description="2D Adaptive Average Pooling parameters" enumId="PcAdaptiveAvgPool2d" parentEnumId="PcOperation"
+        enumTypeId="ParameterClass" relatedEnumId="TtAdaptiveAvgPool2d" relatedEnumTypeId="TransformationType"/>
+    <moqui.basic.Enumeration description="Batch Normalization parameters" enumId="PcBatchNorm" parentEnumId="PcOperation"
+        enumTypeId="ParameterClass" relatedEnumId="TtBatchNorm" relatedEnumTypeId="TransformationType"/>
+    <moqui.basic.Enumeration description="Group Normalization parameters" enumId="PcGroupNorm" parentEnumId="PcOperation"
+        enumTypeId="ParameterClass" relatedEnumId="TtGroupNorm" relatedEnumTypeId="TransformationType"/>
+
+    <!-- Visualization parameter classes -->
+    <moqui.basic.Enumeration description="Visualization defaults" enumId="PcVisualization" enumTypeId="ParameterClass"/>
+    <moqui.basic.Enumeration description="Chart defaults" enumId="PcVizChart" parentEnumId="PcVisualization" enumTypeId="ParameterClass"/>
+    <moqui.basic.Enumeration description="Axes defaults" enumId="PcVizAxes" parentEnumId="PcVisualization" enumTypeId="ParameterClass"/>
+    <moqui.basic.Enumeration description="Palette defaults" enumId="PcVizPalette" parentEnumId="PcVisualization" enumTypeId="ParameterClass"/>
+    <moqui.basic.Enumeration description="Marks defaults" enumId="PcVizMarks" parentEnumId="PcVisualization" enumTypeId="ParameterClass"/>
+
     <moqui.math.ParameterDef parameterDefId="LayerNormEpsilon" parameterTypeEnumId="PtNumberDecimal" classEnumId="PcLayerNorm"
         purposeEnumId="PpMlHyperparameter" parameterCode="eps" parameterName="ε (numerical stability)"
         defaultValue="1e-5" minValue="0"
@@ -207,6 +247,165 @@ along with this software (see the LICENSE.md file). If not, see
         purposeEnumId="PpMlHyperparameter" parameterCode="maxTimescale" parameterName="Longest wavelength scale"
         defaultValue="10000" minValue="0"
         description="PE(t, 2i) = sin(t / s^(2i/D)), PE(t, 2i+1) = cos(t / s^(2i/D)). tensor2tensor common_attention.get_timing_signal_1d(max_timescale=1.0e4); Vaswani et al. 2017, section 3.5."/>
+
+    <!-- Global and Engine defaults -->
+    <moqui.math.ParameterDef parameterDefId="EngineDevice" parameterTypeEnumId="PtTextShort" groupEnumId="PgEngineDefaults"
+        purposeEnumId="PpDeviceConfiguration" parameterCode="device" parameterName="Execution Device"
+        defaultTextValue="cpu"
+        description="Execution target device: cpu, cuda, cuda:0, etc."/>
+    <moqui.math.ParameterDef parameterDefId="EngineDataType" parameterTypeEnumId="PtTextShort" groupEnumId="PgEngineDefaults"
+        purposeEnumId="PpMlHyperparameter" parameterCode="dataType" parameterName="Default Data Type"
+        defaultTextValue="float32"
+        description="Default floating point precision: float32, float64, etc."/>
+    <moqui.math.ParameterDef parameterDefId="EngineNumThreads" parameterTypeEnumId="PtNumberInteger" groupEnumId="PgEngineDefaults"
+        purposeEnumId="PpDeviceConfiguration" parameterCode="numThreads" parameterName="Number of Threads"
+        defaultValue="4" minValue="1"
+        description="Number of CPU worker threads for parallel computation."/>
+    <moqui.math.ParameterDef parameterDefId="EngineSeed" parameterTypeEnumId="PtNumberInteger" groupEnumId="PgEngineDefaults"
+        purposeEnumId="PpMlHyperparameter" parameterCode="seed" parameterName="Random Seed"
+        defaultValue="42"
+        description="Pseudo-random number generator seed for deterministic initialization and operations."/>
+    <moqui.math.ParameterDef parameterDefId="EngineLearningRate" parameterTypeEnumId="PtNumberDecimal" groupEnumId="PgEngineDefaults"
+        purposeEnumId="PpLearningRate" parameterCode="learningRate" parameterName="Learning Rate"
+        defaultValue="0.001" minValue="0"
+        description="Default learning rate for gradient-based optimizers."/>
+    <moqui.math.ParameterDef parameterDefId="EngineWeightDecay" parameterTypeEnumId="PtNumberDecimal" groupEnumId="PgEngineDefaults"
+        purposeEnumId="PpWeightDecay" parameterCode="weightDecay" parameterName="Weight Decay"
+        defaultValue="0.0" minValue="0"
+        description="L2 weight decay penalty factor."/>
+    <moqui.math.ParameterDef parameterDefId="EngineBatchSize" parameterTypeEnumId="PtNumberInteger" groupEnumId="PgEngineDefaults"
+        purposeEnumId="PpBatchSize" parameterCode="batchSize" parameterName="Batch Size"
+        defaultValue="32" minValue="1"
+        description="Mini-batch size for training loops."/>
+    <moqui.math.ParameterDef parameterDefId="EngineEpochs" parameterTypeEnumId="PtNumberInteger" groupEnumId="PgEngineDefaults"
+        purposeEnumId="PpEpochs" parameterCode="epochs" parameterName="Training Epochs"
+        defaultValue="10" minValue="1"
+        description="Default number of training epochs."/>
+    <moqui.math.ParameterDef parameterDefId="EngineBeta1" parameterTypeEnumId="PtNumberDecimal" groupEnumId="PgEngineDefaults"
+        purposeEnumId="PpMomentum" parameterCode="beta1" parameterName="Adam Beta 1"
+        defaultValue="0.9" minValue="0" maxValue="1"
+        description="Exponential decay rate for first moment estimates in Adam."/>
+    <moqui.math.ParameterDef parameterDefId="EngineBeta2" parameterTypeEnumId="PtNumberDecimal" groupEnumId="PgEngineDefaults"
+        purposeEnumId="PpMomentum" parameterCode="beta2" parameterName="Adam Beta 2"
+        defaultValue="0.999" minValue="0" maxValue="1"
+        description="Exponential decay rate for second moment estimates in Adam."/>
+    <moqui.math.ParameterDef parameterDefId="EngineEps" parameterTypeEnumId="PtNumberDecimal" groupEnumId="PgEngineDefaults"
+        purposeEnumId="PpMlHyperparameter" parameterCode="eps" parameterName="Optimizer Epsilon"
+        defaultValue="1e-8" minValue="0"
+        description="Term added to the denominator to improve numerical stability in optimizers."/>
+
+    <!-- Vision Operation Parameter Defaults -->
+    <moqui.math.ParameterDef parameterDefId="Conv1dStride" parameterTypeEnumId="PtNumberInteger" classEnumId="PcConv1d"
+        purposeEnumId="PpMlHyperparameter" parameterCode="stride" parameterName="1D Convolution Stride"
+        defaultValue="1" minValue="1"
+        description="Stride of the 1D convolution kernel sliding window."/>
+    <moqui.math.ParameterDef parameterDefId="Conv1dPadding" parameterTypeEnumId="PtNumberInteger" classEnumId="PcConv1d"
+        purposeEnumId="PpMlHyperparameter" parameterCode="padding" parameterName="1D Convolution Padding"
+        defaultValue="0" minValue="0"
+        description="Zero-padding added to both sides of the 1D input."/>
+    <moqui.math.ParameterDef parameterDefId="Conv1dDilation" parameterTypeEnumId="PtNumberInteger" classEnumId="PcConv1d"
+        purposeEnumId="PpMlHyperparameter" parameterCode="dilation" parameterName="1D Convolution Dilation"
+        defaultValue="1" minValue="1"
+        description="Spacing between kernel elements for 1D atrous/dilated convolution."/>
+    <moqui.math.ParameterDef parameterDefId="Conv1dGroups" parameterTypeEnumId="PtNumberInteger" classEnumId="PcConv1d"
+        purposeEnumId="PpMlHyperparameter" parameterCode="groups" parameterName="1D Convolution Groups"
+        defaultValue="1" minValue="1"
+        description="Number of blocked connections from input channels to output channels."/>
+    <moqui.math.ParameterDef parameterDefId="Conv1dBias" parameterTypeEnumId="PtNumberInteger" classEnumId="PcConv1d"
+        purposeEnumId="PpMlHyperparameter" parameterCode="bias" parameterName="1D Convolution Bias"
+        defaultValue="1" minValue="0" maxValue="1"
+        description="1: learnable bias vector added; 0: no bias."/>
+
+    <moqui.math.ParameterDef parameterDefId="Conv2dStride" parameterTypeEnumId="PtNumberInteger" classEnumId="PcConv2d"
+        purposeEnumId="PpMlHyperparameter" parameterCode="stride" parameterName="2D Convolution Stride"
+        defaultValue="1" minValue="1"
+        description="Stride of the 2D convolution kernel sliding window."/>
+    <moqui.math.ParameterDef parameterDefId="Conv2dPadding" parameterTypeEnumId="PtNumberInteger" classEnumId="PcConv2d"
+        purposeEnumId="PpMlHyperparameter" parameterCode="padding" parameterName="2D Convolution Padding"
+        defaultValue="0" minValue="0"
+        description="Zero-padding added to both sides of the 2D input."/>
+    <moqui.math.ParameterDef parameterDefId="Conv2dDilation" parameterTypeEnumId="PtNumberInteger" classEnumId="PcConv2d"
+        purposeEnumId="PpMlHyperparameter" parameterCode="dilation" parameterName="2D Convolution Dilation"
+        defaultValue="1" minValue="1"
+        description="Spacing between kernel elements for 2D atrous/dilated convolution."/>
+    <moqui.math.ParameterDef parameterDefId="Conv2dGroups" parameterTypeEnumId="PtNumberInteger" classEnumId="PcConv2d"
+        purposeEnumId="PpMlHyperparameter" parameterCode="groups" parameterName="2D Convolution Groups"
+        defaultValue="1" minValue="1"
+        description="Number of blocked connections from input channels to output channels."/>
+    <moqui.math.ParameterDef parameterDefId="Conv2dBias" parameterTypeEnumId="PtNumberInteger" classEnumId="PcConv2d"
+        purposeEnumId="PpMlHyperparameter" parameterCode="bias" parameterName="2D Convolution Bias"
+        defaultValue="1" minValue="0" maxValue="1"
+        description="1: learnable bias vector added; 0: no bias."/>
+
+    <moqui.math.ParameterDef parameterDefId="MaxPool2dPadding" parameterTypeEnumId="PtNumberInteger" classEnumId="PcMaxPool2d"
+        purposeEnumId="PpMlHyperparameter" parameterCode="padding" parameterName="2D Max Pool Padding"
+        defaultValue="0" minValue="0"
+        description="Implicit negative infinity padding added on both sides."/>
+    <moqui.math.ParameterDef parameterDefId="MaxPool2dDilation" parameterTypeEnumId="PtNumberInteger" classEnumId="PcMaxPool2d"
+        purposeEnumId="PpMlHyperparameter" parameterCode="dilation" parameterName="2D Max Pool Dilation"
+        defaultValue="1" minValue="1"
+        description="Stride of the elements within the pooling window."/>
+
+    <moqui.math.ParameterDef parameterDefId="AvgPool2dPadding" parameterTypeEnumId="PtNumberInteger" classEnumId="PcAvgPool2d"
+        purposeEnumId="PpMlHyperparameter" parameterCode="padding" parameterName="2D Avg Pool Padding"
+        defaultValue="0" minValue="0"
+        description="Implicit zero padding added on both sides."/>
+    <moqui.math.ParameterDef parameterDefId="AvgPool2dCountIncludePad" parameterTypeEnumId="PtNumberInteger" classEnumId="PcAvgPool2d"
+        purposeEnumId="PpMlHyperparameter" parameterCode="countIncludePad" parameterName="Include Padding in Average"
+        defaultValue="1" minValue="0" maxValue="1"
+        description="1: zero-padding is included in the averaging calculation; 0: excluded."/>
+
+    <moqui.math.ParameterDef parameterDefId="BatchNormEps" parameterTypeEnumId="PtNumberDecimal" classEnumId="PcBatchNorm"
+        purposeEnumId="PpMlHyperparameter" parameterCode="eps" parameterName="Batch Norm Epsilon"
+        defaultValue="1e-5" minValue="0"
+        description="Value added to the denominator for numerical stability in batch normalization."/>
+    <moqui.math.ParameterDef parameterDefId="BatchNormMomentum" parameterTypeEnumId="PtNumberDecimal" classEnumId="PcBatchNorm"
+        purposeEnumId="PpMlHyperparameter" parameterCode="momentum" parameterName="Batch Norm Momentum"
+        defaultValue="0.1" minValue="0" maxValue="1"
+        description="Value used for running_mean and running_var computation."/>
+    <moqui.math.ParameterDef parameterDefId="BatchNormAffine" parameterTypeEnumId="PtNumberInteger" classEnumId="PcBatchNorm"
+        purposeEnumId="PpMlHyperparameter" parameterCode="affine" parameterName="Batch Norm Affine"
+        defaultValue="1" minValue="0" maxValue="1"
+        description="1: learnable affine parameters γ and β are used; 0: neither exists."/>
+    <moqui.math.ParameterDef parameterDefId="BatchNormTrackRunningStats" parameterTypeEnumId="PtNumberInteger" classEnumId="PcBatchNorm"
+        purposeEnumId="PpMlHyperparameter" parameterCode="trackRunningStats" parameterName="Track Running Stats"
+        defaultValue="1" minValue="0" maxValue="1"
+        description="1: tracks running mean and variance during training; 0: computes batch statistics."/>
+
+    <moqui.math.ParameterDef parameterDefId="GroupNormEps" parameterTypeEnumId="PtNumberDecimal" classEnumId="PcGroupNorm"
+        purposeEnumId="PpMlHyperparameter" parameterCode="eps" parameterName="Group Norm Epsilon"
+        defaultValue="1e-5" minValue="0"
+        description="Value added to the denominator for numerical stability in group normalization."/>
+    <moqui.math.ParameterDef parameterDefId="GroupNormAffine" parameterTypeEnumId="PtNumberInteger" classEnumId="PcGroupNorm"
+        purposeEnumId="PpMlHyperparameter" parameterCode="affine" parameterName="Group Norm Affine"
+        defaultValue="1" minValue="0" maxValue="1"
+        description="1: learnable affine parameters γ and β are used; 0: neither exists."/>
+
+    <!-- Visualization and Rendering Defaults -->
+    <moqui.math.ParameterDef parameterDefId="VizChartWidth" parameterTypeEnumId="PtNumberInteger" groupEnumId="PgVisualization" classEnumId="PcVizChart"
+        purposeEnumId="PpRendering" parameterCode="width" parameterName="Chart Width"
+        defaultValue="600" minValue="1"
+        description="Default rendered chart width in pixels."/>
+    <moqui.math.ParameterDef parameterDefId="VizChartHeight" parameterTypeEnumId="PtNumberInteger" groupEnumId="PgVisualization" classEnumId="PcVizChart"
+        purposeEnumId="PpRendering" parameterCode="height" parameterName="Chart Height"
+        defaultValue="400" minValue="1"
+        description="Default rendered chart height in pixels."/>
+    <moqui.math.ParameterDef parameterDefId="VizChartBackground" parameterTypeEnumId="PtTextShort" groupEnumId="PgVisualization" classEnumId="PcVizChart"
+        purposeEnumId="PpRendering" parameterCode="background" parameterName="Chart Background"
+        defaultTextValue="transparent"
+        description="Default rendered chart background color or CSS value."/>
+    <moqui.math.ParameterDef parameterDefId="VizAxesGrid" parameterTypeEnumId="PtNumberInteger" groupEnumId="PgVizAxes" classEnumId="PcVizAxes"
+        purposeEnumId="PpRendering" parameterCode="grid" parameterName="Show Grid"
+        defaultValue="1" minValue="0" maxValue="1"
+        description="1: display coordinate axis grid lines; 0: hide grid."/>
+    <moqui.math.ParameterDef parameterDefId="VizAxesTickCount" parameterTypeEnumId="PtNumberInteger" groupEnumId="PgVizAxes" classEnumId="PcVizAxes"
+        purposeEnumId="PpRendering" parameterCode="tickCount" parameterName="Tick Count"
+        defaultValue="5" minValue="1"
+        description="Approximate target number of tick marks along numeric coordinate axes."/>
+    <moqui.math.ParameterDef parameterDefId="VizPaletteColorScheme" parameterTypeEnumId="PtTextShort" groupEnumId="PgVizPalette" classEnumId="PcVizPalette"
+        purposeEnumId="PpRendering" parameterCode="colorScheme" parameterName="Color Scheme"
+        defaultTextValue="category10"
+        description="Default Vega/D3 categorical color palette scheme name."/>
 
     <!-- Math Function -->
     <moqui.basic.EnumerationType description="Mathematical Function" enumTypeId="MathFunction"/>

@@ -129,6 +129,8 @@ along with this software (see the LICENSE.md file). If not, see
         <field name="minValue" type="number-decimal"/>
         <field name="maxValue" type="number-decimal"/>
         <field name="defaultValue" type="number-decimal"/>
+        <field name="defaultTextValue" type="text-medium"/>
+        <field name="defaultEnumId" type="id"/>
 
         <relationship type="one" title="ParentParameterDef" related="moqui.math.ParameterDef" short-alias="parent">
             <key-map field-name="parentParameterDefId" related="parameterDefId"/></relationship>
@@ -144,6 +146,8 @@ along with this software (see the LICENSE.md file). If not, see
             <key-map field-name="classEnumId"/></relationship>
         <relationship type="one" title="ParameterPermission" related="moqui.basic.Enumeration" short-alias="permission">
             <key-map field-name="permissionEnumId"/></relationship>
+        <relationship type="one" title="DefaultEnum" related="moqui.basic.Enumeration" short-alias="defaultEnum">
+            <key-map field-name="defaultEnumId" related="enumId"/></relationship>
         <relationship type="one" related="moqui.security.UserAccount" short-alias="userAccount"/>
         <relationship type="one" title="UomType" related="moqui.basic.Enumeration">
             <key-map field-name="uomTypeEnumId"/></relationship>
@@ -235,6 +239,12 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Main Control Parameter" enumId="PgMainControl" parentEnumId="PgControl" enumTypeId="ParameterGroup"/>
             <moqui.basic.Enumeration description="Advanced Control Parameter" enumId="PgAdvancedControl" parentEnumId="PgControl" enumTypeId="ParameterGroup"/>
             <moqui.basic.Enumeration description="Monitoring Parameter" enumId="PgMonitoring" enumTypeId="ParameterGroup"/>
+            <moqui.basic.Enumeration description="Engine Defaults Group" enumId="PgEngineDefaults" enumTypeId="ParameterGroup"/>
+            <moqui.basic.Enumeration description="Visualization and Rendering Defaults Group" enumId="PgVisualization" enumTypeId="ParameterGroup"/>
+            <moqui.basic.Enumeration description="Axes and Grid Defaults" enumId="PgVizAxes" parentEnumId="PgVisualization" enumTypeId="ParameterGroup"/>
+            <moqui.basic.Enumeration description="Color Palette Defaults" enumId="PgVizPalette" parentEnumId="PgVisualization" enumTypeId="ParameterGroup"/>
+            <moqui.basic.Enumeration description="Typography Defaults" enumId="PgVizTypography" parentEnumId="PgVisualization" enumTypeId="ParameterGroup"/>
+            <moqui.basic.Enumeration description="Mark and Geometry Defaults" enumId="PgVizMarks" parentEnumId="PgVisualization" enumTypeId="ParameterGroup"/>
             <!-- Parameter Class -->
             <moqui.basic.EnumerationType description="Parameter Class" enumTypeId="ParameterClass"/>
             <moqui.basic.Enumeration description="Main Parameter" enumId="PcMain" enumTypeId="ParameterClass"/>
@@ -2264,6 +2274,7 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration enumId="MmsmOpenFoam" enumTypeId="MathModelSolvingMethod" description="OpenFOAM Finite Volume CFD Engine"/>
             <moqui.basic.Enumeration enumId="MmsmOpenFoamIcoFoam" parentEnumId="MmsmOpenFoam" enumTypeId="MathModelSolvingMethod" description="OpenFOAM Incompressible Laminar Transient Solver"/>
             <moqui.basic.Enumeration enumId="MmsmOpenFoamSimpleFoam" parentEnumId="MmsmOpenFoam" enumTypeId="MathModelSolvingMethod" description="OpenFOAM Incompressible Turbulent Steady-State Solver"/>
+            <moqui.basic.Enumeration enumId="MmsmJena" enumTypeId="MathModelSolvingMethod" description="Apache Jena Semantic Reasoner &amp; SPARQL Engine"/>
             <!-- Math Model Interpolation -->    
             <moqui.basic.EnumerationType description="Math Model Interpolation" enumTypeId="MathModelInterpolation"/>
             <moqui.basic.Enumeration enumId="MmiLinear" enumTypeId="MathModelInterpolation" description="Linear Interpolation"/>
