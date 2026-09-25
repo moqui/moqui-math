@@ -406,6 +406,18 @@ along with this software (see the LICENSE.md file). If not, see
         purposeEnumId="PpRendering" parameterCode="colorScheme" parameterName="Color Scheme"
         defaultTextValue="category10"
         description="Default Vega/D3 categorical color palette scheme name."/>
+    <moqui.math.ParameterDef parameterDefId="VizMarkStrokeWidth" parameterTypeEnumId="PtNumberDecimal" groupEnumId="PgVizMarks" classEnumId="PcVizMarks"
+        purposeEnumId="PpRendering" parameterCode="strokeWidth" parameterName="Mark Stroke Width"
+        defaultTextValue="2.0" minValue="0.1"
+        description="Default stroke width for line marks in pixels."/>
+    <moqui.math.ParameterDef parameterDefId="VizMarkPointSize" parameterTypeEnumId="PtNumberDecimal" groupEnumId="PgVizMarks" classEnumId="PcVizMarks"
+        purposeEnumId="PpRendering" parameterCode="pointSize" parameterName="Mark Point Size"
+        defaultTextValue="30.0" minValue="1.0"
+        description="Default size for point/scatter marks in square pixels."/>
+    <moqui.math.ParameterDef parameterDefId="VizMarkOpacity" parameterTypeEnumId="PtNumberDecimal" groupEnumId="PgVizMarks" classEnumId="PcVizMarks"
+        purposeEnumId="PpRendering" parameterCode="opacity" parameterName="Mark Opacity"
+        defaultTextValue="1.0" minValue="0.0" maxValue="1.0"
+        description="Default opacity for rendered marks."/>
 
     <!-- Math Function -->
     <moqui.basic.EnumerationType description="Mathematical Function" enumTypeId="MathFunction"/>
