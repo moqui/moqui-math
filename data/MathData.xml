@@ -249,49 +249,49 @@ along with this software (see the LICENSE.md file). If not, see
         description="PE(t, 2i) = sin(t / s^(2i/D)), PE(t, 2i+1) = cos(t / s^(2i/D)). tensor2tensor common_attention.get_timing_signal_1d(max_timescale=1.0e4); Vaswani et al. 2017, section 3.5."/>
 
     <!-- Global and Engine defaults -->
-    <moqui.math.ParameterDef parameterDefId="EngineDevice" parameterTypeEnumId="PtTextShort" groupEnumId="PgEngineDefaults"
+    <moqui.math.ParameterDef parameterDefId="EngineDevice" parameterTypeEnumId="PtTextShort" groupEnumId="PgEngineDefaults" classEnumId="PcEngine"
         purposeEnumId="PpDeviceConfiguration" parameterCode="device" parameterName="Execution Device"
         defaultTextValue="cpu"
         description="Execution target device: cpu, cuda, cuda:0, etc."/>
-    <moqui.math.ParameterDef parameterDefId="EngineDataType" parameterTypeEnumId="PtTextShort" groupEnumId="PgEngineDefaults"
+    <moqui.math.ParameterDef parameterDefId="EngineDataType" parameterTypeEnumId="PtTextShort" groupEnumId="PgEngineDefaults" classEnumId="PcEngine"
         purposeEnumId="PpMlHyperparameter" parameterCode="dataType" parameterName="Default Data Type"
         defaultTextValue="float32"
         description="Default floating point precision: float32, float64, etc."/>
-    <moqui.math.ParameterDef parameterDefId="EngineNumThreads" parameterTypeEnumId="PtNumberInteger" groupEnumId="PgEngineDefaults"
+    <moqui.math.ParameterDef parameterDefId="EngineNumThreads" parameterTypeEnumId="PtNumberInteger" groupEnumId="PgEngineDefaults" classEnumId="PcEngine"
         purposeEnumId="PpDeviceConfiguration" parameterCode="numThreads" parameterName="Number of Threads"
-        defaultValue="4" minValue="1"
+        defaultTextValue="4" minValue="1"
         description="Number of CPU worker threads for parallel computation."/>
-    <moqui.math.ParameterDef parameterDefId="EngineSeed" parameterTypeEnumId="PtNumberInteger" groupEnumId="PgEngineDefaults"
+    <moqui.math.ParameterDef parameterDefId="EngineSeed" parameterTypeEnumId="PtNumberInteger" groupEnumId="PgEngineDefaults" classEnumId="PcEngine"
         purposeEnumId="PpMlHyperparameter" parameterCode="seed" parameterName="Random Seed"
-        defaultValue="42"
+        defaultTextValue="42"
         description="Pseudo-random number generator seed for deterministic initialization and operations."/>
-    <moqui.math.ParameterDef parameterDefId="EngineLearningRate" parameterTypeEnumId="PtNumberDecimal" groupEnumId="PgEngineDefaults"
+    <moqui.math.ParameterDef parameterDefId="EngineLearningRate" parameterTypeEnumId="PtNumberDecimal" groupEnumId="PgEngineDefaults" classEnumId="PcEngine"
         purposeEnumId="PpLearningRate" parameterCode="learningRate" parameterName="Learning Rate"
-        defaultValue="0.001" minValue="0"
+        defaultTextValue="0.001" minValue="0"
         description="Default learning rate for gradient-based optimizers."/>
-    <moqui.math.ParameterDef parameterDefId="EngineWeightDecay" parameterTypeEnumId="PtNumberDecimal" groupEnumId="PgEngineDefaults"
+    <moqui.math.ParameterDef parameterDefId="EngineWeightDecay" parameterTypeEnumId="PtNumberDecimal" groupEnumId="PgEngineDefaults" classEnumId="PcEngine"
         purposeEnumId="PpWeightDecay" parameterCode="weightDecay" parameterName="Weight Decay"
-        defaultValue="0.0" minValue="0"
+        defaultTextValue="0.0" minValue="0"
         description="L2 weight decay penalty factor."/>
-    <moqui.math.ParameterDef parameterDefId="EngineBatchSize" parameterTypeEnumId="PtNumberInteger" groupEnumId="PgEngineDefaults"
+    <moqui.math.ParameterDef parameterDefId="EngineBatchSize" parameterTypeEnumId="PtNumberInteger" groupEnumId="PgEngineDefaults" classEnumId="PcEngine"
         purposeEnumId="PpBatchSize" parameterCode="batchSize" parameterName="Batch Size"
-        defaultValue="32" minValue="1"
+        defaultTextValue="32" minValue="1"
         description="Mini-batch size for training loops."/>
-    <moqui.math.ParameterDef parameterDefId="EngineEpochs" parameterTypeEnumId="PtNumberInteger" groupEnumId="PgEngineDefaults"
+    <moqui.math.ParameterDef parameterDefId="EngineEpochs" parameterTypeEnumId="PtNumberInteger" groupEnumId="PgEngineDefaults" classEnumId="PcEngine"
         purposeEnumId="PpEpochs" parameterCode="epochs" parameterName="Training Epochs"
-        defaultValue="10" minValue="1"
+        defaultTextValue="10" minValue="1"
         description="Default number of training epochs."/>
-    <moqui.math.ParameterDef parameterDefId="EngineBeta1" parameterTypeEnumId="PtNumberDecimal" groupEnumId="PgEngineDefaults"
+    <moqui.math.ParameterDef parameterDefId="EngineBeta1" parameterTypeEnumId="PtNumberDecimal" groupEnumId="PgEngineDefaults" classEnumId="PcEngine"
         purposeEnumId="PpMomentum" parameterCode="beta1" parameterName="Adam Beta 1"
-        defaultValue="0.9" minValue="0" maxValue="1"
+        defaultTextValue="0.9" minValue="0" maxValue="1"
         description="Exponential decay rate for first moment estimates in Adam."/>
-    <moqui.math.ParameterDef parameterDefId="EngineBeta2" parameterTypeEnumId="PtNumberDecimal" groupEnumId="PgEngineDefaults"
+    <moqui.math.ParameterDef parameterDefId="EngineBeta2" parameterTypeEnumId="PtNumberDecimal" groupEnumId="PgEngineDefaults" classEnumId="PcEngine"
         purposeEnumId="PpMomentum" parameterCode="beta2" parameterName="Adam Beta 2"
-        defaultValue="0.999" minValue="0" maxValue="1"
+        defaultTextValue="0.999" minValue="0" maxValue="1"
         description="Exponential decay rate for second moment estimates in Adam."/>
-    <moqui.math.ParameterDef parameterDefId="EngineEps" parameterTypeEnumId="PtNumberDecimal" groupEnumId="PgEngineDefaults"
+    <moqui.math.ParameterDef parameterDefId="EngineEps" parameterTypeEnumId="PtNumberDecimal" groupEnumId="PgEngineDefaults" classEnumId="PcEngine"
         purposeEnumId="PpMlHyperparameter" parameterCode="eps" parameterName="Optimizer Epsilon"
-        defaultValue="1e-8" minValue="0"
+        defaultTextValue="1e-8" minValue="0"
         description="Term added to the denominator to improve numerical stability in optimizers."/>
 
     <!-- Vision Operation Parameter Defaults -->
@@ -384,11 +384,11 @@ along with this software (see the LICENSE.md file). If not, see
     <!-- Visualization and Rendering Defaults -->
     <moqui.math.ParameterDef parameterDefId="VizChartWidth" parameterTypeEnumId="PtNumberInteger" groupEnumId="PgVisualization" classEnumId="PcVizChart"
         purposeEnumId="PpRendering" parameterCode="width" parameterName="Chart Width"
-        defaultValue="600" minValue="1"
+        defaultTextValue="600" minValue="1"
         description="Default rendered chart width in pixels."/>
     <moqui.math.ParameterDef parameterDefId="VizChartHeight" parameterTypeEnumId="PtNumberInteger" groupEnumId="PgVisualization" classEnumId="PcVizChart"
         purposeEnumId="PpRendering" parameterCode="height" parameterName="Chart Height"
-        defaultValue="400" minValue="1"
+        defaultTextValue="400" minValue="1"
         description="Default rendered chart height in pixels."/>
     <moqui.math.ParameterDef parameterDefId="VizChartBackground" parameterTypeEnumId="PtTextShort" groupEnumId="PgVisualization" classEnumId="PcVizChart"
         purposeEnumId="PpRendering" parameterCode="background" parameterName="Chart Background"
@@ -396,11 +396,11 @@ along with this software (see the LICENSE.md file). If not, see
         description="Default rendered chart background color or CSS value."/>
     <moqui.math.ParameterDef parameterDefId="VizAxesGrid" parameterTypeEnumId="PtNumberInteger" groupEnumId="PgVizAxes" classEnumId="PcVizAxes"
         purposeEnumId="PpRendering" parameterCode="grid" parameterName="Show Grid"
-        defaultValue="1" minValue="0" maxValue="1"
+        defaultTextValue="1" minValue="0" maxValue="1"
         description="1: display coordinate axis grid lines; 0: hide grid."/>
     <moqui.math.ParameterDef parameterDefId="VizAxesTickCount" parameterTypeEnumId="PtNumberInteger" groupEnumId="PgVizAxes" classEnumId="PcVizAxes"
         purposeEnumId="PpRendering" parameterCode="tickCount" parameterName="Tick Count"
-        defaultValue="5" minValue="1"
+        defaultTextValue="5" minValue="1"
         description="Approximate target number of tick marks along numeric coordinate axes."/>
     <moqui.math.ParameterDef parameterDefId="VizPaletteColorScheme" parameterTypeEnumId="PtTextShort" groupEnumId="PgVizPalette" classEnumId="PcVizPalette"
         purposeEnumId="PpRendering" parameterCode="colorScheme" parameterName="Color Scheme"
