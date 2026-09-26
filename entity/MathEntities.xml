@@ -1320,6 +1320,9 @@ along with this software (see the LICENSE.md file). If not, see
             <moqui.basic.Enumeration description="Stochastic Gradient Descent Optimizer" enumId="TtOptimizerSgd" parentEnumId="TtMeta" enumTypeId="TransformationType"/>
             <moqui.basic.Enumeration description="Adam Optimizer" enumId="TtOptimizerAdam" parentEnumId="TtMeta" enumTypeId="TransformationType"/>
             <moqui.basic.Enumeration description="AdamW Optimizer" enumId="TtOptimizerAdamW" parentEnumId="TtMeta" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Mathematical Optimization" enumId="TtOptimize" parentEnumId="TtMeta" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Minimization: min f(x)" enumId="TtMinimize" parentEnumId="TtOptimize" enumTypeId="TransformationType"/>
+            <moqui.basic.Enumeration description="Maximization: max f(x)" enumId="TtMaximize" parentEnumId="TtOptimize" enumTypeId="TransformationType"/>
 
             <!-- Logical operations -->
             <moqui.basic.Enumeration enumId="TtLogical" enumTypeId="TransformationType" description="Logical Transformation"/>
