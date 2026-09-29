@@ -406,6 +406,35 @@ along with this software (see the LICENSE.md file). If not, see
         purposeEnumId="PpRendering" parameterCode="colorScheme" parameterName="Color Scheme"
         defaultTextValue="category10"
         description="Default Vega/D3 categorical color palette scheme name."/>
+    <moqui.math.ParameterDef parameterDefId="VizMarkStrokeWidth" parameterTypeEnumId="PtNumberDecimal" groupEnumId="PgVizMarks" classEnumId="PcVizMarks"
+        purposeEnumId="PpRendering" parameterCode="strokeWidth" parameterName="Mark Stroke Width"
+        defaultTextValue="2.0" minValue="0.1"
+        description="Default stroke width for line marks in pixels."/>
+    <moqui.math.ParameterDef parameterDefId="VizMarkPointSize" parameterTypeEnumId="PtNumberDecimal" groupEnumId="PgVizMarks" classEnumId="PcVizMarks"
+        purposeEnumId="PpRendering" parameterCode="pointSize" parameterName="Mark Point Size"
+        defaultTextValue="30.0" minValue="1.0"
+        description="Default size for point/scatter marks in square pixels."/>
+    <moqui.math.ParameterDef parameterDefId="VizMarkOpacity" parameterTypeEnumId="PtNumberDecimal" groupEnumId="PgVizMarks" classEnumId="PcVizMarks"
+        purposeEnumId="PpRendering" parameterCode="opacity" parameterName="Mark Opacity"
+        defaultTextValue="1.0" minValue="0.0" maxValue="1.0"
+        description="Default opacity for rendered marks."/>
+
+    <!-- Standard Optimization and Generic Parameter Definitions -->
+    <moqui.math.ParameterDef parameterDefId="OptimizationVariable" parameterTypeEnumId="PtNumberDecimal"
+        purposeEnumId="PpMathModel" classEnumId="PcMain" parameterCode="optVar" parameterName="Optimization Variable"
+        description="Standard decision variable for mathematical optimization models."/>
+    <moqui.math.ParameterDef parameterDefId="PdGenericDecimal" parameterTypeEnumId="PtNumberDecimal"
+        purposeEnumId="PpMathModel" classEnumId="PcMain" parameterCode="genericDecimal" parameterName="Generic Decimal Parameter"
+        description="Generic scalar decimal parameter inferred from numeric assignment."/>
+    <moqui.math.ParameterDef parameterDefId="PdGenericInteger" parameterTypeEnumId="PtNumberInteger"
+        purposeEnumId="PpMathModel" classEnumId="PcMain" parameterCode="genericInteger" parameterName="Generic Integer Parameter"
+        description="Generic integer parameter inferred from integer assignment."/>
+    <moqui.math.ParameterDef parameterDefId="PdGenericText" parameterTypeEnumId="PtTextShort"
+        purposeEnumId="PpMathModel" classEnumId="PcMain" parameterCode="genericText" parameterName="Generic Text Parameter"
+        description="Generic text parameter inferred from string assignment."/>
+    <moqui.math.ParameterDef parameterDefId="PdGenericBoolean" parameterTypeEnumId="PtTextIndicator"
+        purposeEnumId="PpMathModel" classEnumId="PcMain" parameterCode="genericBoolean" parameterName="Generic Boolean Parameter"
+        description="Generic boolean parameter inferred from boolean assignment."/>
 
     <!-- Math Function -->
     <moqui.basic.EnumerationType description="Mathematical Function" enumTypeId="MathFunction"/>

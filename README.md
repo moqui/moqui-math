@@ -388,7 +388,25 @@ The relational model is reflected 1:1 into the JVM via **Groovy Math** (`groovy-
 | `moqui.math.MathModelDefPipeline` | Pipeline task sequence | nested `transformation('Step')` | `sequenceNum`, `stepName`, `transformationId` |
 | `moqui.math.MathModel` | Concrete model instance | `model('ModelInstance') { ... }` | `solvingMethodEnumId`, `statusId`, `statusFlowId` |
 
+### Architectural Taxonomy: Code Roles and Category-Theoretic Orchestration
+
+The metamodel explicitly classifies executable logic across three distinct tiers of abstraction, state, and governance:
+
+| Costrutto / Metamodel Entity | Ruolo & Natura del Codice | Livello di Astrazione | Stato | Parametrizzazione | Execution Engine |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **`MathModelDefContent`** / `TensorContent` | **Modelli Macro & Sistemi Complessi** (LLM checkpoints, script Python/Julia, mesh OpenFOAM CFD, pipeline complete) | **Macro** (intero modello o workflow di simulazione/inferenza) | Di norma **Stateful** (pesi residenti in memoria nativa, cache KV, mesh geometriche) | Configurazioni esterne, checkpoint URI, env | Runtime esterni o librerie C/C++ native (LibTorch, OpenXLA Panama FFM) |
+| **`Morphism`** (`serviceName`) | **Enterprise Service Layer & Funzioni Custom** (servizi Moqui/Java/Kotlin, transizioni di stato di categoria, microservizi, tool MCP) | **Meso** (frammenti funzionali riusabili $f: A \to B$, logica di business o IO) | **Stateless** / Transazionale | `MorphismParameterBinding` (`parameterName`, `contextPath`, `literalValue`, output di morfismi a monte) | Moqui ExecutionContext (`ec.service.sync().name(...).parameters(...).call()`) |
+| **`Transformation`** (`transformationTypeEnumId`) | **Funzioni Matematiche Standard** (catalogo universale da manuale: `Affine`, `ReLU`, `MatMul`, `LayerNorm`, `SVD`, `FFT`) | **Micro** (operatori e primitive algebrico-tensoriali elementari) | Puramente **Stateless** | `TransformationOperand` (`TotSingle`, `TotKernel`, `TotBias`, `TotLeft`, `TotRight`) | Provider computazionali nativi ad alte prestazioni (LibTorch, JAX/XLA, BLAS, PETSc) |
+
+#### Unifying Enterprise Business Logic, Native Mathematics, and Streaming Pipelines
+
+1. **Enterprise Services ($f: A \to B$)**: Stateless, transazionali, orientati al dominio business (DDD/J2EE), con logging, tracing e distributed transactions gestiti nativamente da Moqui Entity & Service Engine.
+2. **Mathematical & ML Models**: Eseguiti su kernel nativi C/C++ ad altissime prestazioni (LibTorch, OpenXLA/JAX) tramite Project Panama Foreign Function & Memory (FFM), eliminando l'overhead di serializzazione JNI o socket Python.
+3. **Category-Theoretic Orchestration & Agentic Pipelines**: `MorphismComposition` consente di comporre sia servizi applicativi che operatori matematici in un unico grafo categorico formale. Pattern di integrazione come Apache Camel / EIP, data streaming con Apache Kafka e flussi agentici (Model Context Protocol - MCP) vengono espressi come composizione di morfismi senza cambiare linguaggio formale.
+4. **SQL Separation**: L'SQL transazionale enterprise è incapsulato nei servizi (Moqui Entity Engine / JDBC), mentre l'SQL per data science e BI rimane libero per l'interrogazione analitica dei dati.
+
 ## Dependencies
+
 
 None.
 
