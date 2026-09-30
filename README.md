@@ -405,6 +405,16 @@ The metamodel explicitly classifies executable logic across three distinct tiers
 3. **Category-Theoretic Orchestration & Agentic Pipelines**: `MorphismComposition` consente di comporre sia servizi applicativi che operatori matematici in un unico grafo categorico formale. Pattern di integrazione come Apache Camel / EIP, data streaming con Apache Kafka e flussi agentici (Model Context Protocol - MCP) vengono espressi come composizione di morfismi senza cambiare linguaggio formale.
 4. **SQL Separation**: L'SQL transazionale enterprise è incapsulato nei servizi (Moqui Entity Engine / JDBC), mentre l'SQL per data science e BI rimane libero per l'interrogazione analitica dei dati.
 
+#### Orchestrazione Categorica di Microservizi e Processi E2E: Esempio Order-to-Cash
+
+La teoria delle categorie (`moqui.math.ct`) fornisce un livello formale di orchestrazione indipendente dalla tecnologia con cui i singoli servizi sono implementati (Moqui Services, Spring Boot REST controllers, Quarkus microservices, gRPC):
+
+- **Stati Operativi come Oggetti di Categoria (`CategoryObject` / `CotOperationalState`)**: Gli stati di business (`OtcInputReady`, `OtcCartOpen`, `OtcOrderPlaced`, `OtcOrderApproved`, `OtcShipmentShipped`, `OtcOrderComplete`, `OtcCashSettled`) non sono semplici flag stringa arbitrari, ma predicati tipizzati nello spazio della categoria.
+- **Pre- e Post-Condizioni Distribuite via Sonde Diagnostiche (`MtEndo`)**: Quando i servizi sono distribuiti (REST su Spring o Quarkus), il controllo di consistenza non può assumere la memoria locale. Sonde endomorfiche pure (`MtEndo`) interrogano endpoint diagnostici privi di effetti collaterali (es. `check#ContextValue`, `check#UserPermission`, o `GET /probes/...`).
+- **Testimoni d'Identità Fail-Closed ($id_A \in \text{Hom}(A, A)$)**: L'identità categorica $id_A$ è implementata come composizione fail-closed (`McNary`) di sonde diagnostiche. Valutare $id_A$ garantisce che il contesto runtime abiti effettivamente l'oggetto $A$ *prima* che qualsiasi mutazione di business venga autorizzata.
+- **Transizioni Atomiche e Binding Tipizzato (`Morphism` e `MorphismParameterBinding`)**: I morfismi operativi ($f: A \to B$) associano i parametri della richiesta e i percorsi del contesto tramite binding dichiarativo verso il servizio target (`serviceName`).
+- **Congiunzioni Terminali via Costruzioni Universali ($A \times B$)**: Stati congiunti (es. ordine completato E incasso registrato) sono espressi come prodotto categoriale (`UcProduct` su `UniversalConstruction`). L'interprete valida contemporaneamente entrambe le proiezioni ($p_1$ e $p_2$), evitando accoppiamenti ad-hoc tra spedizione e contabilità.
+
 ## Dependencies
 
 
