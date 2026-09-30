@@ -392,18 +392,28 @@ The relational model is reflected 1:1 into the JVM via **Groovy Math** (`groovy-
 
 The metamodel explicitly classifies executable logic across three distinct tiers of abstraction, state, and governance:
 
-| Costrutto / Metamodel Entity | Ruolo & Natura del Codice | Livello di Astrazione | Stato | Parametrizzazione | Execution Engine |
+| Construct / Metamodel Entity | Code Nature & Role | Level of Abstraction | State | Parameterization | Execution Engine |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **`MathModelDefContent`** / `TensorContent` | **Modelli Macro & Sistemi Complessi** (LLM checkpoints, script Python/Julia, mesh OpenFOAM CFD, pipeline complete) | **Macro** (intero modello o workflow di simulazione/inferenza) | Di norma **Stateful** (pesi residenti in memoria nativa, cache KV, mesh geometriche) | Configurazioni esterne, checkpoint URI, env | Runtime esterni o librerie C/C++ native (LibTorch, OpenXLA Panama FFM) |
-| **`Morphism`** (`serviceName`) | **Enterprise Service Layer & Funzioni Custom** (servizi Moqui/Java/Kotlin, transizioni di stato di categoria, microservizi, tool MCP) | **Meso** (frammenti funzionali riusabili $f: A \to B$, logica di business o IO) | **Stateless** / Transazionale | `MorphismParameterBinding` (`parameterName`, `contextPath`, `literalValue`, output di morfismi a monte) | Moqui ExecutionContext (`ec.service.sync().name(...).parameters(...).call()`) |
-| **`Transformation`** (`transformationTypeEnumId`) | **Funzioni Matematiche Standard** (catalogo universale da manuale: `Affine`, `ReLU`, `MatMul`, `LayerNorm`, `SVD`, `FFT`) | **Micro** (operatori e primitive algebrico-tensoriali elementari) | Puramente **Stateless** | `TransformationOperand` (`TotSingle`, `TotKernel`, `TotBias`, `TotLeft`, `TotRight`) | Provider computazionali nativi ad alte prestazioni (LibTorch, JAX/XLA, BLAS, PETSc) |
+| **`MathModelDefContent`** / `TensorContent` | **Macro Models & Complex Systems** (LLM checkpoints, Python/Julia scripts, OpenFOAM CFD meshes, complete pipelines) | **Macro** (entire model or simulation/inference workflow) | Typically **Stateful** (weights resident in native memory, KV caches, geometric meshes) | External configuration, checkpoint URIs, env | External runtimes or native C/C++ libraries (LibTorch, OpenXLA Panama FFM) |
+| **`Morphism`** (`serviceName`) | **Enterprise Service Layer & Custom Functions** (Moqui/Java/Kotlin services, category state transitions, microservices, MCP tools) | **Meso** (reusable functional fragments $f: A \to B$, business logic or IO) | **Stateless** / Transactional | `MorphismParameterBinding` (`parameterName`, `contextPath`, `literalValue`, upstream morphism outputs) | Moqui ExecutionContext (`ec.service.sync().name(...).parameters(...).call()`) |
+| **`Transformation`** (`transformationTypeEnumId`) | **Standard Mathematical Functions** (universal textbook catalog: `Affine`, `ReLU`, `MatMul`, `LayerNorm`, `SVD`, `FFT`) | **Micro** (elementary algebraic and tensor operators/primitives) | Purely **Stateless** | `TransformationOperand` (`TotSingle`, `TotKernel`, `TotBias`, `TotLeft`, `TotRight`) | High-performance native computational providers (LibTorch, JAX/XLA, BLAS, PETSc) |
 
 #### Unifying Enterprise Business Logic, Native Mathematics, and Streaming Pipelines
 
-1. **Enterprise Services ($f: A \to B$)**: Stateless, transazionali, orientati al dominio business (DDD/J2EE), con logging, tracing e distributed transactions gestiti nativamente da Moqui Entity & Service Engine.
-2. **Mathematical & ML Models**: Eseguiti su kernel nativi C/C++ ad altissime prestazioni (LibTorch, OpenXLA/JAX) tramite Project Panama Foreign Function & Memory (FFM), eliminando l'overhead di serializzazione JNI o socket Python.
-3. **Category-Theoretic Orchestration & Agentic Pipelines**: `MorphismComposition` consente di comporre sia servizi applicativi che operatori matematici in un unico grafo categorico formale. Pattern di integrazione come Apache Camel / EIP, data streaming con Apache Kafka e flussi agentici (Model Context Protocol - MCP) vengono espressi come composizione di morfismi senza cambiare linguaggio formale.
-4. **SQL Separation**: L'SQL transazionale enterprise è incapsulato nei servizi (Moqui Entity Engine / JDBC), mentre l'SQL per data science e BI rimane libero per l'interrogazione analitica dei dati.
+1. **Enterprise Services ($f: A \to B$)**: Stateless, transactional, domain-driven (DDD/J2EE), with native logging, tracing, and distributed transactions managed by the Moqui Entity & Service Engine.
+2. **Mathematical & ML Models**: Executed directly on high-performance native C/C++ kernels (LibTorch, OpenXLA/JAX) via Project Panama Foreign Function & Memory (FFM), eliminating JNI serialization overhead or Python sockets.
+3. **Category-Theoretic Orchestration & Agentic Pipelines**: `MorphismComposition` composes application services and mathematical operators into a single formal categorical graph. Integration patterns (Apache Camel / EIP), event streaming (Apache Kafka), and agentic tool workflows (Model Context Protocol - MCP) are expressed as morphism composition without altering the formal language.
+4. **SQL Separation**: Transactional enterprise SQL remains encapsulated in business services (Moqui Entity Engine / JDBC), while data science and analytics SQL remains dedicated to analytical queries.
+
+#### Categorical Microservice Orchestration & End-to-End Processes: The Order-to-Cash Example
+
+Category theory (`moqui.math.ct`) provides a technology-agnostic formal orchestration layer across diverse service implementations (Moqui Services, Spring Boot REST controllers, Quarkus microservices, gRPC):
+
+- **Operational States as Category Objects (`CategoryObject` / `CotOperationalState`)**: Business states (`OtcInputReady`, `OtcCartOpen`, `OtcOrderPlaced`, `OtcOrderApproved`, `OtcShipmentShipped`, `OtcOrderComplete`, `OtcCashSettled`) are typed predicates in the category space rather than arbitrary string flags.
+- **Distributed Pre- and Post-Conditions via Diagnostic Probes (`MtEndo`)**: In distributed systems (REST over Spring or Quarkus), state consistency cannot rely on local JVM memory. Pure endomorphic probes (`MtEndo`) query side-effect-free diagnostic endpoints (e.g. `check#ContextValue`, `check#UserPermission`, or `GET /api/probes/...`).
+- **Fail-Closed Identity Witnesses ($id_A \in \text{Hom}(A, A)$)**: The categorical identity $id_A$ is implemented as a fail-closed composition (`McNary`) of diagnostic probes. Evaluating $id_A$ guarantees that the runtime context genuinely inhabits object $A$ *before* any mutating business transition is executed.
+- **Atomic Transitions & Typed Parameter Binding (`Morphism` & `MorphismParameterBinding`)**: Operational morphisms ($f: A \to B$) map request parameters and context paths via declarative bindings to the target service (`serviceName`).
+- **Terminal Conjunctions via Universal Constructions ($A \times B$)**: Conjoint terminal states (e.g. order completed AND cash captured) are expressed as a categorical product (`UcProduct` on `UniversalConstruction`). The runtime validates both projections ($p_1$ and $p_2$) simultaneously, eliminating ad-hoc coupling between fulfillment and accounting.
 
 ## Dependencies
 
