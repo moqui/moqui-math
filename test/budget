@@ -1,0 +1,2 @@
+# Regression budget in seconds of feature time. Raise it only after measuring and reviewing a legitimate increase.
+server = 1

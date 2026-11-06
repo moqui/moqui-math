@@ -1,6 +1,6 @@
 # Moqui Math
 
-[![license](http://img.shields.io/badge/license-CC0%201.0%20Universal-blue.svg)](https://github.com/moqui/moqui-math/blob/master/LICENSE.md)
+[![license](https://img.shields.io/badge/license-CC0%201.0%20Universal-blue.svg)](LICENSE.md)
 
 **PLM for mathematical models: the model is the product, with a lifecycle, a change history, and proof.**
 
@@ -247,7 +247,7 @@ It records the fact, and only the fact. Not everything (you drown), not nothing
 | Transformations | `Transformation`, `TransformationOperand`, `DiagonalExtraction`, `TriangularExtraction`, `BandExtraction`, `BlockMatrixExtraction`, `NormResult` |
 | Equations and predicates | Recursive `Transformation` expressions, typed/scalar operands, equality, inequality, membership, constraints, and predicates |
 | Approximated Functions | `ApproximatedFunction`, `ApproximatedFunctionSample`, `ApproximatedFunctionDerivative` |
-| Mathematical Models | `MathModelDef`, `MathModelDefIdentification`, `MathModelDefContent`, `MathModelDefPipeline`, `MathModel`, `MathModelRun`, `MathModelEvent`, `MathModelPerf`, `MathModelData` |
+| Mathematical Models | `MathModelDef`, `MathModelDefIdentification`, `MathModelDefContent`, `MathModel`, `MathModelRun`, `MathModelEvent`, `MathModelPerf`, `MathModelData` |
 | Graph Theory | `Graph`, `GraphVertex`, `GraphEdge`, `GraphContent` |
 | Finite-Element Mesh | `Mesh`, `MeshContent`, `MeshQuality`, `MeshKCell`, `MeshKCellVertex`, `MeshKCellEdge`, `MeshKCellIncidence`, `MeshGroup`, `MeshGroupMember` |
 | Trajectories | `ParametricPath`, `ParametricPathPoint`, `ParametricPathContent`, `ParametricPathEvent`, `Trajectory`, `TrajectoryPoint`, `TrajectoryPointRun`, `TrajectoryRun`, `TrajectoryStats` |
@@ -271,15 +271,13 @@ function results.
 
 ### Inspection views
 
-The model includes views that expose the shared interpretation without adding
-storage entities:
-
-- `ParameterDeclaredType` resolves a parameter definition and its declared
-  mathematical type;
-- `TransformationAndOperand` exposes exact expressions, nested operands, and
-  parameter results; and
-- `MorphismTypeSignature` exposes the categorical and type-theoretic signature
-  of a morphism together with its optional exact realization.
+The model includes views that expose shared interpretation without adding
+storage entities. `ParameterDetail` and `ParameterLogDetail` combine parameter
+values with their definitions, while `MorphismDetail`,
+`MorphismCompositionComponentDetail`, and `MorphismParameterBindingDetail`
+expose executable categorical structures. Linear algebra and tensor views such
+as `MatrixAndComponent`, `MatrixTrace`, `TensorAndElement`, and the tensor
+reshape/flip views provide queryable projections of stored values.
 
 ### Executable categorical pipelines
 
@@ -357,12 +355,11 @@ meaning stays in.
 
 ### Mathematical Models
 
-The metamodel separates algorithmic definition/routing from execution instances and runtime artifacts:
+The metamodel separates algorithmic definitions from execution instances and runtime artifacts:
 
 - **`MathModelDef`**: Carries the algorithmic specification, PLM lifecycle (Draft → Approved → Production → Retired), and external-registry identification (Hugging Face ID, OpenAI model name, MLflow registered model ID, etc.).
-- **`MathModelDefPipeline`**: Defines the ordered computational tasks of the pipeline (analogous to manufacturing routing tasks). Each task references the transformation or approximated function to execute, along with execution-method metadata (`solvingMethodEnumId`, `interpolationEnumId`, `basisFunctionEnumId`, `basisOrder`).
 - **`MathModel`**: Concrete instance of the computational model, bound to optional domain discretization (`Graph`, `Mesh`), parameters, and lifecycle state machines (`statusId`, `statusFlowId`).
-- **`MathModelData`**: Pure data binding table linking the concrete mathematical entities (`Tensor`, `Matrix`, `Vector`, `MeshKCell`, `GraphVertex`, etc.) consumed or produced by the model.
+- **`MathModelData`**: Data binding table linking the concrete mathematical entities (`Tensor`, `Matrix`, `Vector`, `MeshKCell`, `GraphVertex`, etc.) and the optional transformation or approximated function used by the model.
 - **`MathModelRun`**: Tracks training, eval, or inference runs with status flows, metrics, events, and performance records (`MathModelPerf`).
 
 ### Java ecosystem: Mathematical DSL & Fluent API Alignment
@@ -385,7 +382,6 @@ The relational model is reflected 1:1 into the JVM via **Groovy Math** (`groovy-
 | `moqui.math.TensorDecomposition` | Satellite entity (shared PK) | `tensorDecomposition('Tucker') { ... }` | `decompositionMethodEnumId`, `coreTensorId`, `sourceTensorId` |
 | `moqui.math.CoordinateSystemTransformation` | Satellite entity (shared PK) | `coordinateSystemTransformation('Frame')` | `sourceCoordinateSystemId`, `targetCoordinateSystemId`, `matrixId` |
 | `moqui.math.MathModelDef` | Routing template / PLM | `modelDef('PipelineDef') { ... }` | `modelTypeEnumId`, `usageContextEnumId` |
-| `moqui.math.MathModelDefPipeline` | Pipeline task sequence | nested `transformation('Step')` | `sequenceNum`, `stepName`, `transformationId` |
 | `moqui.math.MathModel` | Concrete model instance | `model('ModelInstance') { ... }` | `solvingMethodEnumId`, `statusId`, `statusFlowId` |
 
 ### Architectural Taxonomy: Code Roles and Category-Theoretic Orchestration
@@ -429,17 +425,25 @@ For MR-Moqui, follow the Rust-runtime instructions below. For Java Moqui only:
 ## MR-Moqui runtime
 
 On the `mr-moqui` branch this component supplies XML entity definitions and seed
-data for [MR-Moqui master](https://github.com/moqui/mr-moqui). Install it under
-`mr-moqui/runtime/component/moqui-math` and run `./moq load seed-initial seed`
-from the framework root. The gateway uses the same physical SQL naming as the
-framework's default `java` naming mode; do not point it at a legacy quoted-name
-Rust database without migrating that database first.
+data for [MR-Moqui](https://github.com/moqui/mr-moqui). Install it under
+`mr-moqui/runtime/component/moqui-math` and run the following commands from the
+framework root:
+
+    ./moq load types=seed components=moqui-math
+    ./moq test moqui-math --db fresh
+
+Fresh schemas use the framework's default `java` physical SQL naming. Set
+`entity_sql_name_style=legacy` before opening an existing legacy Rust database,
+or migrate that database offline first.
 
 Groovy Math, JVM, JDBC, DJL, JNI and Panama examples above describe integrations
 for the Java ecosystem. They are not execution engines bundled by this XML
 component or loaded by MR-Moqui. Rust/JavaScript services or configured external
 providers execute calculations on MR-Moqui. Apache Camel and Quarkus references
 are examples of external implementations, not runtime requirements.
+
+The component itself is a portable entity model and data set. It contains no
+bundled Rust, JavaScript, Java, or Groovy calculation engine.
 
 
 For ONNX trajectory inference, moqui-device now supplies the native Moqui service

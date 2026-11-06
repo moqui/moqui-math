@@ -3871,7 +3871,7 @@ along with this software (see the LICENSE.md file). If not, see
             <key-map field-name="purposeEnumId"/></relationship>
     </entity>
     <!-- Mesh K-Cell Parameter Extensions -->
-    <extend-entity entity-name="Parameter" package="moqui.math" enable-audit-log="update" use="configuration" cache="true" short-alias="parameters">
+    <extend-entity entity-name="Parameter" package="moqui.math" enable-audit-log="update" cache="true">
         <!-- Material and shader info specific to this parameter assignment. -->
         <field name="materialEnumId" type="id">
             <description>Material used to compute or interpret this parameter (e.g., steel, glass).</description></field>

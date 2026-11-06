@@ -39,8 +39,8 @@ along with this software (see the LICENSE.md file). If not, see
         <alias-all entity-alias="PAR"><exclude field="parameterId"/><exclude field="sequenceNum"/>
             <exclude field="numericValue"/><exclude field="symbolicValue"/>
             <exclude field="parameterEnumId"/></alias-all>
-        <alias entity-alias="PAR" name="parameterSequenceNum" field="sequenceNum"/>
         <alias-all entity-alias="PDEF"><exclude field="parameterDefId"/></alias-all>
+        <alias entity-alias="PAR" name="parameterSequenceNum" field="sequenceNum"/>
     </view-entity>
 
     <!-- ========== Vector ========== -->
@@ -131,14 +131,18 @@ along with this software (see the LICENSE.md file). If not, see
 
         <alias-all entity-alias="M"/>
         <alias-all entity-alias="MC"><exclude field="matrixId"/></alias-all>
-        <complex-alias field="diffIndex">
-            <complex-alias-field entity-alias="MC" field-name="rowIndex"/>
-            <complex-alias-field operator="-" entity-alias="MC" field="colIndex"/>
-        </complex-alias>
-        <complex-alias field="sumIndex">
-            <complex-alias-field entity-alias="MC" field-name="rowIndex"/>
-            <complex-alias-field operator="+" entity-alias="MC" field="colIndex"/>
-        </complex-alias>
+        <alias name="diffIndex" type="number-integer">
+            <complex-alias operator="-">
+                <complex-alias-field entity-alias="MC" field="rowIndex"/>
+                <complex-alias-field entity-alias="MC" field="colIndex"/>
+            </complex-alias>
+        </alias>
+        <alias name="sumIndex" type="number-integer">
+            <complex-alias operator="+">
+                <complex-alias-field entity-alias="MC" field="rowIndex"/>
+                <complex-alias-field entity-alias="MC" field="colIndex"/>
+            </complex-alias>
+        </alias>
     </view-entity>
     <view-entity entity-name="MatrixAdjoint" package="moqui.math">
         <description>View that presents the conjugate transpose of a matrix.
@@ -153,7 +157,7 @@ along with this software (see the LICENSE.md file). If not, see
         <alias entity-alias="MC" name="rowIndex" field="colIndex"/>
         <alias entity-alias="MC" name="colIndex" field="rowIndex"/>
         <alias name="imaginaryConjValue" type="number-decimal">
-            <complex-alias expression="-MC.imaginaryValue"/>
+            <complex-alias expression="-MC.IMAGINARY_VALUE"/>
         </alias>
     </view-entity> 
     <view-entity entity-name="MatrixTrace" package="moqui.math">
@@ -163,11 +167,11 @@ along with this software (see the LICENSE.md file). If not, see
             <key-map field-name="matrixId"/></member-entity>
 
         <alias-all entity-alias="M"/>
-        <alias-all entity-alias="MC"><exclude field="matrixId"/></alias-all>
         <alias entity-alias="MC" name="traceValue" function="sum" field="realValue"/>
 
         <entity-condition>
-            <econdition field-name="rowIndex" operator="equals" from-field="colIndex"/>
+            <econdition entity-alias="MC" field-name="rowIndex" operator="equals"
+                    to-entity-alias="MC" to-field-name="colIndex"/>
         </entity-condition>
     </view-entity>
     <view-entity entity-name="MatrixTranspose" package="moqui.math">
@@ -191,7 +195,7 @@ along with this software (see the LICENSE.md file). If not, see
         <alias-all entity-alias="M"/>
         <alias-all entity-alias="MC"><exclude field="matrixId"/></alias-all>
         <alias name="dimensionIndex" type="number-integer">
-            <complex-alias expression="MC.rowIndex * M.cols + MC.colIndex"/>
+            <complex-alias expression="MC.ROW_INDEX * M.COLS + MC.COL_INDEX"/>
         </alias>
     </view-entity>
     <view-entity entity-name="MatrixReciprocal" package="moqui.math">
@@ -203,16 +207,21 @@ along with this software (see the LICENSE.md file). If not, see
         <alias-all entity-alias="M"/>
         <alias-all entity-alias="MC"><exclude field="matrixId"/></alias-all>
         <alias name="den" type="number-decimal">
-            <complex-alias expression="(MC.realValue * MC.realValue) + (MC.imaginaryValue * MC.imaginaryValue)"/>
+            <complex-alias expression="(MC.REAL_VALUE * MC.REAL_VALUE)
+                + (COALESCE(MC.IMAGINARY_VALUE, 0) * COALESCE(MC.IMAGINARY_VALUE, 0))"/>
         </alias>
         <alias name="recipRealValue" type="number-decimal">
-            <case><when expression="den &lt;&gt; 0">
-                <complex-alias expression="MC.realValue / den"/>
+            <case><when expression="(MC.REAL_VALUE * MC.REAL_VALUE)
+                    + (COALESCE(MC.IMAGINARY_VALUE, 0) * COALESCE(MC.IMAGINARY_VALUE, 0)) &lt;&gt; 0">
+                <complex-alias expression="MC.REAL_VALUE / ((MC.REAL_VALUE * MC.REAL_VALUE)
+                    + (COALESCE(MC.IMAGINARY_VALUE, 0) * COALESCE(MC.IMAGINARY_VALUE, 0)))"/>
             </when><else><complex-alias expression="0"/></else></case>
         </alias>
         <alias name="recipImaginaryValue" type="number-decimal">
-            <case><when expression="den &lt;&gt; 0">
-                <complex-alias expression="-MC.imaginaryValue / den"/>
+            <case><when expression="(MC.REAL_VALUE * MC.REAL_VALUE)
+                    + (COALESCE(MC.IMAGINARY_VALUE, 0) * COALESCE(MC.IMAGINARY_VALUE, 0)) &lt;&gt; 0">
+                <complex-alias expression="-COALESCE(MC.IMAGINARY_VALUE, 0) / ((MC.REAL_VALUE * MC.REAL_VALUE)
+                    + (COALESCE(MC.IMAGINARY_VALUE, 0) * COALESCE(MC.IMAGINARY_VALUE, 0)))"/>
             </when><else><complex-alias expression="0"/></else></case>
         </alias>
     </view-entity>
@@ -225,7 +234,7 @@ along with this software (see the LICENSE.md file). If not, see
         <alias-all entity-alias="M"/>
         <alias-all entity-alias="MC"><exclude field="matrixId"/></alias-all>
         <alias name="flipRowIndex" type="number-integer">
-            <complex-alias expression="M.rows - MC.rowIndex - 1"/>
+            <complex-alias expression="M.ROWS - MC.ROW_INDEX - 1"/>
         </alias>
     </view-entity>
     <view-entity entity-name="MatrixFlipLeftRight" package="moqui.math">
@@ -237,7 +246,7 @@ along with this software (see the LICENSE.md file). If not, see
         <alias-all entity-alias="M"/>
         <alias-all entity-alias="MC"><exclude field="matrixId"/></alias-all>
         <alias name="flipColIndex" type="number-integer">
-            <complex-alias expression="M.cols - MC.colIndex - 1"/>
+            <complex-alias expression="M.COLS - MC.COL_INDEX - 1"/>
         </alias>
     </view-entity>
     <view-entity entity-name="MatrixRotate90" package="moqui.math">
@@ -249,16 +258,16 @@ along with this software (see the LICENSE.md file). If not, see
         <alias-all entity-alias="M"/>
         <alias-all entity-alias="MC"><exclude field="matrixId"/></alias-all>
         <alias name="rotRow" type="number-integer"><case>
-            <when expression="${k} == 0"><complex-alias expression="MC.rowIndex"/></when>
-            <when expression="${k} == 1"><complex-alias expression="MC.colIndex"/></when>
-            <when expression="${k} == 2"><complex-alias expression="M.rows - 1 - MC.rowIndex"/></when>
-            <else><complex-alias expression="M.cols - 1 - MC.colIndex"/></else>
+            <when expression="${k} = 0"><complex-alias expression="MC.ROW_INDEX"/></when>
+            <when expression="${k} = 1"><complex-alias expression="MC.COL_INDEX"/></when>
+            <when expression="${k} = 2"><complex-alias expression="M.ROWS - 1 - MC.ROW_INDEX"/></when>
+            <else><complex-alias expression="M.COLS - 1 - MC.COL_INDEX"/></else>
         </case></alias>
         <alias name="rotCol" type="number-integer"><case>
-            <when expression="${k} == 0"><complex-alias expression="MC.colIndex"/></when>
-            <when expression="${k} == 1"><complex-alias expression="M.rows - 1 - MC.rowIndex"/></when>
-            <when expression="${k} == 2"><complex-alias expression="M.cols - 1 - MC.colIndex"/></when>
-            <else><complex-alias expression="MC.rowIndex"/></else>
+            <when expression="${k} = 0"><complex-alias expression="MC.COL_INDEX"/></when>
+            <when expression="${k} = 1"><complex-alias expression="M.ROWS - 1 - MC.ROW_INDEX"/></when>
+            <when expression="${k} = 2"><complex-alias expression="M.COLS - 1 - MC.COL_INDEX"/></when>
+            <else><complex-alias expression="MC.ROW_INDEX"/></else>
         </case></alias>
     </view-entity>
 
@@ -288,11 +297,12 @@ along with this software (see the LICENSE.md file). If not, see
     
         <alias-all entity-alias="T"/>
         <alias-all entity-alias="TE"><exclude field="tensorId"/><exclude field="linearIndex"/></alias-all>
+        <alias entity-alias="TA0" name="axis0Stride" field="axisStride" default-display="false"/>
         <alias name="rowIndex" type="number-integer">
-            <complex-alias expression="TE.linearIndex / TA0.axisStride"/>
+            <complex-alias expression="FLOOR(TE.LINEAR_INDEX / TA0.AXIS_STRIDE)"/>
         </alias>
         <alias name="colIndex" type="number-integer">
-            <complex-alias expression="TE.linearIndex % TA0.axisStride"/>
+            <complex-alias expression="TE.LINEAR_INDEX % TA0.AXIS_STRIDE"/>
         </alias>
     </view-entity>
     <!-- Mode-1 unfolding -->
@@ -316,11 +326,14 @@ along with this software (see the LICENSE.md file). If not, see
 
         <alias-all entity-alias="T"/>
         <alias-all entity-alias="TE"><exclude field="tensorId"/><exclude field="linearIndex"/></alias-all>
+        <alias entity-alias="TA0" name="axis0Stride" field="axisStride" default-display="false"/>
+        <alias entity-alias="TA1" name="axis1Stride" field="axisStride" default-display="false"/>
         <alias name="rowIndex" type="number-integer">
-            <complex-alias expression="TE.linearIndex % TA0.axisStride / TA1.axisStride"/>
+            <complex-alias expression="FLOOR((TE.LINEAR_INDEX % TA0.AXIS_STRIDE) / TA1.AXIS_STRIDE)"/>
         </alias>
         <alias name="colIndex" type="number-integer">
-            <complex-alias expression="TE.linearIndex / TA0.axisStride * TA1.axisStride + TE.linearIndex % TA1.axisStride"/>
+            <complex-alias expression="FLOOR(TE.LINEAR_INDEX / TA0.AXIS_STRIDE) * TA1.AXIS_STRIDE
+                + TE.LINEAR_INDEX % TA1.AXIS_STRIDE"/>
         </alias>
     </view-entity>
     <!-- Full vectorisation -->
@@ -346,16 +359,21 @@ along with this software (see the LICENSE.md file). If not, see
         <alias-all entity-alias="T"/>
         <alias-all entity-alias="TE"><exclude field="tensorId"/></alias-all>
         <alias name="den" type="number-decimal">
-            <complex-alias expression="(TE.realValue * TE.realValue) + (TE.imaginaryValue * TE.imaginaryValue)"/>
+            <complex-alias expression="(TE.REAL_VALUE * TE.REAL_VALUE)
+                + (COALESCE(TE.IMAGINARY_VALUE, 0) * COALESCE(TE.IMAGINARY_VALUE, 0))"/>
         </alias>
         <alias name="recipRealValue" type="number-decimal">
-            <case><when expression="den &lt;&gt; 0">
-                <complex-alias expression="TE.realValue / den"/>
+            <case><when expression="(TE.REAL_VALUE * TE.REAL_VALUE)
+                    + (COALESCE(TE.IMAGINARY_VALUE, 0) * COALESCE(TE.IMAGINARY_VALUE, 0)) &lt;&gt; 0">
+                <complex-alias expression="TE.REAL_VALUE / ((TE.REAL_VALUE * TE.REAL_VALUE)
+                    + (COALESCE(TE.IMAGINARY_VALUE, 0) * COALESCE(TE.IMAGINARY_VALUE, 0)))"/>
             </when><else><complex-alias expression="0"/></else></case>
         </alias>
         <alias name="recipImagValue" type="number-decimal">
-            <case><when expression="den &lt;&gt; 0">
-                <complex-alias expression="-TE.imaginaryValue / den"/>
+            <case><when expression="(TE.REAL_VALUE * TE.REAL_VALUE)
+                    + (COALESCE(TE.IMAGINARY_VALUE, 0) * COALESCE(TE.IMAGINARY_VALUE, 0)) &lt;&gt; 0">
+                <complex-alias expression="-COALESCE(TE.IMAGINARY_VALUE, 0) / ((TE.REAL_VALUE * TE.REAL_VALUE)
+                    + (COALESCE(TE.IMAGINARY_VALUE, 0) * COALESCE(TE.IMAGINARY_VALUE, 0)))"/>
             </when><else><complex-alias expression="0"/></else></case>
         </alias>
     </view-entity>
@@ -364,7 +382,7 @@ along with this software (see the LICENSE.md file). If not, see
         <member-entity entity-alias="T" entity-name="moqui.math.Tensor"/>
         <member-entity entity-alias="TE" entity-name="moqui.math.TensorElement" join-from-alias="T">
             <key-map field-name="tensorId"/></member-entity>
-        <member-entity entity-alias="TA0" entity-name="moqui.math.TensorAxis" sub-select="true" join-from-alias="T">
+        <member-entity entity-alias="TA0" entity-name="moqui.math.TensorAxis" join-from-alias="T">
             <key-map field-name="tensorId"/>
             <entity-condition>
                 <econdition field-name="axisIndex" operator="equals" value="0"/>
@@ -373,9 +391,11 @@ along with this software (see the LICENSE.md file). If not, see
 
         <alias-all entity-alias="T"/>
         <alias-all entity-alias="TE"><exclude field="tensorId"/></alias-all>
+        <alias entity-alias="TA0" name="axis0Size" field="axisSize" default-display="false"/>
+        <alias entity-alias="TA0" name="axis0Stride" field="axisStride" default-display="false"/>
         <alias name="flipLinear" type="number-integer">
-            <complex-alias expression="((TA0.axisSize - 1) - (TE.linearIndex / TA0.axisStride))
-                * TA0.axisStride + (TE.linearIndex % TA0.axisStride)"/>
+            <complex-alias expression="((TA0.AXIS_SIZE - 1) - FLOOR(TE.LINEAR_INDEX / TA0.AXIS_STRIDE))
+                * TA0.AXIS_STRIDE + (TE.LINEAR_INDEX % TA0.AXIS_STRIDE)"/>
         </alias>
     </view-entity>
     <view-entity entity-name="TensorFlipLeftRight" package="moqui.math">
@@ -385,29 +405,35 @@ along with this software (see the LICENSE.md file). If not, see
             <key-map field-name="tensorId"/></member-entity>
         <member-entity entity-alias="TA0" entity-name="moqui.math.TensorAxis" join-from-alias="T">
             <key-map field-name="tensorId"/>
-            <econdition field-name="axisIndex" operator="equals" value="0"/>
+            <entity-condition><econdition field-name="axisIndex" operator="equals" value="0"/></entity-condition>
         </member-entity>
         <member-entity entity-alias="TA1" entity-name="moqui.math.TensorAxis" join-from-alias="T">
             <key-map field-name="tensorId"/>
-            <econdition field-name="axisIndex" operator="equals" value="1"/>
+            <entity-condition><econdition field-name="axisIndex" operator="equals" value="1"/></entity-condition>
         </member-entity>
 
         <alias-all entity-alias="T"/>
         <alias-all entity-alias="TE"><exclude field="tensorId"/></alias-all>
+        <alias entity-alias="TA0" name="axis0Stride" field="axisStride" default-display="false"/>
+        <alias entity-alias="TA1" name="axis1Size" field="axisSize" default-display="false"/>
+        <alias entity-alias="TA1" name="axis1Stride" field="axisStride" default-display="false"/>
         <alias name="prefixLinearIndex" type="number-integer">
-            <complex-alias expression="TE.linearIndex / TA0.axisStride * TA0.axisStride"/>
+            <complex-alias expression="FLOOR(TE.LINEAR_INDEX / TA0.AXIS_STRIDE) * TA0.AXIS_STRIDE"/>
         </alias>
         <alias name="originalAxis1Index" type="number-integer">
-            <complex-alias expression="(TE.linearIndex % TA0.axisStride) / TA1.axisStride"/>
+            <complex-alias expression="FLOOR((TE.LINEAR_INDEX % TA0.AXIS_STRIDE) / TA1.AXIS_STRIDE)"/>
         </alias>
         <alias name="newAxis1Index" type="number-integer">
-            <complex-alias expression="(TA1.axisSize - 1) - originalAxis1Index"/>
+            <complex-alias expression="(TA1.AXIS_SIZE - 1)
+                - FLOOR((TE.LINEAR_INDEX % TA0.AXIS_STRIDE) / TA1.AXIS_STRIDE)"/>
         </alias>
         <alias name="suffixLinearIndex" type="number-integer">
-            <complex-alias expression="TE.linearIndex % TA1.axisStride"/>
+            <complex-alias expression="TE.LINEAR_INDEX % TA1.AXIS_STRIDE"/>
         </alias>
         <alias name="flipLinear" type="number-integer">
-            <complex-alias expression="prefixLinearIndex + newAxis1Index * TA1.axisStride + suffixLinearIndex"/>
+            <complex-alias expression="FLOOR(TE.LINEAR_INDEX / TA0.AXIS_STRIDE) * TA0.AXIS_STRIDE
+                + ((TA1.AXIS_SIZE - 1) - FLOOR((TE.LINEAR_INDEX % TA0.AXIS_STRIDE) / TA1.AXIS_STRIDE)) * TA1.AXIS_STRIDE
+                + (TE.LINEAR_INDEX % TA1.AXIS_STRIDE)"/>
         </alias>
     </view-entity>
 
