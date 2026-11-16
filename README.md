@@ -429,7 +429,7 @@ XML/JavaScript regression checks.
 
 On the `mr-moqui` branch this component supplies XML entity definitions and seed
 data for [MR-Moqui](https://github.com/moqui/mr-moqui). Install it under
-`mr-moqui/runtime/component/moqui-math` and run the following commands from the
+`mr-moqui/runtime/components/addon/moqui-math` and run the following commands from the
 framework root:
 
     ./moq load types=seed components=moqui-math

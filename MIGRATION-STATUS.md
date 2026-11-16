@@ -14,11 +14,11 @@ and tensor projections. `ParametricPath.events` now joins on
 
 ## Verification
 
-From the MR Moqui root, with this branch installed under `runtime/component`:
+From the MR Moqui root, with this branch installed under `runtime/components/addon`:
 
 ```bash
 ./moq test --nobuild moqui-math --spec MathModel,MathViews --db fresh
-target/release/moqui check runtime/component/moqui-math/entity runtime/component/moqui-math/data
+target/release/moqui check runtime/components/addon/moqui-math/entity runtime/components/addon/moqui-math/data
 ```
 
 The specs verify relationship traversal, matrix projections and tensor indices
